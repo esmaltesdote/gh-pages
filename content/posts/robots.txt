@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://esmaltesdote.com.br/sitemap.xml

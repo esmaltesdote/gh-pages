@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Massoterapeutas e Qualidade de Vida: O Impacto de uma Boa Sessão de Massagem - Esmaltes Dote</title>
+    <meta name="description" content="
+Você já saiu de uma sessão de massagem com a sensação de que o mundo estava mais leve? Como se cada músculo tivesse respirado aliviado, e até a mente tivesse e">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <span>Esmaltes Dote</span>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Massoterapeutas e Qualidade de Vida: O Impacto de uma Boa Sessão de Massagem</h1>
+            
+            
+                <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 2rem; line-height: 1.5;">
+Você já saiu de uma sessão de massagem com a sensação de que o mundo estava mais leve? Como se cada músculo tivesse respirado aliviado, e até a mente tivesse e</p>
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2025-12-03" style="color: var(--text-muted);">
+                        03/12/2025 10:35
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/Massoterapeutas.jpg" alt="Massoterapeutas e Qualidade de Vida: O Impacto de uma Boa Sessão de Massagem">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p><!-- wp:paragraph --></p>
+<p>Você já saiu de uma sessão de massagem com a sensação de que o mundo estava mais leve? Como se cada músculo tivesse respirado aliviado, e até a mente tivesse encontrado um espaço silencioso para descansar?</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Pois é, não é exagero dizer que a massoterapia vai muito além de aliviar dores. Ela toca diretamente a qualidade de vida, mexe com o emocional, equilibra o corpo e dá aquele empurrãozinho que a gente precisa para enfrentar os dias corridos. Mas o que exatamente faz um massoterapeuta ser tão essencial nesse processo de bem-estar?</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Por que a massagem impacta tanto o corpo e a mente?</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>A resposta pode parecer óbvia: relaxa. Mas não é só isso. A massagem estimula a circulação, melhora a oxigenação dos tecidos, regula a pressão muscular e até ajuda o sistema linfático a fazer seu trabalho de limpeza. É como se fosse uma faxina interna que, de quebra, ainda acalma a mente. E não dá pra negar — corpo e mente caminham juntos. Quando um está sobrecarregado, o outro paga a conta.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Agora, pense bem: quantas vezes você já sentiu uma dor no pescoço e, junto, veio aquela irritação sem motivo? Ou então, após uma semana exaustiva, um simples toque nas costas trouxe lágrimas de alívio? A massagem é justamente isso — um lembrete físico de que sentir-se bem não precisa ser um luxo raro.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Massoterapeuta: um profissional que vai além do toque</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Muita gente ainda pensa que o massoterapeuta só “aperta músculos”. Mas quem já passou por uma boa sessão sabe que a técnica é quase uma arte. Envolve anatomia, fisiologia, sensibilidade e até psicologia. Porque, convenhamos, às vezes a tensão que carregamos não é só física. É emocional, é mental, é aquela preocupação que não desgruda.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>O massoterapeuta de verdade aprende a ler sinais do corpo: um ombro rígido pode revelar noites mal dormidas; uma lombar dolorida pode estar ligada ao estresse do trabalho. E é nesse ponto que a massagem deixa de ser apenas um tratamento físico para se tornar um cuidado integral.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Qualidade de vida: pequenas escolhas que fazem diferença</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Falar de qualidade de vida é quase um clichê hoje em dia. Todo mundo promete, mas pouca gente realmente entende. O que isso significa, afinal? É dormir bem? É ter energia durante o dia? É conseguir rir sem peso no coração? A verdade é que qualidade de vida é um pacote — e a massagem faz parte dele.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Pense no seguinte: o corpo humano foi feito para o movimento, mas a rotina moderna nos prende à cadeira, ao volante, ao sofá. Isso cobra um preço. A massagem entra como uma compensação, uma forma de lembrar ao corpo como é se sentir livre. Não resolve tudo, claro, mas abre espaço para que outras mudanças saudáveis tenham mais efeito.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Quando a massagem deixa de ser luxo e vira necessidade</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Já percebeu como muitas empresas no exterior oferecem sessões rápidas de massagem no ambiente de trabalho? Isso não é frescura corporativa, é estratégia de produtividade. Funcionários menos tensos erram menos, adoecem menos e trabalham com mais clareza. E aqui está o ponto interessante: a massagem, que antes era vista como um mimo de spa, hoje ganha status de ferramenta de saúde preventiva.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>E vamos ser sinceros — com tanta correria, quem não precisa de um respiro? A massagem se torna, então, um investimento. Não só no corpo, mas também na cabeça. Afinal, não existe qualidade de vida sem equilíbrio emocional.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">O toque humano em tempos digitais</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>No meio de tantas telas, reuniões virtuais e interações digitais, o toque humano virou quase um artigo de luxo. E isso é curioso, porque o toque é uma das necessidades mais básicas do ser humano. Ele reduz a produção de cortisol (o hormônio do estresse) e aumenta a liberação de ocitocina (o famoso “hormônio do carinho”).</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Uma massagem bem-feita, então, não é só técnica: é conexão. É a chance de se desligar do piloto automático e sentir que existe alguém ali cuidando de você, de forma atenciosa e presente. Sabe quando a gente sente que foi ouvido de verdade em uma conversa? É a mesma lógica, só que com o corpo.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Benefícios que vão além do óbvio</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Quando se fala em massagem, muita gente pensa apenas em relaxamento muscular. Mas os efeitos são muito mais amplos. Veja alguns deles:</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list"><!-- wp:list-item --></p>
+<li><strong>Melhora do sono:</strong> com a redução das tensões, o corpo entra mais facilmente no estado de descanso profundo.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Fortalecimento do sistema imunológico:</strong> há estudos mostrando que sessões regulares podem aumentar a resistência a infecções.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Redução da ansiedade:</strong> pela combinação de toque, ambiente tranquilo e liberação de neurotransmissores.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Apoio a tratamentos médicos:</strong> em casos de fibromialgia, dores crônicas e até recuperação pós-operatória.</li>
+<p>
+<!-- /wp:list-item --></ul>
+<p>
+<!-- /wp:list --></p>
+<p><!-- wp:paragraph --></p>
+<p>Curioso como um ato tão simples pode ter tantos efeitos em cadeia, não é?</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Massoterapia como carreira e estilo de vida</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Para os profissionais da área, ser massoterapeuta não é apenas ter uma profissão — é quase adotar uma missão de vida. Quem trabalha com isso sabe que cada atendimento é uma troca: você oferece técnica e cuidado, mas também recebe confiança, histórias e até gratidão de quem chega carregado e sai renovado.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Claro, exige estudo sério, dedicação e prática constante. Afinal, não basta só ter “mãos boas”. O mercado hoje valoriza quem entende do corpo humano, domina técnicas variadas e sabe personalizar cada sessão conforme a necessidade do cliente. E aqui entra algo fundamental: a busca por conhecimento contínuo. Ter acesso a um <a href="https://www.terapiasnaturais.com/curso-de-massoterapia/" target="_blank" rel="noreferrer noopener">curso online para massoterapeutas com acesso vitalício</a> pode ser justamente a ponte entre o que já se sabe e o que ainda pode ser aprimorado.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">O que esperar de uma boa sessão de massagem?</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Seja você cliente ou profissional, o que realmente define uma boa sessão não é só a técnica aplicada. É o cuidado com o ambiente, o respeito pelo ritmo da pessoa atendida e, acima de tudo, a sensibilidade em ajustar cada detalhe. A pressão certa, o tempo adequado, até a escolha do óleo ou da música fazem diferença.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>E aqui vai uma curiosidade: muita gente acha que uma massagem precisa doer para “funcionar”. Nada mais equivocado. Dor não é sinônimo de resultado. O que conta é o equilíbrio entre conforto e eficácia, entre alívio e prazer. Uma boa sessão é aquela em que o cliente levanta da maca sentindo-se inteiro — nem mais tenso, nem mais mole, mas no ponto certo.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Quando a massagem vira autocuidado</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>É fácil pensar na massagem como algo pontual, um presente que damos a nós mesmos em momentos de estresse. Mas e se a gente encarasse como parte de uma rotina de autocuidado? Assim como escovar os dentes ou se alongar pela manhã. A massagem pode ser esse lembrete regular de que o corpo precisa de atenção, de que o bem-estar merece espaço na agenda.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Quer saber? Talvez essa seja a maior lição que a massoterapia traz: cuidar do corpo não é vaidade, é sobrevivência. Num mundo que exige cada vez mais, parar para sentir um toque cuidadoso é quase um ato de resistência.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">O futuro da massoterapia e a qualidade de vida</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Olhando para frente, o cenário só tende a se expandir. Com a saúde mental ganhando espaço nas discussões globais e a medicina preventiva se fortalecendo, a massoterapia ocupa um papel de destaque. Novas técnicas surgem, pesquisas reforçam seus benefícios e a procura cresce em diferentes públicos — atletas, executivos, idosos, gestantes.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>O que permanece, no entanto, é a essência: o toque humano como ferramenta de cura e equilíbrio. Não importa quanta tecnologia surja, não há aplicativo que substitua a sensação de ser cuidado de verdade por outro ser humano.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Conclusão: massoterapia como um convite à vida plena</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>No fim das contas, a massagem não é apenas sobre músculos relaxados ou dores que desaparecem. É sobre recuperar a sensação de inteireza, aquela impressão de que corpo e mente finalmente estão na mesma sintonia. É um convite para viver com mais leveza, mais presença, mais saúde.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Então, da próxima vez que alguém perguntar por que investir em massoterapia, talvez a resposta não esteja só em estudos ou dados médicos. Talvez esteja naquela sensação difícil de explicar, mas fácil de reconhecer: quando você sai da maca, respira fundo e pensa — “era exatamente disso que eu precisava”.</p>
+<p>
+<!-- /wp:paragraph --></p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

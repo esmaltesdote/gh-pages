@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7 dicas essenciais para montar um guarda-roupa feminino elegante - Esmaltes Dote</title>
+    <meta name="description" content="Descubra 7 dicas essenciais para montar um guarda-roupa feminino elegante e versátil. Estilo e praticidade para transformar seu visual hoje!">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/moda/" style="color:#ffffff;">Moda</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">7 dicas essenciais para montar um guarda-roupa feminino elegante</h1>
+            
+            
+                <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 2rem; line-height: 1.5;">Descubra 7 dicas essenciais para montar um guarda-roupa feminino elegante e versátil. Estilo e praticidade para transformar seu visual hoje!</p>
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-05-13" style="color: var(--text-muted);">
+                        13/05/2026 00:00
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/7-dicas-essenciais-para-montar-um-guarda-roupa-feminino-elegante.jpg" alt="7 dicas essenciais para montar um guarda-roupa feminino elegante">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p>Montar um guarda-roupa elegante &eacute; um desejo comum entre muitas mulheres, pois a forma como nos vestimos reflete nossa personalidade, estilo e confian&ccedil;a. No entanto, criar uma cole&ccedil;&atilde;o de roupas que seja vers&aacute;til, sofisticada e pr&aacute;tica pode ser um desafio. Para facilitar esse processo, reunimos <strong>7 dicas essenciais</strong> que v&atilde;o ajudar a construir um guarda-roupa feminino elegante, capaz de acompanhar diferentes ocasi&otilde;es e tend&ecirc;ncias sem perder a identidade.</p>
+<h2>1. Invista Em Pe&ccedil;as Cl&aacute;ssicas E Atemporais</h2>
+<p>A base de um guarda-roupa elegante est&aacute; nas pe&ccedil;as cl&aacute;ssicas, que nunca saem de moda. Itens como o <strong>blazer preto</strong>, a camisa branca, a cal&ccedil;a de alfaiataria e o vestido tubinho s&atilde;o exemplos perfeitos. Eles funcionam como um verdadeiro coringa e podem ser combinados de diversas formas, garantindo sempre um visual sofisticado.</p>
+<h3>Por que pe&ccedil;as cl&aacute;ssicas s&atilde;o importantes?</h3>
+<p>Essas pe&ccedil;as s&atilde;o vers&aacute;teis e duradouras, o que significa que voc&ecirc; n&atilde;o precisar&aacute; substitu&iacute;-las frequentemente. Al&eacute;m disso, elas servem como um ponto de partida para compor looks mais elaborados ou casuais, dependendo dos acess&oacute;rios e complementos escolhidos.</p>
+<h2>2. Escolha Tecidos De Qualidade</h2>
+<p>A qualidade dos tecidos influencia diretamente na apar&ecirc;ncia e na durabilidade das roupas. Tecidos nobres, como a l&atilde; fria, o algod&atilde;o de alta gramatura, a seda e o linho, al&eacute;m de proporcionar conforto, conferem um caimento melhor e um visual mais refinado.</p>
+<h3>Como identificar tecidos de qualidade?</h3>
+<p>Observe a textura, o peso e o acabamento das pe&ccedil;as. Um tecido de qualidade n&atilde;o amassa facilmente, tem um toque macio e n&atilde;o deixa fiapos soltos. Investir em roupas com bons tecidos &eacute; uma forma de garantir eleg&acirc;ncia e sofistica&ccedil;&atilde;o.</p>
+<h2>3. Tenha Uma Paleta De Cores Harmoniosa</h2>
+<p>Uma paleta de cores bem definida ajuda a criar combina&ccedil;&otilde;es mais f&aacute;ceis e elegantes. Para montar um guarda-roupa feminino sofisticado, prefira tons neutros como preto, branco, bege, cinza e azul marinho, que s&atilde;o f&aacute;ceis de combinar entre si.</p>
+<h3>Como montar uma paleta de cores eficiente?</h3>
+<p>Escolha de tr&ecirc;s a cinco cores principais que reflitam seu estilo e que possam ser usadas em diferentes ocasi&otilde;es. Adicione algumas pe&ccedil;as em cores mais vibrantes, mas sempre equilibrando para n&atilde;o perder a harmonia. Isso garante que suas roupas conversem entre si, facilitando o mix and match.</p>
+<h2>4. Aposte Em Acess&oacute;rios Que Elevam O Look</h2>
+<p>Os acess&oacute;rios t&ecirc;m o poder de transformar um visual b&aacute;sico em algo elegante e sofisticado. Invista em bolsas estruturadas, sapatos cl&aacute;ssicos, cintos finos e joias delicadas para complementar suas roupas.</p>
+<h3>Dicas para escolher acess&oacute;rios elegantes</h3>
+<p>- Prefira acess&oacute;rios em materiais de qualidade, como couro leg&iacute;timo para bolsas e sapatos.</p>
+<p>- Invista em pe&ccedil;as minimalistas e atemporais que possam ser usadas em diferentes ocasi&otilde;es.</p>
+<p>- Evite exageros, pois a eleg&acirc;ncia est&aacute; no equil&iacute;brio entre simplicidade e bom gosto.</p>
+<h2>5. Priorize O Ajuste Perfeito Das Roupas</h2>
+<p>Uma pe&ccedil;a elegante &eacute; aquela que veste bem. Mesmo a roupa mais bonita perde o charme se n&atilde;o estiver ajustada ao corpo corretamente. Por isso, &eacute; fundamental dar aten&ccedil;&atilde;o ao caimento e, se necess&aacute;rio, levar as pe&ccedil;as para ajustes em uma costureira.</p>
+<h3>Como garantir um ajuste perfeito?</h3>
+<p>- Verifique se as roupas n&atilde;o est&atilde;o largas ou apertadas demais.</p>
+<p>- Preste aten&ccedil;&atilde;o na altura da barra das cal&ccedil;as e saias.</p>
+<p>- Ajuste ombros, cintura e mangas para valorizar sua silhueta.</p>
+<h2>6. Diversifique Estilos Com Pe&ccedil;as-Chave</h2>
+<p>Ter um guarda-roupa elegante n&atilde;o significa usar sempre o mesmo estilo. &Eacute; importante ter pe&ccedil;as que permitam variar entre o casual chic, o formal e o despojado sofisticado, para que voc&ecirc; esteja preparada para diferentes situa&ccedil;&otilde;es.</p>
+<h3>Exemplos de pe&ccedil;as-chave para diversificar o guarda-roupa</h3>
+<p>- Um trench coat cl&aacute;ssico para dias mais frios.</p>
+<p>- Uma saia midi plissada para um toque feminino.</p>
+<p>- Um su&eacute;ter de cashmere para o conforto com eleg&acirc;ncia.</p>
+<p>- Um vestido envelope para ocasi&otilde;es especiais.</p>
+<p>Com essas pe&ccedil;as, &eacute; poss&iacute;vel criar looks variados, mantendo sempre a sofistica&ccedil;&atilde;o.</p>
+<h2>7. Mantenha A Organiza&ccedil;&atilde;o E O Cuidado Com As Roupas</h2>
+<p>Um guarda-roupa elegante tamb&eacute;m depende da forma como as roupas s&atilde;o armazenadas e cuidadas. Manter as pe&ccedil;as limpas, passadas e bem organizadas faz toda a diferen&ccedil;a na hora de escolher o que vestir e prolonga a vida &uacute;til das roupas.</p>
+<h3>Dicas para conservar suas pe&ccedil;as</h3>
+<p>- Separe as roupas por categoria e cor para facilitar a visualiza&ccedil;&atilde;o.</p>
+<p>- Utilize cabides adequados para cada tipo de roupa.</p>
+<p>- Evite guardar pe&ccedil;as molhadas ou suadas para prevenir mofo e odores.</p>
+<p>- Fa&ccedil;a uma revis&atilde;o peri&oacute;dica para doar ou descartar o que n&atilde;o usa mais.</p>
+<p>---</p>
+<h2>Considera&ccedil;&otilde;es Finais Para Um Guarda-Roupa Feminino Elegante</h2>
+<p>Montar um guarda-roupa elegante &eacute; um processo que exige aten&ccedil;&atilde;o, planejamento e investimento em qualidade. As dicas apresentadas ajudam a construir uma cole&ccedil;&atilde;o de pe&ccedil;as que n&atilde;o s&oacute; valorizam a beleza pessoal, mas que tamb&eacute;m facilitam o dia a dia com versatilidade e estilo.</p>
+<p>Lembre-se que eleg&acirc;ncia vai al&eacute;m da roupa em si &mdash; &eacute; um reflexo da postura, do cuidado e da autenticidade. Saber escolher as pe&ccedil;as certas, cuidar delas e combin&aacute;-las com intelig&ecirc;ncia &eacute; o segredo para manter um visual sempre impec&aacute;vel.</p>
+<p>Por fim, vale destacar que, ao montar sua cole&ccedil;&atilde;o, &eacute; importante respeitar suas prefer&ecirc;ncias pessoais e seu estilo de vida. Assim, o guarda-roupa n&atilde;o se torna apenas uma sele&ccedil;&atilde;o de roupas, mas um verdadeiro aliado para expressar quem voc&ecirc; &eacute;. Com essas estrat&eacute;gias, montar uma <a href="https://stravaganzza.com.br/" target="_blank" rel="noopener">roupa femina</a> elegante e funcional se torna uma tarefa prazerosa e recompensadora.</p>
+<p>Ao aplicar essas dicas, seu guarda-roupa ganhar&aacute; um novo significado, onde cada pe&ccedil;a contribui para um visual harmonioso e cheio de personalidade. Comece hoje mesmo a transformar sua maneira de vestir com essas orienta&ccedil;&otilde;es essenciais!</p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

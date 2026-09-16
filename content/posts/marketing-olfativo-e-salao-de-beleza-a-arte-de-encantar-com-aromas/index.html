@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing Olfativo e Salão de Beleza: A Arte de Encantar com Aromas - Esmaltes Dote</title>
+    <meta name="description" content="
+O marketing olfativo é uma estratégia sensorial que vem ganhando cada vez mais espaço no mercado brasileiro, especialmente em setores onde a experiência do cli">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <span>Esmaltes Dote</span>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Marketing Olfativo e Salão de Beleza: A Arte de Encantar com Aromas</h1>
+            
+            
+                <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 2rem; line-height: 1.5;">
+O marketing olfativo é uma estratégia sensorial que vem ganhando cada vez mais espaço no mercado brasileiro, especialmente em setores onde a experiência do cli</p>
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2025-07-21" style="color: var(--text-muted);">
+                        21/07/2025 10:58
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/salao-de-beleza.jpg" alt="Marketing Olfativo e Salão de Beleza: A Arte de Encantar com Aromas">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p><!-- wp:paragraph --></p>
+<p>O marketing olfativo é uma estratégia sensorial que vem ganhando cada vez mais espaço no mercado brasileiro, especialmente em setores onde a experiência do cliente é essencial — como é o caso dos salões de beleza. Mais do que oferecer serviços de estética e bem-estar, muitos salões estão investindo em uma atmosfera que desperta emoções, fideliza clientes e cria uma identidade marcante. E o aroma do ambiente pode ser o fator decisivo para isso.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Neste artigo, vamos ver como o <a href="https://cheirobom.com.br/" target="_blank" rel="noreferrer noopener">marketing olfativo</a> pode transformar a experiência em salões de beleza, quais aromas são mais indicados, os benefícios dessa técnica e como aplicá-la de forma eficaz. Se você é dono(a) de salão ou deseja entender mais sobre o poder dos sentidos no consumo, este conteúdo é para você.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">O que é Marketing Olfativo?</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>O marketing olfativo é uma vertente do marketing sensorial que utiliza aromas estrategicamente selecionados para influenciar o comportamento do consumidor, provocar emoções e fortalecer a identidade da marca. O olfato, por ser um dos sentidos mais ligados à memória e às emoções, tem um papel poderoso na construção da experiência do cliente.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Segundo estudos, as pessoas lembram com até <strong>35% mais precisão de algo que sentem pelo olfato</strong> do que por outros sentidos. Isso significa que, ao criar uma "assinatura olfativa", o salão pode marcar presença na mente e no coração do cliente, aumentando a chance de retorno e recomendação.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Por que usar Marketing Olfativo em Salões de Beleza?</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">1. <strong>Criação de Identidade Sensorial</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Assim como a identidade visual (logotipo, cores, decoração), o aroma do ambiente pode se tornar parte da personalidade do salão. Um cheiro agradável e exclusivo ajuda a fixar a marca na memória dos clientes.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">2. <strong>Aumento do Tempo de Permanência</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Ambientes agradáveis fazem com que as pessoas queiram permanecer mais tempo. No caso de salões de beleza, onde muitas vezes os serviços são longos (como escova, coloração, manicure e pedicure), um aroma envolvente pode tornar a experiência mais confortável e prazerosa.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">3. <strong>Associação com Bem-Estar e Relaxamento</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>O cheiro certo pode induzir ao relaxamento, reduzir a ansiedade e criar uma sensação de acolhimento. Isso é essencial em um salão de beleza, onde o objetivo é justamente promover autoestima e bem-estar.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">4. <strong>Diferenciação no Mercado</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Em um setor competitivo, oferecer algo além do básico é fundamental. O marketing olfativo pode ser um diferencial que separa o seu salão dos concorrentes, criando uma experiência única.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Aromas Mais Indicados para Salões de Beleza</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>A escolha do aroma ideal deve levar em consideração o público-alvo, o tipo de serviço oferecido e a identidade da marca. Veja alguns exemplos:</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">🌸 <strong>Lavanda</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Perfeita para salões que desejam transmitir tranquilidade e relaxamento. A lavanda tem propriedades calmantes, ideal para clientes que buscam um momento de autocuidado.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">🍊 <strong>Cítricos (laranja, limão, bergamota)</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Transmitem energia, frescor e vitalidade. São aromas indicados para ambientes modernos, joviais e que desejam estimular a positividade.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">🌿 <strong>Capim-limão (lemongrass)</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Tem um toque refrescante e sofisticado, muito usado em ambientes que prezam pela naturalidade e leveza. Ideal para salões com foco em beleza natural e orgânica.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">🌹 <strong>Rosas e flores brancas</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Transmitem feminilidade, romantismo e elegância. Excelente opção para salões com estética mais clássica.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">🪵 <strong>Notas amadeiradas e baunilha</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Criam um ambiente mais sofisticado e acolhedor. Ideal para salões premium que desejam oferecer uma experiência de luxo.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Como Aplicar o Marketing Olfativo no Salão de Beleza</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">1. <strong>Escolha um Aromatizador Profissional</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Evite soluções caseiras como sprays comuns ou sachês. Invista em difusores elétricos, aromatizadores de ambiente com temporizador ou sistemas de aromatização automatizada.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">2. <strong>Defina a Assinatura Olfativa</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Crie um aroma exclusivo, que será sempre utilizado em sua unidade. Essa consistência ajuda na fixação da marca. É possível, inclusive, contratar empresas especializadas em “branding olfativo”.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">3. <strong>Posicione Estratégicamente os Difusores</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Coloque os dispositivos em pontos estratégicos: na recepção, salas de espera, área de lavagem e ambientes fechados como salas de estética. Evite exageros: o aroma deve ser suave, envolvente e não invasivo.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">4. <strong>Combine com Outras Estratégias Sensoriais</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Unir o marketing olfativo a uma boa trilha sonora, iluminação adequada e atendimento acolhedor multiplica os resultados. A experiência do cliente é um conjunto de estímulos, e o cheiro deve estar em harmonia com todos eles.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Benefícios Diretos do Marketing Olfativo no Salão</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list"><!-- wp:list-item --></p>
+<li><strong>Melhora da experiência do cliente:</strong> transforma uma simples ida ao salão em um momento marcante e prazeroso.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Aumento da fidelização:</strong> o aroma exclusivo cria laços emocionais que favorecem o retorno dos clientes.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Valorização da marca:</strong> um ambiente mais sensorial e refinado eleva a percepção de valor dos serviços.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Diminuição da ansiedade:</strong> especialmente útil para serviços mais demorados ou que envolvam algum desconforto.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Estímulo ao consumo espontâneo:</strong> clientes mais relaxados e satisfeitos tendem a consumir mais produtos adicionais ou serviços complementares.</li>
+<p>
+<!-- /wp:list-item --></ul>
+<p>
+<!-- /wp:list --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Dica Bônus: Marketing Olfativo como Vitrine</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Se você vende produtos de beleza, aromaterapia ou cosméticos no salão, usar os aromas desses próprios produtos como assinatura olfativa pode estimular as vendas. O cliente sente o cheiro no ambiente e se interessa em levar para casa a mesma experiência.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Você pode, por exemplo, oferecer <strong>kits de aromatização doméstica</strong> com a "fragrância do seu salão" — isso reforça o vínculo com a marca e gera renda extra.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Cuidados Importantes ao Usar Aromas no Salão</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list"><!-- wp:list-item --></p>
+<li><strong>Evite aromas muito doces ou enjoativos</strong>, pois podem causar desconforto.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Considere possíveis alergias e sensibilidades</strong> dos clientes. Prefira óleos essenciais naturais ou fragrâncias hipoalergênicas.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Mantenha a constância</strong>: não altere o cheiro com frequência. Isso ajuda a criar identidade e memória olfativa.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Monitore a intensidade</strong>: um ambiente muito perfumado pode afastar os clientes em vez de encantá-los.</li>
+<p>
+<!-- /wp:list-item --></ul>
+<p>
+<!-- /wp:list --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Casos de Sucesso: Salões que Usam Marketing Olfativo</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Diversos salões de beleza renomados já adotam o marketing olfativo como parte de sua estratégia. Redes como Jacques Janine, Laces and Hair e outras boutiques de beleza utilizam aromas personalizados para marcar sua identidade e elevar o padrão de atendimento.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Alguns desses estabelecimentos oferecem até <strong>sessões de aromaterapia</strong> como parte do serviço de beleza, reforçando o cuidado integral com corpo e mente.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Conclusão: O Cheiro da Fidelização</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Em um mercado tão competitivo como o da beleza, investir em estratégias que encantem o cliente desde o primeiro contato é essencial. O marketing olfativo é uma ferramenta poderosa, acessível e eficaz para transformar o ambiente do salão em um espaço memorável, acolhedor e único.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Mais do que um perfume agradável no ar, trata-se de criar <strong>uma assinatura invisível que o cliente leva na memória e no coração</strong>. Quando feito com estratégia, o aroma do seu salão pode ser o motivo pelo qual o cliente decide voltar — e recomendar.</p>
+<p>
+<!-- /wp:paragraph --></p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

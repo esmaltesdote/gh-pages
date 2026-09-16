@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descubra os Benefícios da Prótese Fixa para Sorrisos Perfeitos - Esmaltes Dote</title>
+    <meta name="description" content="Conheça os benefícios da prótese fixa e conquiste um sorriso perfeito com conforto, durabilidade e estética natural. Saiba mais agora!">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/beleza/" style="color:#ffffff;">Beleza</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Descubra os Benefícios da Prótese Fixa para Sorrisos Perfeitos</h1>
+            
+            
+                <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 2rem; line-height: 1.5;">Conheça os benefícios da prótese fixa e conquiste um sorriso perfeito com conforto, durabilidade e estética natural. Saiba mais agora!</p>
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-06-16" style="color: var(--text-muted);">
+                        16/06/2026 00:00
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/descubra-os-beneficios-da-protese-fixa-para-sorrisos-perfeitos.jpg" alt="Descubra os Benefícios da Prótese Fixa para Sorrisos Perfeitos">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p>A busca por um sorriso perfeito est&aacute; cada vez mais acess&iacute;vel gra&ccedil;as aos avan&ccedil;os da odontologia est&eacute;tica e funcional. Entre as solu&ccedil;&otilde;es que transformam a vida de muitas pessoas, a <strong>pr&oacute;tese fixa</strong> destaca-se como uma op&ccedil;&atilde;o eficiente, duradoura e esteticamente agrad&aacute;vel. Seja para restaurar dentes perdidos, melhorar a mastiga&ccedil;&atilde;o ou recuperar a autoestima, a pr&oacute;tese fixa oferece uma s&eacute;rie de benef&iacute;cios que v&atilde;o muito al&eacute;m do simples aspecto visual.</p>
+<h2>O Que &Eacute; A Pr&oacute;tese Fixa?</h2>
+<p>A <strong>pr&oacute;tese fixa</strong> &eacute; um tipo de restaura&ccedil;&atilde;o dent&aacute;ria que &eacute; permanentemente cimentada sobre dentes naturais ou implantes, n&atilde;o sendo remov&iacute;vel pelo paciente. Diferente das pr&oacute;teses m&oacute;veis, que podem ser retiradas para limpeza, a pr&oacute;tese fixa proporciona maior conforto, estabilidade e funcionalidade.</p>
+<p>Ela pode ser composta por coroas, pontes ou estruturas sobre implantes, sendo indicada para substituir um ou mais dentes ausentes, restabelecendo a harmonia do sorriso e a fun&ccedil;&atilde;o mastigat&oacute;ria.</p>
+<h2>Principais Tipos De Pr&oacute;tese Fixa</h2>
+<h3>Coroas Dent&aacute;rias</h3>
+<p>As coroas s&atilde;o capas que recobrem o dente danificado ou com estrutura comprometida, protegendo-o e restaurando sua forma e fun&ccedil;&atilde;o. Podem ser feitas de porcelana, cer&acirc;mica, metal ou combina&ccedil;&atilde;o destes materiais.</p>
+<h3>Pontes Fixas</h3>
+<p>Indicadas para substituir dentes ausentes, as pontes fixas s&atilde;o suportadas por dentes naturais adjacentes ou por implantes, preenchendo o espa&ccedil;o vazio e evitando o deslocamento dos dentes vizinhos.</p>
+<h3>Pr&oacute;teses sobre Implantes</h3>
+<p>Quando n&atilde;o h&aacute; dentes remanescentes para suporte, a pr&oacute;tese fixa pode ser ancorada em implantes dent&aacute;rios, garantindo estabilidade, durabilidade e alta semelhan&ccedil;a com dentes naturais.</p>
+<h2>Benef&iacute;cios Est&eacute;ticos Da Pr&oacute;tese Fixa</h2>
+<h3>Sorriso Natural e Harm&ocirc;nico</h3>
+<p>A possibilidade de personaliza&ccedil;&atilde;o da pr&oacute;tese fixa permite criar dentes com cor, formato e tamanho que se alinhem perfeitamente ao sorriso natural do paciente. Isso resulta em um aspecto altamente est&eacute;tico, evitando o efeito artificial que pode ocorrer em outras solu&ccedil;&otilde;es.</p>
+<h3>Melhora da Autoestima</h3>
+<p>Recuperar um sorriso completo devolve a confian&ccedil;a para sorrir, falar e conviver socialmente. A pr&oacute;tese fixa contribui para a valoriza&ccedil;&atilde;o da imagem pessoal, impactando positivamente na vida profissional e pessoal.</p>
+<h3>Estabilidade da Estrutura Facial</h3>
+<p>A aus&ecirc;ncia de dentes pode causar afundamento facial e envelhecimento precoce. A pr&oacute;tese fixa ajuda a manter a estrutura &oacute;ssea e muscular da face, preservando a juventude do semblante.</p>
+<h2>Benef&iacute;cios Funcionais Da Pr&oacute;tese Fixa</h2>
+<h3>Mastiga&ccedil;&atilde;o Eficiente</h3>
+<p>Com dentes substitu&iacute;dos por pr&oacute;teses fixas, a capacidade de mastigar alimentos &eacute; restabelecida, permitindo uma dieta variada e saud&aacute;vel. Isso evita problemas gastrointestinais decorrentes da m&aacute; tritura&ccedil;&atilde;o dos alimentos.</p>
+<h3>Fala Clarificada</h3>
+<p>A falta de dentes pode prejudicar a pron&uacute;ncia de certas palavras. A pr&oacute;tese fixa ajuda a recuperar a dic&ccedil;&atilde;o correta, favorecendo a comunica&ccedil;&atilde;o e a intera&ccedil;&atilde;o social.</p>
+<h3>Durabilidade e Resist&ecirc;ncia</h3>
+<p>Pr&oacute;teses fixas s&atilde;o confeccionadas com materiais resistentes e possuem longa vida &uacute;til quando bem cuidadas. Essa durabilidade reduz a necessidade de substitui&ccedil;&otilde;es frequentes, tornando o investimento vantajoso.</p>
+<h2>Cuidados Essenciais Com A Pr&oacute;tese Fixa</h2>
+<h3>Higiene Bucal Rigorosa</h3>
+<p>Mesmo sendo fixa, a pr&oacute;tese necessita de cuidados di&aacute;rios com a escova&ccedil;&atilde;o e uso do fio dental para evitar o ac&uacute;mulo de placa bacteriana, c&aacute;ries em dentes remanescentes e doen&ccedil;as gengivais.</p>
+<h3>Consultas Regulares ao Dentista</h3>
+<p>A manuten&ccedil;&atilde;o preventiva &eacute; fundamental para garantir o bom estado da pr&oacute;tese e detectar qualquer problema precocemente. Consultas peri&oacute;dicas ajudam a prolongar a vida &uacute;til do tratamento.</p>
+<h3>Evitar H&aacute;bitos Prejudiciais</h3>
+<p>Mastigar alimentos muito duros, roer unhas ou usar os dentes para abrir objetos pode danificar a pr&oacute;tese fixa. &Eacute; importante adotar h&aacute;bitos saud&aacute;veis para preservar o investimento.</p>
+<h2>Compara&ccedil;&atilde;o Entre Pr&oacute;tese Fixa E Pr&oacute;tese Remov&iacute;vel</h2>
+<p>| Caracter&iacute;stica | Pr&oacute;tese Fixa | Pr&oacute;tese Remov&iacute;vel |</p>
+<p>|-------------------------|--------------------------------|-------------------------------|</p>
+<p>| Fixa&ccedil;&atilde;o | Permanente | Remov&iacute;vel |</p>
+<p>| Conforto | Alto | Pode causar desconforto |</p>
+<p>| Est&eacute;tica | Muito natural | Menos natural |</p>
+<p>| Manuten&ccedil;&atilde;o | Mais simples | Pode exigir ajustes frequentes|</p>
+<p>| Custo | Geralmente mais alto | Geralmente mais baixo |</p>
+<p>| Indica&ccedil;&atilde;o | Pacientes com boa estrutura &oacute;ssea e gengival | Pacientes com restri&ccedil;&otilde;es cl&iacute;nicas|</p>
+<p>Essa compara&ccedil;&atilde;o ajuda a entender por que a pr&oacute;tese fixa &eacute; a escolha preferida para quem busca funcionalidade e est&eacute;tica alinhadas.</p>
+<h2>Quando Optar Pela Pr&oacute;tese Fixa?</h2>
+<p>A indica&ccedil;&atilde;o da <strong>pr&oacute;tese fixa</strong> depende de uma avalia&ccedil;&atilde;o detalhada do dentista, considerando fatores como quantidade e qualidade dos dentes remanescentes, sa&uacute;de bucal geral, condi&ccedil;&otilde;es &oacute;sseas e expectativas do paciente.</p>
+<p>Pacientes com perda parcial de dentes, dentes comprometidos mas com raiz saud&aacute;vel, ou que utilizam implantes dent&aacute;rios podem ser excelentes candidatos para esse tipo de pr&oacute;tese.</p>
+<h3>Protese Protocolo Lafaiete: Uma Solu&ccedil;&atilde;o Completa</h3>
+<p>Um exemplo de aplica&ccedil;&atilde;o da pr&oacute;tese fixa &eacute; a <a href="https://odontolaf.com/protese-dentaria-em-conselheiro-lafaiete-mg/" target="_blank" rel="noopener">Protese Protocolo Lafaiete</a>, uma t&eacute;cnica que utiliza implantes dent&aacute;rios para suportar uma pr&oacute;tese fixa completa na arcada superior ou inferior. Essa solu&ccedil;&atilde;o &eacute; ideal para pacientes que perderam todos os dentes em uma arcada, proporcionando estabilidade, conforto e um sorriso renovado.</p>
+<p>Essa t&eacute;cnica &eacute; reconhecida pela alta taxa de sucesso e satisfa&ccedil;&atilde;o dos pacientes, al&eacute;m de ser uma alternativa definitiva para quem busca eliminar as pr&oacute;teses m&oacute;veis.</p>
+<h2>O Processo De Confec&ccedil;&atilde;o Da Pr&oacute;tese Fixa</h2>
+<h3>Avalia&ccedil;&atilde;o Inicial e Planejamento</h3>
+<p>O dentista realiza exame cl&iacute;nico, radiogr&aacute;fico e, em alguns casos, tomogr&aacute;fico para avaliar a estrutura &oacute;ssea e a condi&ccedil;&atilde;o dos dentes remanescentes. A partir disso, &eacute; elaborado um plano de tratamento personalizado.</p>
+<h3>Prepara&ccedil;&atilde;o dos Dentes ou Implantes</h3>
+<p>Para pr&oacute;teses fixas convencionais, os dentes que servir&atilde;o de suporte s&atilde;o preparados, reduzindo seu tamanho para receber a coroa ou ponte. J&aacute; para pr&oacute;teses sobre implantes, o profissional faz a instala&ccedil;&atilde;o dos implantes no osso.</p>
+<h3>Moldagem e Confec&ccedil;&atilde;o</h3>
+<p>S&atilde;o feitas moldagens precisas para a confec&ccedil;&atilde;o da pr&oacute;tese em laborat&oacute;rio, garantindo ajuste perfeito e est&eacute;tica adequada. A escolha dos materiais &eacute; feita conforme a necessidade e prefer&ecirc;ncia.</p>
+<h3>Prova e Ajustes</h3>
+<p>Ap&oacute;s a confec&ccedil;&atilde;o, a pr&oacute;tese &eacute; testada na boca do paciente. Ajustes de oclus&atilde;o, conforto e est&eacute;tica s&atilde;o realizados para garantir a satisfa&ccedil;&atilde;o total.</p>
+<h3>Cimenta&ccedil;&atilde;o Definitiva</h3>
+<p>Com tudo aprovado, a pr&oacute;tese &eacute; cimentada definitivamente, completando o processo de reabilita&ccedil;&atilde;o.</p>
+<h2>Materiais Utilizados Na Pr&oacute;tese Fixa</h2>
+<p>Os avan&ccedil;os tecnol&oacute;gicos permitiram o desenvolvimento de materiais que aliam resist&ecirc;ncia e beleza. Os mais comuns s&atilde;o:</p>
+<p>- <strong>Porcelana:</strong> Alta est&eacute;tica, imita o esmalte natural.</p>
+<p>- <strong>Zirc&ocirc;nia:</strong> Extremamente resistente e est&eacute;tica, ideal para coroas e pontes.</p>
+<p>- <strong>Metalocer&acirc;mica:</strong> Combina resist&ecirc;ncia do metal com a est&eacute;tica da porcelana.</p>
+<p>- <strong>Resina:</strong> Usada em pr&oacute;teses provis&oacute;rias.</p>
+<p>A escolha do material depende do caso cl&iacute;nico, or&ccedil;amento e expectativas do paciente.</p>
+<h2>Vantagens Da Pr&oacute;tese Fixa Para A Sa&uacute;de Bucal</h2>
+<h3>Preven&ccedil;&atilde;o do Desgaste Dent&aacute;rio</h3>
+<p>A pr&oacute;tese fixa ajuda a equilibrar a mordida e distribuir a for&ccedil;a mastigat&oacute;ria, evitando o desgaste excessivo dos dentes naturais.</p>
+<h3>Prote&ccedil;&atilde;o dos Dentes Remanescentes</h3>
+<p>Ao substituir dentes ausentes, evita-se o deslocamento e inclina&ccedil;&atilde;o dos dentes vizinhos, prevenindo problemas ortod&ocirc;nticos.</p>
+<h3>Redu&ccedil;&atilde;o do Risco de Problemas Periodontais</h3>
+<p>Com a pr&oacute;tese bem ajustada e higiene adequada, a sa&uacute;de gengival &eacute; mantida, reduzindo a incid&ecirc;ncia de infec&ccedil;&otilde;es e inflama&ccedil;&otilde;es.</p>
+<h2>Considera&ccedil;&otilde;es Finais Sobre A Pr&oacute;tese Fixa</h2>
+<p>Optar pela <strong>pr&oacute;tese fixa</strong> representa um investimento na qualidade de vida, sa&uacute;de e autoestima. Al&eacute;m de devolver a funcionalidade perdida, oferece um sorriso harm&ocirc;nico e natural, que pode transformar a maneira como uma pessoa se v&ecirc; e &eacute; vista.</p>
+<p>Ao escolher essa solu&ccedil;&atilde;o, &eacute; fundamental contar com profissionais especializados e cl&iacute;nicas que utilizem tecnologia de ponta para garantir resultados satisfat&oacute;rios e duradouros.</p>
+<p>---</p>
+<h3>Palavras-chave importantes para SEO</h3>
+<p>- <strong>Pr&oacute;tese fixa</strong></p>
+<p>- <strong>Pr&oacute;tese dent&aacute;ria fixa</strong></p>
+<p>- <strong>Benef&iacute;cios da pr&oacute;tese fixa</strong></p>
+<p>- <strong>Pr&oacute;tese fixa sobre implante</strong></p>
+<p>- <strong>Reabilita&ccedil;&atilde;o oral</strong></p>
+<p>- <strong>Sorriso perfeito</strong></p>
+<p>- <strong>Pr&oacute;tese fixa est&eacute;tica</strong></p>
+<p>- <strong>Protese protocolo lafaiete</strong></p>
+<p>---</p>
+<p>Investir em uma pr&oacute;tese fixa &eacute; investir em sa&uacute;de, est&eacute;tica e bem-estar. A transforma&ccedil;&atilde;o proporcionada por essa t&eacute;cnica vai muito al&eacute;m do sorriso, alcan&ccedil;ando uma nova qualidade de vida.</p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

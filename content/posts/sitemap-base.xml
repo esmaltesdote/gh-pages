@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    <url>
+        <loc>https://esmaltesdote.com.br/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    
+    <url>
+        <loc>https://esmaltesdote.com.br/contato/</loc>
+        <lastmod>2025-12-20</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://esmaltesdote.com.br/politica-de-privacidade/</loc>
+        <lastmod>2025-12-20</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://esmaltesdote.com.br/sobre-nos/</loc>
+        <lastmod>2025-12-20</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://esmaltesdote.com.br/termos-de-uso/</loc>
+        <lastmod>2025-12-20</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+
+    
+
+    
+    <url>
+        <loc>https://esmaltesdote.com.br/categoria/blog/</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <url>
+        <loc>https://esmaltesdote.com.br/categoria/beleza/</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <url>
+        <loc>https://esmaltesdote.com.br/categoria/maquiagem/</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <url>
+        <loc>https://esmaltesdote.com.br/categoria/moda/</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <url>
+        <loc>https://esmaltesdote.com.br/categoria/so-para-eles/</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <url>
+        <loc>https://esmaltesdote.com.br/categoria/unhas/</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+
+</urlset>

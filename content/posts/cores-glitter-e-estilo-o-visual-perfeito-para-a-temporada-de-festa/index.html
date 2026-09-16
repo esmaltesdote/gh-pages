@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cores, Glitter e Estilo: O Visual Perfeito Para a Temporada de Festa - Esmaltes Dote</title>
+    <meta name="description" content="Descubra como arrasar na temporada de festa com cores vibrantes, glitter e estilo único. Inspire-se e brilhe em qualquer ocasião!">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/beleza/" style="color:#ffffff;">Beleza</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Cores, Glitter e Estilo: O Visual Perfeito Para a Temporada de Festa</h1>
+            
+            
+                <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 2rem; line-height: 1.5;">Descubra como arrasar na temporada de festa com cores vibrantes, glitter e estilo único. Inspire-se e brilhe em qualquer ocasião!</p>
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-02-02" style="color: var(--text-muted);">
+                        02/02/2026 21:00
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/cores-glitter-e-estilo-o-visual-perfeito-para-a-temporada-de-festa.jpg" alt="Cores, Glitter e Estilo: O Visual Perfeito Para a Temporada de Festa">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p>A temporada de festa &eacute; o momento ideal para ousar no visual, combinando <strong>cores vibrantes</strong>, muito <strong>glitter</strong> e estilo &uacute;nico que refletem a energia e alegria das comemora&ccedil;&otilde;es. Seja para uma festa de fim de ano, carnaval ou qualquer evento especial, criar um look que chame aten&ccedil;&atilde;o e ao mesmo tempo mantenha a eleg&acirc;ncia &eacute; essencial. A combina&ccedil;&atilde;o certa de maquiagem, roupas e acess&oacute;rios pode transformar seu visual e garantir que voc&ecirc; brilhe em qualquer ocasi&atilde;o.</p>
+<h2>A Import&acirc;ncia Das Cores Na Temporada De Festa</h2>
+<p>As <strong>cores</strong> s&atilde;o elementos fundamentais para compor um visual festivo. Elas t&ecirc;m o poder de transmitir emo&ccedil;&otilde;es, destacar caracter&iacute;sticas pessoais e at&eacute; influenciar o humor. Durante a temporada de festas, tons vibrantes e met&aacute;licos ganham destaque, trazendo energia e sofistica&ccedil;&atilde;o ao look.</p>
+<h3>Tons Vibrantes que Nunca Saem de Moda</h3>
+<p>Para quem quer destacar-se, investir em cores como vermelho, azul royal, verde esmeralda e amarelo mostarda &eacute; uma escolha acertada. Essas tonalidades s&atilde;o ideais para criar contrastes interessantes e chamar aten&ccedil;&atilde;o de forma positiva.</p>
+<p>- <strong>Vermelho:</strong> S&iacute;mbolo de paix&atilde;o e poder, o vermelho &eacute; cl&aacute;ssico em festas. Pode ser usado em vestidos, blusas ou acess&oacute;rios.</p>
+<p>- <strong>Azul Royal:</strong> Elegante e vers&aacute;til, combina com diferentes tons de pele e &eacute; perfeito para eventos noturnos.</p>
+<p>- <strong>Verde Esmeralda:</strong> Remete &agrave; natureza e &agrave; renova&ccedil;&atilde;o, trazendo frescor ao visual.</p>
+<p>- <strong>Amarelo Mostarda:</strong> Uma cor quente e alegre que real&ccedil;a o bronzeado e ilumina o rosto.</p>
+<h3>Cores Met&aacute;licas para Brilhar Ainda Mais</h3>
+<p>Al&eacute;m das cores vivas, os tons met&aacute;licos s&atilde;o indispens&aacute;veis para compor looks festivos. Prata, dourado, bronze e cobre adicionam um toque glamouroso e sofisticado. Eles podem aparecer em vestidos, sapatos, bolsas ou at&eacute; na maquiagem.</p>
+<p>- O <strong>dourado</strong> &eacute; perfeito para quem busca um visual luxuoso sem perder a leveza.</p>
+<p>- O <strong>prata</strong> traz modernidade e funciona muito bem em festas noturnas.</p>
+<p>- O <strong>bronze</strong> e o <strong>cobre</strong> s&atilde;o &oacute;timos para quem prefere um brilho mais sutil e natural.</p>
+<h2>Glitter: O Toque De Magia No Visual</h2>
+<p>O <strong>glitter</strong> &eacute; o elemento que transforma qualquer produ&ccedil;&atilde;o simples em um look deslumbrante. Ele reflete luz, chama aten&ccedil;&atilde;o e adiciona um ar de fantasia e divers&atilde;o.</p>
+<h3>Como Usar Glitter Sem Exageros</h3>
+<p>Apesar de ser uma tend&ecirc;ncia forte, o glitter deve ser usado com equil&iacute;brio para n&atilde;o sobrecarregar o visual. Algumas dicas importantes s&atilde;o:</p>
+<p>- Aplicar glitter nos olhos para destacar o olhar sem pesar o rosto.</p>
+<p>- Usar glitter em acess&oacute;rios, como bolsas e sapatos, para um toque sutil.</p>
+<p>- Incorporar glitter na nail art para um detalhe delicado e festivo.</p>
+<p>- Escolher produtos de qualidade que fixem bem e evitem queda excessiva.</p>
+<h3>Glitter na Maquiagem: Realce e Diversidade</h3>
+<p>A maquiagem com glitter &eacute; uma das formas mais populares de apostar nesse brilho. Pode ser aplicado em sombras, delineadores e at&eacute; nos l&aacute;bios. &Eacute; ideal para quem quer um visual arrojado e cheio de personalidade.</p>
+<p>&Eacute; importante lembrar que a prepara&ccedil;&atilde;o da pele deve ser cuidadosa para garantir que o glitter fixe bem e o rosto mantenha um aspecto fresco durante toda a festa.</p>
+<h2>Estilo E Tend&ecirc;ncias Para A Temporada De Festa</h2>
+<p>Ter estilo &eacute; essencial para construir o visual perfeito. Isso significa escolher pe&ccedil;as que valorizem o corpo, respeitem a personalidade e estejam alinhadas com as tend&ecirc;ncias atuais.</p>
+<h3>Looks que Combinam Conforto e Eleg&acirc;ncia</h3>
+<p>A temporada de festa pede roupas elegantes, mas o conforto n&atilde;o deve ser deixado de lado. Tecidos flu&iacute;dos, cortes que favorecem o movimento e modelagens que se ajustam ao corpo s&atilde;o essenciais.</p>
+<p>- Vestidos midi com tecidos leves e detalhes em brilho.</p>
+<p>- Macac&otilde;es com cortes modernos e tecidos sofisticados.</p>
+<p>- Blusas com transpar&ecirc;ncias combinadas com cal&ccedil;as ou saias de cintura alta.</p>
+<h3>Acess&oacute;rios que Fazem a Diferen&ccedil;a</h3>
+<p>Os acess&oacute;rios s&atilde;o o toque final para qualquer produ&ccedil;&atilde;o. Brincos grandes, colares statement, bolsas com brilho e sapatos metalizados s&atilde;o escolhas certeiras.</p>
+<p>- Invista em acess&oacute;rios que tragam brilho, mas mantenham o equil&iacute;brio com o restante do look.</p>
+<p>- Cintos com detalhes met&aacute;licos ajudam a marcar a cintura e valorizam a silhueta.</p>
+<p>- Chap&eacute;us e tiaras com glitter ou pedrarias podem ser um diferencial para eventos ao ar livre.</p>
+<h2>Dicas De Maquiagem Para A Temporada De Festa</h2>
+<p>A maquiagem &eacute; pe&ccedil;a-chave para completar o visual. Para a temporada festiva, apostar em tons que combinem com as roupas e adicionem um toque de glamour &eacute; fundamental.</p>
+<h3>Pele Iluminada e Natural</h3>
+<p>Uma base leve, iluminador nos pontos estrat&eacute;gicos do rosto e um acabamento natural s&atilde;o ideais para equilibrar os detalhes brilhantes do look.</p>
+<p>- Use primer para preparar a pele e garantir maior durabilidade da maquiagem.</p>
+<p>- Corretivo para uniformizar o tom da pele.</p>
+<p>- Iluminador nas t&ecirc;mporas, arco do cupido, ponta do nariz e abaixo das sobrancelhas.</p>
+<h3>Olhos Marcantes com Glitter</h3>
+<p>O destaque dos olhos pode ser feito com sombras em tons met&aacute;licos e glitter. Para um efeito mais dram&aacute;tico, aposte em delineadores com brilho ou pedras aplicadas na linha dos c&iacute;lios.</p>
+<h3>L&aacute;bios que Enchem os Olhos</h3>
+<p>Aposte em batons de efeito matte para equilibrar o brilho do glitter nos olhos ou escolha um batom com gloss para um visual mais sensual e moderno. Tons vermelhos, vinhos e nudes s&atilde;o os mais indicados.</p>
+<h3>Cuidado com a Durabilidade</h3>
+<p>Produtos &agrave; prova d&rsquo;&aacute;gua e fixadores de maquiagem s&atilde;o essenciais para garantir que o visual permane&ccedil;a impec&aacute;vel durante toda a festa. No caso da <a href="https://vogaurbana.com.br/maquiagens-de-carnaval-que-vao-roubar-a-cena-ideias-criativas-e-cheias-de-cor/" target="_blank" rel="noopener">maquiagem para o carnaval 2026</a>, por exemplo, a resist&ecirc;ncia ao suor e &agrave; umidade &eacute; fundamental.</p>
+<h2>Cabelos Que Complementam O Visual Festivo</h2>
+<p>Os cabelos tamb&eacute;m merecem aten&ccedil;&atilde;o especial na constru&ccedil;&atilde;o do visual para a temporada de festa. Eles podem ganhar acess&oacute;rios, texturas e cores que valorizem o look.</p>
+<h3>Tend&ecirc;ncias de Penteados para a Temporada</h3>
+<p>- <strong>Ondas soltas:</strong> Para um ar natural e elegante.</p>
+<p>- <strong>Coques bagun&ccedil;ados:</strong> Modernos e sofisticados.</p>
+<p>- <strong>Tran&ccedil;as com glitter:</strong> Um toque divertido e original.</p>
+<p>- <strong>Rabo de cavalo alto:</strong> Que alonga o rosto e combina com looks modernos.</p>
+<h3>Acess&oacute;rios para Cabelos</h3>
+<p>Tiara de pedrarias, presilhas com glitter e arcos coloridos s&atilde;o acess&oacute;rios que fazem toda a diferen&ccedil;a e combinam com o clima festivo.</p>
+<h2>Roupas Com Brilho E Texturas Luxuosas</h2>
+<p>Al&eacute;m das cores e do glitter, as texturas s&atilde;o importantes para criar um visual interessante e sofisticado.</p>
+<h3>Veludo, Paet&ecirc;s e Renda</h3>
+<p>- <strong>Veludo:</strong> Um tecido cl&aacute;ssico que traz conforto e glamour.</p>
+<p>- <strong>Paet&ecirc;s:</strong> O brilho dos paet&ecirc;s &eacute; perfeito para festas e pode ser usado em vestidos, blazers ou saias.</p>
+<p>- <strong>Renda:</strong> Delicada e feminina, a renda pode aparecer em detalhes ou em pe&ccedil;as inteiras para um visual rom&acirc;ntico.</p>
+<h3>Combina&ccedil;&otilde;es que Funcionam</h3>
+<p>Combinar tecidos diferentes pode resultar em um look equilibrado e cheio de estilo. Por exemplo, um vestido de veludo com acess&oacute;rios met&aacute;licos ou uma blusa de paet&ecirc;s com cal&ccedil;a de alfaiataria.</p>
+<h2>Como Escolher O Visual Ideal Para Cada Tipo De Festa</h2>
+<p>Cada evento tem seu pr&oacute;prio estilo e exig&ecirc;ncias, o que influencia diretamente na escolha do visual.</p>
+<h3>Festa Formal</h3>
+<p>- Vestidos longos ou midi, em tecidos nobres.</p>
+<p>- Maquiagem elaborada, por&eacute;m elegante.</p>
+<p>- Acess&oacute;rios sofisticados e discretos.</p>
+<h3>Festa Casual</h3>
+<p>- Roupas com cortes mais simples, mas com toque de brilho ou cor.</p>
+<p>- Maquiagem leve com algum detalhe colorido ou glitter sutil.</p>
+<p>- Acess&oacute;rios divertidos e descontra&iacute;dos.</p>
+<h3>Carnaval e Festas Tem&aacute;ticas</h3>
+<p>- Visual mais ousado, com muito glitter, cores fortes e acess&oacute;rios chamativos.</p>
+<p>- Maquiagem art&iacute;stica e criativa, que pode incluir pedrarias e pinturas faciais.</p>
+<p>- Roupas que permitam movimento e conforto para curtir a festa por horas.</p>
+<h2>Conclus&atilde;o: Brilhe Com Confian&ccedil;a E Estilo</h2>
+<p>A temporada de festa &eacute; a oportunidade perfeita para experimentar e combinar <strong>cores</strong>, <strong>glitter</strong> e estilo de maneira &uacute;nica. O segredo para um visual perfeito est&aacute; no equil&iacute;brio entre ousadia e eleg&acirc;ncia, conforto e sofistica&ccedil;&atilde;o.</p>
+<p>Investir em pe&ccedil;as que valorizem seu corpo, escolher maquiagens que realcem sua beleza natural e apostar em acess&oacute;rios que complementem o look s&atilde;o passos fundamentais para garantir que voc&ecirc; se destaque em qualquer evento. A escolha das cores deve refletir sua personalidade e o clima da festa, enquanto o glitter pode ser o toque m&aacute;gico que transforma o visual em algo inesquec&iacute;vel.</p>
+<p>Com essas dicas, o visual para a temporada de festa ser&aacute; simplesmente irresist&iacute;vel. Aproveite para brilhar com confian&ccedil;a e curtir cada momento especial de forma plena e estilosa!</p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

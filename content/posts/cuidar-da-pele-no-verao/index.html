@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confira 9 Dicas Importantes para Cuidar da Pele no Verão e Manter a Saúde - Esmaltes Dote</title>
+    <meta name="description" content="
+O verão exige cuidados especiais com a pele. Descubra 9 dicas práticas para manter sua pele saudável e protegida durante os dias de calor intenso.
+
+
+Mesmo o ve">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <span>Esmaltes Dote</span>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Confira 9 Dicas Importantes para Cuidar da Pele no Verão e Manter a Saúde</h1>
+            
+            
+                <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 2rem; line-height: 1.5;">
+O verão exige cuidados especiais com a pele. Descubra 9 dicas práticas para manter sua pele saudável e protegida durante os dias de calor intenso.
+
+
+Mesmo o ve</p>
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2025-02-27" style="color: var(--text-muted);">
+                        27/02/2025 19:43
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/cuidados-com-a-pele.jpg" alt="Confira 9 Dicas Importantes para Cuidar da Pele no Verão e Manter a Saúde">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p><!-- wp:paragraph --></p>
+<p><strong><em>O verão exige cuidados especiais com a pele. Descubra 9 dicas práticas para manter sua pele saudável e protegida durante os dias de calor intenso.</em></strong></p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Mesmo o verão estando para acabar ainda tem muito sol para curtir, especialmente em lugares paradisíacos. Porém, a exposição ao sol exige cuidados redobrados com a nossa pele. </p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Manter a pele saudável e radiante durante a estação mais quente do ano é essencial, e para isso, adotar uma rotina simples de cuidados diários pode fazer toda a diferença. </p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Descubra, a seguir, 9 dicas essenciais para garantir que sua pele fique linda e protegida enquanto você aproveita o melhor do verão.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">9 Dicas de cuidados com a pele no verão</h2>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Vamos combinar que no verão o único desejo é aproveitar ao máximo os dias de sol, as praias e o calor. </p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Mas, como cuidar da nossa pele de maneira eficaz durante a estação mais quente do ano, ainda mais com o aquecimento global que estamos vivendo, provocando o aumento das temperaturas como jamais vistas antes? O segredo está em adotar uma rotina simples e eficiente de cuidados com a pele, combinando o uso de produtos adequados e boas práticas. </p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Vamos te ajudar com 9 dicas valiosas para manter a pele saudável e radiante durante o verão!</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">1- Manter a pele limpa e hidratada</h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>O primeiro passo essencial para cuidar da pele no verão é mantê-la limpa e hidratada. Com o aumento da temperatura e da exposição ao sol, o suor e a sujeira podem obstruir os poros, o que pode causar acne, irritações e ressecamento. </p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Por isso, é fundamental começar a rotina de cuidados com a pele com uma limpeza adequada. Um sabonete facial suave, adequado ao seu tipo de pele, é ideal para remover as impurezas sem agredir a barreira natural da pele.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Além da limpeza, a hidratação também é crucial. Com o calor, a pele perde água mais rapidamente, o que pode resultar em ressecamento. Usar um hidratante leve e que se adapte ao seu tipo de pele é essencial. A hidratação vai ajudar a manter a pele macia e prevenir o surgimento de rugas finas e ressecamento.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Adotar esses cuidados é um passo importante no <a href="https://mutari.com.br/autocuidado-holistico/" target="_blank" rel="noreferrer noopener">autocuidado holístico</a>, que busca equilibrar o corpo e a mente, tratando-se com carinho e atenção. Então, ao dedicar tempo para esses cuidados, você está não apenas mantendo a sua pele saudável, mas também promovendo o bem-estar geral. </p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Limpar, hidratar e se cuidar de forma holística são passos simples, mas que fazem toda a diferença na saúde e beleza da sua pele durante o verão.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">2- Evitar sol direto</h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Se você está em um lugar como as <a href="https://esimliberty.com/barra-de-sao-miguel/" target="_blank" rel="noreferrer noopener">praias Barra de São Miguel</a>, é impossível resistir ao sol, mas é importante lembrar que a exposição direta e prolongada ao sol pode causar danos à pele. Para evitar queimaduras e o envelhecimento precoce, procure sempre ficar na sombra durante os horários mais intensos do sol (entre 10h e 16h). </p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Usar chapéu, óculos de sol e roupas com proteção UV também é uma maneira de evitar o contato direto com os raios solares.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Evitar a exposição direta ao sol não significa deixar de aproveitar os dias de calor, mas sim cuidar da sua saúde e da sua pele.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">3- Aplicar hidratante na pele</h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>A pele precisa de hidratação constante, especialmente no verão, quando a exposição ao sol pode acelerar a perda de água. Portanto, a cada limpeza, a aplicação de um bom hidratante deve ser um passo fundamental da sua rotina. Os hidratantes possuem ingredientes que ajudam a manter a pele com uma aparência saudável e jovial.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Escolha um hidratante adequado ao seu tipo de pele. Para quem tem pele oleosa, é interessante procurar por produtos mais leves, enquanto quem tem pele seca pode se beneficiar de hidratantes mais potentes, que tragam uma hidratação mais profunda. </p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>E se você passar um tempo ao ar livre, a hidratação pós-sol vai garantir que a pele se recupere de possíveis ressecamentos causados pela exposição ao sol.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">4- Usar protetor solar constantemente</h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Não há como negar: o protetor solar é o aliado mais importante no cuidado com a pele no verão. A exposição aos raios UV pode causar danos irreversíveis à pele, como queimaduras solares, manchas e até o envelhecimento precoce. </p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Por isso, usar protetor solar deve ser uma prioridade. Mesmo nos dias nublados ou quando você está em ambientes fechados, os raios solares ainda podem afetar sua pele.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>É importante aplicar o protetor solar cerca de 30 minutos antes de se expor ao sol e reaplicar a cada 2 horas ou após nadar. Não se esqueça de passar em todas as áreas expostas, como rosto, colo, pescoço, braços e pernas. Isso vai garantir que sua pele fique protegida e que você possa aproveitar o sol sem comprometer sua saúde.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">5- Consumir alimentos antioxidantes</h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Além de cuidar da pele de fora, o que você consome também impacta diretamente na saúde da sua pele. Os alimentos antioxidantes são ricos em nutrientes que ajudam a combater os danos causados pelos radicais livres, que se acumulam especialmente quando ficamos expostos ao sol. </p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Frutas como morango, laranja, mirtilo e abacaxi, além de vegetais como espinafre e couve, ajudam a melhorar a aparência da pele, combatendo o envelhecimento precoce e outras condições relacionadas ao sol.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Esses alimentos também são ricos em vitaminas A, C e E, que promovem a regeneração celular e a proteção contra o estresse oxidativo. Então, inclua essas delícias na sua dieta e veja os benefícios refletindo na sua pele.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">6- Beba muitos líquidos</h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Durante o verão, nosso corpo perde mais líquidos por conta do suor e da temperatura elevada. Isso pode deixar a pele desidratada e propensa ao ressecamento. Por isso, a dica é beber muitos líquidos. A água é a principal aliada nesse processo, pois ajuda a manter a pele hidratada de dentro para fora. </p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Sucos naturais, água de coco e chás gelados são opções saborosas que também contribuem para a hidratação da pele.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>A ingestão adequada de líquidos também vai beneficiar seu organismo de maneira geral, melhorando a digestão, a função renal e até a sua energia. Não se esqueça: hidratação é um passo fundamental para manter a pele bonita e saudável, especialmente quando estamos expostos ao sol.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">7- Fazer esfoliação na pele</h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>A esfoliação é um passo crucial para garantir que a pele esteja sempre renovada e radiante. Durante o verão, a pele tende a acumular células mortas mais rapidamente, o que pode fazer com que ela fique opaca e com aspecto ressecado. A esfoliação vai ajudar a remover essas células, promovendo a renovação da pele e prevenindo o aparecimento de cravos e espinhas.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>No entanto, é importante ter cuidado para não exagerar. Esfolie a pele 1 a 2 vezes por semana, utilizando produtos suaves e que não irritem a pele. Isso vai garantir que sua pele fique lisinha, fresca e preparada para absorver melhor os hidratantes e outros produtos que você aplicar.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">8- Aplicar loção pós-sol</h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Após um dia de sol intenso, nada melhor do que aplicar uma loção pós-sol para acalmar e hidratar a pele. A loção pós-sol ajuda a reduzir a vermelhidão e a sensação de ardência, além de devolver a hidratação que a pele perdeu durante a exposição ao sol. Produtos com aloe vera ou camomila são ideais para promover o efeito refrescante e regenerador que a pele precisa.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Usar loção pós-sol também contribui para a prevenção do envelhecimento precoce, pois mantém a pele bem hidratada e ajuda a reduzir a inflamação causada pela exposição excessiva aos raios solares.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading">9- Usar sabonete antisséptico</h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Durante os meses de calor, o aumento da oleosidade e do suor pode deixar a pele mais propensa a acúmulos de bactérias. Por isso, o uso de um sabonete antisséptico pode ser uma ótima alternativa para garantir que sua pele esteja livre de impurezas e microorganismos. Esses sabonetes ajudam a combater a proliferação de bactérias que causam acne e outras irritações. Ao optar por um produto antisséptico, você ajuda a manter os poros desobstruídos, prevenindo cravos e espinhas.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Contudo, vale a pena lembrar que é importante escolher um sabonete suave, que não resseque demais a pele. O objetivo é limpar sem agredir a sua barreira de proteção natural.</p>
+<p><!-- /wp:paragraph --></p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

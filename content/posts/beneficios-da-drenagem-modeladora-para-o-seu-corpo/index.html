@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benefícios da drenagem modeladora para o seu corpo - Esmaltes Dote</title>
+    <meta name="description" content="Descubra os benefícios da drenagem modeladora para melhorar a circulação, reduzir medidas e deixar seu corpo mais saudável e definido.">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/unhas/" style="color:#ffffff;">Unhas</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Benefícios da drenagem modeladora para o seu corpo</h1>
+            
+            
+                <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 2rem; line-height: 1.5;">Descubra os benefícios da drenagem modeladora para melhorar a circulação, reduzir medidas e deixar seu corpo mais saudável e definido.</p>
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-09-10" style="color: var(--text-muted);">
+                        10/09/2026 00:00
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/beneficios-da-drenagem-modeladora-para-o-seu-corpo.jpg" alt="Benefícios da drenagem modeladora para o seu corpo">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p>A busca por um corpo saud&aacute;vel e esteticamente agrad&aacute;vel &eacute; uma preocupa&ccedil;&atilde;o constante para muitas pessoas. Entre as diversas t&eacute;cnicas dispon&iacute;veis, a <strong>drenagem modeladora</strong> vem ganhando destaque por seus resultados eficazes e benef&iacute;cios que v&atilde;o al&eacute;m da est&eacute;tica. Essa t&eacute;cnica combina os efeitos da drenagem linf&aacute;tica com movimentos modeladores, promovendo uma s&eacute;rie de vantagens para o corpo e o bem-estar geral.</p>
+<p>Para quem reside na regi&atilde;o da Mooca, a oferta de servi&ccedil;os especializados em drenagem modeladora tem crescido significativamente. A <a href="https://atenainstituto.com.br/drenomodeladora-na-mooca/" target="_blank" rel="noopener">massagem drenomodeladora na Mooca</a> destaca-se pela qualidade e profissionalismo dos terapeutas, que aplicam t&eacute;cnicas atualizadas e personalizadas para cada cliente.</p>
+<h2>O Que &Eacute; A Drenagem Modeladora?</h2>
+<p>A <strong>drenagem modeladora</strong> &eacute; uma t&eacute;cnica de massagem que utiliza movimentos espec&iacute;ficos para estimular o sistema linf&aacute;tico e, simultaneamente, modelar o contorno corporal. Diferente da drenagem linf&aacute;tica tradicional, que se concentra apenas na elimina&ccedil;&atilde;o de l&iacute;quidos retidos, a drenagem modeladora tem como objetivo principal ajudar na redu&ccedil;&atilde;o de medidas, melhorar a firmeza da pele e suavizar irregularidades, como a celulite.</p>
+<p>Os movimentos s&atilde;o mais intensos e direcionados, o que contribui para uma melhora significativa da circula&ccedil;&atilde;o sangu&iacute;nea e linf&aacute;tica, al&eacute;m de potencializar a queima de gordura localizada e o t&ocirc;nus muscular.</p>
+<h2>Como Funciona A Drenagem Modeladora?</h2>
+<p>O funcionamento da drenagem modeladora est&aacute; baseado na combina&ccedil;&atilde;o de duas a&ccedil;&otilde;es principais: a <strong>estimula&ccedil;&atilde;o do sistema linf&aacute;tico</strong> e a modelagem dos tecidos. Atrav&eacute;s de movimentos de press&atilde;o, deslizamento e amassamento, a t&eacute;cnica promove a elimina&ccedil;&atilde;o de toxinas, reduz o incha&ccedil;o e ativa a circula&ccedil;&atilde;o.</p>
+<p>Ao estimular os g&acirc;nglios linf&aacute;ticos, a drenagem facilita a remo&ccedil;&atilde;o do excesso de l&iacute;quidos e subst&acirc;ncias t&oacute;xicas que acumulam no corpo, o que pode ajudar a diminuir a sensa&ccedil;&atilde;o de incha&ccedil;o e melhorar o aspecto da pele. Al&eacute;m disso, os movimentos modeladores atuam sobre o tecido adiposo, favorecendo a redistribui&ccedil;&atilde;o da gordura e o contorno corporal mais definido.</p>
+<h2>Principais Benef&iacute;cios Da Drenagem Modeladora</h2>
+<h3>1. Redu&ccedil;&atilde;o de medidas e melhora do contorno corporal</h3>
+<p>Um dos maiores atrativos da drenagem modeladora &eacute; a <strong>redu&ccedil;&atilde;o de medidas</strong> em regi&otilde;es espec&iacute;ficas do corpo, como abd&ocirc;men, coxas, gl&uacute;teos e bra&ccedil;os. A t&eacute;cnica ajuda a desinchar a regi&atilde;o e, com sess&otilde;es regulares, contribui para a modelagem do corpo, deixando-o mais definido.</p>
+<h3>2. Melhora da circula&ccedil;&atilde;o sangu&iacute;nea e linf&aacute;tica</h3>
+<p>A <strong>estimula&ccedil;&atilde;o da circula&ccedil;&atilde;o</strong> &eacute; fundamental para a sa&uacute;de do corpo. A drenagem modeladora auxilia na oxigena&ccedil;&atilde;o dos tecidos, melhora o transporte de nutrientes e favorece a elimina&ccedil;&atilde;o de res&iacute;duos metab&oacute;licos. Isso resulta em uma sensa&ccedil;&atilde;o de leveza e bem-estar, al&eacute;m de prevenir problemas como varizes e edemas.</p>
+<h3>3. Combate &agrave; celulite e flacidez</h3>
+<p>A celulite &eacute; uma condi&ccedil;&atilde;o que afeta grande parte da popula&ccedil;&atilde;o feminina, caracterizada pelo aspecto ondulado da pele devido ao ac&uacute;mulo de gordura e reten&ccedil;&atilde;o de l&iacute;quidos. A drenagem modeladora age diretamente nos tecidos, melhorando a firmeza da pele e suavizando as irregularidades causadas pela celulite.</p>
+<h3>4. Al&iacute;vio de tens&otilde;es e melhora do relaxamento muscular</h3>
+<p>Al&eacute;m dos benef&iacute;cios est&eacute;ticos, a drenagem modeladora oferece uma sensa&ccedil;&atilde;o profunda de relaxamento. Os movimentos aplicados ajudam a aliviar a tens&atilde;o muscular, reduzindo dores e desconfortos, o que contribui para um maior equil&iacute;brio f&iacute;sico e mental.</p>
+<h3>5. Est&iacute;mulo do metabolismo e aux&iacute;lio na perda de peso</h3>
+<p>O aumento da circula&ccedil;&atilde;o e a ativa&ccedil;&atilde;o do sistema linf&aacute;tico promovidos pela drenagem modeladora tamb&eacute;m estimulam o metabolismo. Isso pode facilitar a queima de gordura e, quando associado a uma alimenta&ccedil;&atilde;o equilibrada e pr&aacute;tica regular de exerc&iacute;cios, potencializa a perda de peso.</p>
+<h2>Indica&ccedil;&otilde;es E Contraindica&ccedil;&otilde;es Da Drenagem Modeladora</h2>
+<h3>Indica&ccedil;&otilde;es</h3>
+<p>A drenagem modeladora &eacute; indicada para pessoas que desejam melhorar o aspecto do corpo, reduzir medidas, combater a celulite e flacidez, al&eacute;m de promover uma sensa&ccedil;&atilde;o geral de bem-estar. Tamb&eacute;m &eacute; recomendada para quem sofre com reten&ccedil;&atilde;o de l&iacute;quidos e incha&ccedil;o.</p>
+<h3>Contraindica&ccedil;&otilde;es</h3>
+<p>Apesar de ser uma t&eacute;cnica segura, a drenagem modeladora n&atilde;o &eacute; indicada para gestantes, pessoas com infec&ccedil;&otilde;es de pele, trombose, hipertens&atilde;o descontrolada, c&acirc;ncer ou problemas card&iacute;acos graves. Nesses casos, &eacute; fundamental consultar um profissional de sa&uacute;de antes de iniciar o tratamento.</p>
+<h2>Como &Eacute; Feita A Drenagem Modeladora?</h2>
+<p>A sess&atilde;o de drenagem modeladora geralmente dura entre 45 minutos e uma hora. O terapeuta utiliza as m&atilde;os para realizar movimentos espec&iacute;ficos, que variam de acordo com a necessidade do paciente e a regi&atilde;o do corpo a ser tratada.</p>
+<p>Antes do in&iacute;cio da massagem, o profissional realiza uma avalia&ccedil;&atilde;o para identificar as &aacute;reas que precisam de maior aten&ccedil;&atilde;o, considerando aspectos como reten&ccedil;&atilde;o de l&iacute;quidos, flacidez e ac&uacute;mulo de gordura localizada.</p>
+<p>Durante a sess&atilde;o, &eacute; comum o uso de cremes ou &oacute;leos espec&iacute;ficos que facilitam a deslizamento das m&atilde;os e potencializam os efeitos da massagem. A frequ&ecirc;ncia recomendada pode variar, mas muitas vezes s&atilde;o indicadas de 10 a 15 sess&otilde;es para resultados duradouros.</p>
+<h2>Drenagem Modeladora E A Import&acirc;ncia Do Profissional Qualificado</h2>
+<p>Para garantir a efic&aacute;cia e a seguran&ccedil;a do procedimento, &eacute; fundamental que a drenagem modeladora seja realizada por um profissional capacitado e experiente. T&eacute;cnicas mal aplicadas podem causar desconforto ou at&eacute; mesmo agravar problemas de sa&uacute;de.</p>
+<p>Al&eacute;m disso, o profissional poder&aacute; orientar sobre os cuidados complementares, como alimenta&ccedil;&atilde;o saud&aacute;vel, ingest&atilde;o adequada de l&iacute;quidos e exerc&iacute;cios f&iacute;sicos, que potencializam os resultados.</p>
+<h2>Drenagem Modeladora Como Aliada No Combate &Agrave; Reten&ccedil;&atilde;o De L&iacute;quidos</h2>
+<p>A reten&ccedil;&atilde;o de l&iacute;quidos &eacute; um problema comum, principalmente em mulheres, e pode causar incha&ccedil;o, sensa&ccedil;&atilde;o de peso e desconforto. A drenagem modeladora atua diretamente nesse aspecto, estimulando a circula&ccedil;&atilde;o linf&aacute;tica e facilitando a elimina&ccedil;&atilde;o do excesso de l&iacute;quidos acumulados nos tecidos.</p>
+<p>Esse efeito &eacute; essencial para quem busca n&atilde;o apenas uma melhora est&eacute;tica, mas tamb&eacute;m um al&iacute;vio nos sintomas relacionados &agrave; reten&ccedil;&atilde;o, como cansa&ccedil;o nas pernas e sensa&ccedil;&atilde;o de corpo pesado.</p>
+<h2>Resultados Vis&iacute;veis E Duradouros Com A Drenagem Modeladora</h2>
+<p>Um dos grandes diferenciais da drenagem modeladora &eacute; a possibilidade de observar resultados vis&iacute;veis logo nas primeiras sess&otilde;es. A redu&ccedil;&atilde;o do incha&ccedil;o e a melhora do contorno corporal s&atilde;o percebidas rapidamente, o que motiva a continuidade do tratamento.</p>
+<p>Com a manuten&ccedil;&atilde;o adequada, os benef&iacute;cios podem ser duradouros, especialmente quando a t&eacute;cnica &eacute; associada a h&aacute;bitos saud&aacute;veis. A combina&ccedil;&atilde;o entre massagem, alimenta&ccedil;&atilde;o balanceada e atividade f&iacute;sica potencializa os efeitos e contribui para o alcance de um corpo mais saud&aacute;vel e bonito.</p>
+<h2>Massagem Drenomodeladora Na Mooca: A Escolha Ideal Para Quem Busca Qualidade E Resultados</h2>
+<p>A proximidade e facilidade de acesso a esses servi&ccedil;os tornam a experi&ecirc;ncia ainda mais prazerosa, possibilitando que as pessoas incorporem a drenagem modeladora em sua rotina de cuidados com o corpo de forma pr&aacute;tica e eficiente.</p>
+<h2>Cuidados Antes E Depois Da Drenagem Modeladora</h2>
+<h3>Antes da sess&atilde;o</h3>
+<p>&Eacute; recomend&aacute;vel evitar refei&ccedil;&otilde;es pesadas antes da massagem para n&atilde;o causar desconforto durante o procedimento. Beber bastante &aacute;gua ajuda a preparar o organismo para a elimina&ccedil;&atilde;o de toxinas.</p>
+<h3>Depois da sess&atilde;o</h3>
+<p>Ap&oacute;s a drenagem modeladora, a hidrata&ccedil;&atilde;o continua sendo fundamental para potencializar os efeitos da massagem. Al&eacute;m disso, evitar exposi&ccedil;&atilde;o ao sol e atividades f&iacute;sicas intensas nas primeiras horas pode ajudar na recupera&ccedil;&atilde;o e garantir melhores resultados.</p>
+<h2>Considera&ccedil;&otilde;es Finais</h2>
+<p>A <strong>drenagem modeladora</strong> &eacute; uma t&eacute;cnica que oferece m&uacute;ltiplos benef&iacute;cios para o corpo, unindo a&ccedil;&otilde;es est&eacute;ticas e funcionais que promovem sa&uacute;de, beleza e bem-estar. Com a possibilidade de redu&ccedil;&atilde;o de medidas, melhora da circula&ccedil;&atilde;o, combate &agrave; celulite e al&iacute;vio de tens&otilde;es, essa massagem pode ser uma excelente aliada para quem deseja cuidar do corpo de forma eficaz e natural.</p>
+<p>Investir em sess&otilde;es regulares, com acompanhamento profissional e h&aacute;bitos saud&aacute;veis, potencializa os resultados e contribui para um estilo de vida mais equilibrado e satisfat&oacute;rio.</p>
+<p>---</p>
+<p>Seja qual for o objetivo, a drenagem modeladora representa uma t&eacute;cnica confi&aacute;vel e moderna, capaz de transformar a rela&ccedil;&atilde;o com o corpo, elevando a autoestima e promovendo uma qualidade de vida superior.</p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

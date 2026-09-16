@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unhas - Esmaltes Dote</title>
+    <meta name="description" content="">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/unhas/" style="color:#ffffff;">Unhas</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container">
+    <header style="margin-bottom: 3rem; text-align: center;">
+        <h1 class="page-title" style="border: none; padding: 0;">Unhas</h1>
+        <p style="color: var(--text-muted); font-size: 1.2rem;">Veja todas as notícias desta categoria.</p>
+    </header>
+
+    <div class="gs-grid">
+        
+            
+            <article class="gs-card" style="grid-column: span 12; @media(min-width: 768px){ grid-column: span 4; }">
+                <a href="/beneficios-da-drenagem-modeladora-para-o-seu-corpo/">
+                    <div class="gs-card__img-wrapper">
+                        
+                            <img src="/static/uploads/beneficios-da-drenagem-modeladora-para-o-seu-corpo.jpg" alt="Benefícios da drenagem modeladora para o seu corpo" loading="lazy">
+                        
+                    </div>
+                    <h3 class="gs-card__title">Benefícios da drenagem modeladora para o seu corpo</h3>
+                    <div class="gs-card__meta">
+                        10/09/2026
+                    </div>
+                </a>
+            </article>
+            
+            <article class="gs-card" style="grid-column: span 12; @media(min-width: 768px){ grid-column: span 4; }">
+                <a href="/como-escolher-o-melhor-metodo-de-transplante-capilar-fue-dhi-para-restaurar-fios-e-recuperar-aquele-cabelo-lindo/">
+                    <div class="gs-card__img-wrapper">
+                        
+                            <img src="/static/uploads/como-escolher-o-melhor-metodo-de-transplante-capilar-fue-dhi-para-restaurar-fios-e-recuperar-aquele-cabelo-lindo.jpg" alt="Como escolher o melhor metodo de transplante capilar fue dhi para restaurar fios e recuperar aquele cabelo lindo" loading="lazy">
+                        
+                    </div>
+                    <h3 class="gs-card__title">Como escolher o melhor metodo de transplante capilar fue dhi para restaurar fios e recuperar aquele cabelo lindo</h3>
+                    <div class="gs-card__meta">
+                        15/08/2026
+                    </div>
+                </a>
+            </article>
+            
+            <article class="gs-card" style="grid-column: span 12; @media(min-width: 768px){ grid-column: span 4; }">
+                <a href="/o-poder-do-visagismo-harmonizacao-e-expressao-da-beleza-autentica-da-mulher-moderna/">
+                    <div class="gs-card__img-wrapper">
+                        
+                            <img src="/static/uploads/o-poder-do-visagismo-harmonizacao-e-expressao-da-beleza-autentica-da-mulher-moderna.jpg" alt="O Poder do Visagismo: Harmonização e Expressão da Beleza Autêntica da Mulher Moderna" loading="lazy">
+                        
+                    </div>
+                    <h3 class="gs-card__title">O Poder do Visagismo: Harmonização e Expressão da Beleza Autêntica da Mulher Moderna</h3>
+                    <div class="gs-card__meta">
+                        21/07/2026
+                    </div>
+                </a>
+            </article>
+            
+            <article class="gs-card" style="grid-column: span 12; @media(min-width: 768px){ grid-column: span 4; }">
+                <a href="/como-escolher-revestimentos-modernos-para-ambientes-de-beleza/">
+                    <div class="gs-card__img-wrapper">
+                        
+                            <img src="/static/uploads/como-escolher-revestimentos-modernos-para-ambientes-de-beleza.jpg" alt="Como escolher revestimentos modernos para ambientes de beleza" loading="lazy">
+                        
+                    </div>
+                    <h3 class="gs-card__title">Como escolher revestimentos modernos para ambientes de beleza</h3>
+                    <div class="gs-card__meta">
+                        09/07/2026
+                    </div>
+                </a>
+            </article>
+            
+            <article class="gs-card" style="grid-column: span 12; @media(min-width: 768px){ grid-column: span 4; }">
+                <a href="/como-escolher-looks-perfeitos-para-cerimonias-reduzidas/">
+                    <div class="gs-card__img-wrapper">
+                        
+                            <img src="/static/uploads/como-escolher-looks-perfeitos-para-cerimonias-reduzidas.jpg" alt="Como escolher looks perfeitos para cerimônias reduzidas" loading="lazy">
+                        
+                    </div>
+                    <h3 class="gs-card__title">Como escolher looks perfeitos para cerimônias reduzidas</h3>
+                    <div class="gs-card__meta">
+                        13/05/2026
+                    </div>
+                </a>
+            </article>
+            
+            <article class="gs-card" style="grid-column: span 12; @media(min-width: 768px){ grid-column: span 4; }">
+                <a href="/descubra-locais-exclusivos-para-eventos-de-moda-no-mirante-jurua/">
+                    <div class="gs-card__img-wrapper">
+                        
+                            <img src="/static/uploads/descubra-locais-exclusivos-para-eventos-de-moda-no-mirante-jurua.jpg" alt="Descubra locais exclusivos para eventos de moda no Mirante Juruá" loading="lazy">
+                        
+                    </div>
+                    <h3 class="gs-card__title">Descubra locais exclusivos para eventos de moda no Mirante Juruá</h3>
+                    <div class="gs-card__meta">
+                        13/05/2026
+                    </div>
+                </a>
+            </article>
+            
+            <article class="gs-card" style="grid-column: span 12; @media(min-width: 768px){ grid-column: span 4; }">
+                <a href="/como-aproveitar-promocoes-em-lojas-de-beleza-e-estilo-facil/">
+                    <div class="gs-card__img-wrapper">
+                        
+                            <img src="/static/uploads/como-aproveitar-promocoes-em-lojas-de-beleza-e-estilo-facil.jpg" alt="Como Aproveitar Promoções em Lojas de Beleza e Estilo Fácil" loading="lazy">
+                        
+                    </div>
+                    <h3 class="gs-card__title">Como Aproveitar Promoções em Lojas de Beleza e Estilo Fácil</h3>
+                    <div class="gs-card__meta">
+                        13/01/2026
+                    </div>
+                </a>
+            </article>
+            
+        
+    </div>
+
+    
+    <nav class="pagination">
+        
+        
+    </nav>
+    
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

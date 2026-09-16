@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benefícios das Velas Aromáticas para Relaxamento e Bem-Estar - Esmaltes Dote</title>
+    <meta name="description" content="
+Imagine chegar em casa depois de um dia longo — desses que parecem se estender mais do que deveriam — e acender uma vela que traz um aroma suave, quente, quase">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <span>Esmaltes Dote</span>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Benefícios das Velas Aromáticas para Relaxamento e Bem-Estar</h1>
+            
+            
+                <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 2rem; line-height: 1.5;">
+Imagine chegar em casa depois de um dia longo — desses que parecem se estender mais do que deveriam — e acender uma vela que traz um aroma suave, quente, quase</p>
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2025-12-06" style="color: var(--text-muted);">
+                        06/12/2025 14:00
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/vela-aromatica.jpg" alt="Benefícios das Velas Aromáticas para Relaxamento e Bem-Estar">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p><!-- wp:paragraph --></p>
+<p>Imagine chegar em casa depois de um dia longo — desses que parecem se estender mais do que deveriam — e acender uma vela que traz um aroma suave, quente, quase familiar. É curioso como um simples cheiro pode fazer o corpo respirar fundo sem que a gente perceba. Sabe de uma coisa?</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Às vezes isso é tudo que precisamos para voltar ao eixo. As velas aromáticas têm esse poder quase poético de transformar ambientes duros em lugares acolhedores, e pessoas tensas em pessoas presentes. Não é truque; é sensação, memória e um pouco de ritual misturado.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Por que velas aromáticas despertam tanto aconchego?</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>As velas carregam algo quase ancestral. Antes de luz elétrica, era assim que as pessoas iluminavam o mundo — chama viva, tremulante, íntima. Hoje, o contexto mudou, mas o efeito permanece. A chama acalma de um jeito que poucos objetos conseguem; ela cria um ponto focal, convida o olhar a desacelerar. E quando o aroma entra em cena, tudo ganha mais camadas.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>O olfato, para muitos de nós, é o sentido mais emocional. Um cheiro pode trazer lembranças que nem sabíamos guardar. Quem nunca foi surpreendido pelo perfume de bolo de fubá e, por um instante, voltou para a casa da avó? Ou o cheirinho de chuva que transporta direto para alguma tarde perdida na infância? Não é exagero: aromas atuam como atalhos para memórias — e memórias influenciam humor.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>De certo modo, acender uma vela aromática é quase como iniciar um ritual íntimo. Não precisa ser elaborado. Às vezes basta riscar o fósforo. Outras vezes, envolve preparar a casa para uma noite só sua, com música baixa ou silêncio total. Cada pessoa encontra seu jeito.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>A ciência discreta por trás do bem-estar</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Ainda que pareça algo puramente emocional, existe ciência envolvida. Nosso sistema límbico — a parte do cérebro responsável por emoções, comportamento e motivação — reage diretamente aos estímulos olfativos. Quando um aroma agradável chega, ele praticamente “conversa” com essa região. E essa conversa pode suavizar a sensação de estresse, modular a ansiedade e até melhorar a concentração.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Claro, vale um ponto importante: vela aromática não resolve problemas. Mas, sinceramente, ela ajuda a criar o clima ideal para processar o que está dentro de nós. É quase um suporte sensorial. Se você combina isso com respiração calma e um cantinho bem arrumado, o efeito é ainda melhor.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Profissionais da área de bem-estar costumam citar a aromaterapia como complemento terapêutico — não substituto. A vantagem das velas é que elas permitem experimentar esses efeitos de um jeito simples, sem necessidade de equipamentos.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Aromas e seus efeitos: qual cheiro combina com você?</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Agora vem a parte divertida: os aromas.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Cada fragrância traz uma personalidade, como se fosse um personagem entrando em cena. E, honestamente, escolher o cheiro certo é quase como escolher música. Depende do humor, do momento e até da estação do ano.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list"><!-- wp:list-item --></p>
+<li><strong>Lavanda</strong>: famosa por acalmar. No fim de um dia cheio, ela parece dar um abraço no ar.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Eucalipto</strong>: refrescante; ótimo para quem precisa “respirar melhor” no sentido físico e mental.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Baunilha</strong>: calorosa, cremosa, lembra casa acolhedora e noites tranquilas.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Jasmim</strong>: floral e elegante; cria clima romântico, quase cinematográfico.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Rosas</strong>: doce, suave, perfeito para quem gosta de um toque clássico.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Citronela</strong>: além de perfumar, ajuda a afastar mosquitos — útil demais no verão brasileiro.</li>
+<p>
+<!-- /wp:list-item --></ul>
+<p>
+<!-- /wp:list --></p>
+<p><!-- wp:paragraph --></p>
+<p>E sabe o que é curioso? As pessoas costumam escolher aromas diferentes no inverno e no verão. No frio, notas mais quentes (como canela, âmbar, sândalo) ganham força. No calor, fragrâncias cítricas e frescas fazem mais sucesso.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Se você gosta de seguir tendências, velas com notas de chá branco, figo e bamboo estão em alta nos últimos meses — minimalistas, sofisticadas, e muito queridinhas em fotos de decoração no Instagram.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Ambientes onde a vela faz diferença de verdade</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Alguns lugares parecem mudar completamente quando ganham uma vela aromática.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading"><strong>Quarto</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>O local onde recarregamos energia merece atenção. Uma vela de lavanda ou camomila, acesa meia hora antes de dormir, ajuda a preparar o corpo para o descanso. É quase como desligar as luzes mentais.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading"><strong>Sala de estar</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Aqui a vela cria atmosfera. A luz da chama deixa o ambiente mais convidativo, ótimo para receber visitas ou curtir momentos tranquilos. Baunilha e jasmim funcionam bem nesse espaço.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading"><strong>Banheiro</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Um banho quente acompanhado de vela aromática... bem, isso fala por si só. Um verdadeiro spa doméstico. Muitos brasileiros têm adotado essa prática principalmente à noite para relaxar depois do trabalho.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading"><strong>Home office</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>É impressionante como aromas como capim-limão, hortelã e alecrim ajudam a manter foco. Não fazem milagres, claro, mas ajudam a criar contexto. Às vezes é o detalhe que faltava para entrar no ritmo.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Rituais simples que deixam tudo mais leve</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Muita gente acredita que precisa de algo grandioso para relaxar, mas relaxamento mora nos detalhes.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Quer saber? Uma vela, uma luminária suave e uma playlist tranquila podem fazer milagre.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Experimente isso:</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list"><!-- wp:list-item --></p>
+<li>Reduza a luz ambiente.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>Coloque música instrumental — piano ou lo-fi funciona bem.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>Arrume rapidamente o espaço: uma mesa limpa dá sensação de ordem.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>Acenda a vela.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>Sente por dois minutos antes de fazer qualquer coisa.</li>
+<p>
+<!-- /wp:list-item --></ul>
+<p>
+<!-- /wp:list --></p>
+<p><!-- wp:paragraph --></p>
+<p>Essa espécie de “pausa consciente” muda a energia do ambiente e, de quebra, a sua também. Às vezes até melhora o humor de quem mora com você — a casa fica menos agitada quando os cheiros são harmoniosos.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Uma pequena digressão: manter a casa organizada não é só estética. Um espaço leve cria rotinas emocionais mais saudáveis. Velas acabam fazendo parte desse micro-ritual de cuidado com o lar.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Benefícios emocionais e psicológicos</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>As velas aromáticas são quase como um botão de pausa. Elas não correm, não apitam, não notificam. Estão ali, discretas, criando uma zona de conforto sensorial.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Alguns benefícios percebidos por quem usa com frequência:</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list"><!-- wp:list-item --></p>
+<li>Sensação de acolhimento</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>Redução da tensão</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>Conexão com o presente</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>Melhora da qualidade da introspecção</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>Ambiente mais receptivo para descanso</li>
+<p>
+<!-- /wp:list-item --></ul>
+<p>
+<!-- /wp:list --></p>
+<p><!-- wp:paragraph --></p>
+<p>E, sinceramente, num mundo cheio de estímulos, qualquer estímulo que ajude a desacelerar já merece respeito. Quem nunca se viu pensando: “Por que eu não faço isso mais vezes?”</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Benefícios físicos indiretos</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Aqui entra uma parte um pouco mais técnica, mas vamos manter simples.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Quando nos sentimos calmos, o corpo ajusta naturalmente o ritmo da respiração. Inspirações mais profundas trazem mais oxigênio. Mais oxigênio ajuda o corpo todo a funcionar melhor. É como se o organismo recebesse o recado: “Agora podemos desacelerar.”</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Algumas fragrâncias, como eucalipto e hortelã, também dão sensação de respiração mais limpa. Não fazem tratamento médico, claro, mas ajudam no conforto — principalmente em dias secos ou em ambientes fechados. Essa combinação entre aroma e respiração faz diferença na qualidade do descanso, na concentração e até na digestão.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Como escolher velas de boa qualidade</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Quando o assunto é vela, nem tudo é igual, e vale ficar atento a alguns pontos antes de comprar.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading"><strong>Tipo de cera</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list"><!-- wp:list-item --></p>
+<li><strong>Cera vegetal (soja, coco)</strong>: queima mais limpa, sem fuligem perceptível.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Parafina</strong>: popular e acessível; queima mais rápido.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Cera de abelha</strong>: natural e resistente, aroma levemente adocicado.</li>
+<p>
+<!-- /wp:list-item --></ul>
+<p>
+<!-- /wp:list --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading"><strong>Pavio</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Prefira pavios de algodão ou madeira com boa procedência. Os de madeira estalam levemente — um charme extra.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading"><strong>Fragrância</strong></h3>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Fragrâncias de qualidade costumam ser feitas com óleos essenciais ou blends bem elaborados. Algumas marcas brasileiras conhecidas incluem:</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list"><!-- wp:list-item --></p>
+<li>Avatim</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>L’Occitane au Brésil</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>Tania Bulhões</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>Zara Home (embora use mais fragrâncias sintéticas)</li>
+<p>
+<!-- /wp:list-item --></ul>
+<p>
+<!-- /wp:list --></p>
+<p><!-- wp:paragraph --></p>
+<p>Pesquise avaliações, veja se a vela queima por igual e se o cheiro é perceptível sem ser invasivo.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>No meio desse processo de escolha, muita gente até tenta aprender <a href="https://seressencia.com.br/como-fazer-vela-aromatica-5-receitas/" target="_blank" rel="noreferrer noopener">como fazer vela aromática</a>, e isso abre um mundo de possibilidades artesanais.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Segurança: um detalhe importante</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Velas são incríveis, mas exigem certos cuidados — nada complicado, só bom senso.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list"><!-- wp:list-item --></p>
+<li>Não deixe a vela acesa sem supervisão.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>Mantenha longe de cortinas, livros, tecidos.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>Evite colocar em superfícies muito instáveis.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>Corte o pavio a cada novo uso (meio centímetro já basta).</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li>Se tiver pets curiosos, atenção redobrada.</li>
+<p>
+<!-- /wp:list-item --></ul>
+<p>
+<!-- /wp:list --></p>
+<p><!-- wp:paragraph --></p>
+<p>Por outro lado, existe quem diga “Ah, eu deixo a vela acesa sempre e nunca aconteceu nada.” Isso é a tal da contradição: funciona até o dia em que não funciona. Por isso, melhor prevenir.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Conclusão: o aconchego que cabe na palma da mão</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>As velas aromáticas não são só um item de decoração, nem mero objeto perfumado. Elas carregam atmosfera, memória e pausa. Têm o poder sutil de transformar um momento qualquer em um pequeno refúgio sensorial — coisa rara, mas necessária.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Quando você acende uma vela, cria um ambiente que convida à presença. É quase um lembrete silencioso de que a vida não precisa ser corrida o tempo todo. Pode ser leve, pode ser cheirosa, pode ser suave. Pode ter pequenos rituais que, no fim das contas, fazem toda a diferença no bem-estar.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>E, sinceramente? Uma vela acesa muda tudo.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Se quiser transformar sua rotina com um toque de calmaria, comece com uma chama.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>
+<!-- /wp:paragraph --></p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

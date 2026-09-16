@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benefícios da Punarnava para as Unhas - Esmaltes Dote</title>
+    <meta name="description" content="
+Cuidar das unhas vai muito além da estética — unhas fortes, saudáveis e resistentes também são sinais de uma boa saúde interna. Entre os diversos ingredientes ">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <span>Esmaltes Dote</span>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Benefícios da Punarnava para as Unhas</h1>
+            
+            
+                <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 2rem; line-height: 1.5;">
+Cuidar das unhas vai muito além da estética — unhas fortes, saudáveis e resistentes também são sinais de uma boa saúde interna. Entre os diversos ingredientes </p>
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2025-12-25" style="color: var(--text-muted);">
+                        25/12/2025 08:57
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/manicure.jpg" alt="Benefícios da Punarnava para as Unhas">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p><!-- wp:paragraph --></p>
+<p>Cuidar das unhas vai muito além da estética — unhas fortes, saudáveis e resistentes também são sinais de uma boa saúde interna. Entre os diversos ingredientes naturais que vêm ganhando destaque no universo dos cuidados com as unhas, a <strong>Punarnava</strong>, uma planta medicinal originária da Índia, se destaca pelos seus poderosos efeitos regenerativos e desintoxicantes. Neste artigo, você vai descobrir como a Punarnava pode transformar a saúde das suas unhas de forma natural e eficaz.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity">
+<!-- /wp:separator --><p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>O que é a Punarnava?</strong></h2>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>A Punarnava, cientificamente conhecida como <em>Boerhavia diffusa</em>, é uma planta tradicionalmente utilizada na medicina ayurvédica há séculos. Seu nome em sânscrito significa “renovadora do corpo”, e não é à toa — ela é famosa por suas propriedades anti-inflamatórias, diuréticas, antioxidantes e revitalizantes.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity">
+<!-- /wp:separator --><p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Por que a saúde das unhas importa?</strong></h2>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>As unhas refletem muito do que está acontecendo dentro do nosso corpo. Deficiências nutricionais, intoxicações, problemas hormonais ou até doenças crônicas podem se manifestar por meio de:</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list"><!-- wp:list-item -->
+<li>Unhas quebradiças</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list">
+<li>Descamação</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list">
+<li>Alterações na cor ou textura</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list">
+<li>Crescimento lento</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- /wp:list --></p>
+<p><!-- wp:paragraph --></p>
+<p>Manter as unhas saudáveis é mais do que vaidade — é autocuidado.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity">
+<!-- /wp:separator --><p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Como a Punarnava atua nas unhas?</strong></h2>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>A Punarnava atua em diferentes frentes que beneficiam diretamente as unhas:</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading"><strong>1. Ação antioxidante</strong></h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Ela combate os radicais livres que podem enfraquecer a matriz ungueal (a estrutura de onde nascem as unhas), promovendo crescimento saudável e forte.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading"><strong>2. Desintoxicação do organismo</strong></h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Por ser um potente diurético natural, a Punarnava ajuda o corpo a eliminar toxinas que, em excesso, afetam a saúde da pele, cabelos e unhas.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading"><strong>3. Fortalecimento celular</strong></h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Rica em compostos bioativos, ela ajuda na regeneração celular, essencial para manter as unhas resistentes, sem rachaduras ou pontas duplas.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity">
+<!-- /wp:separator --><p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Punarnava é boa para todos os tipos de unhas?</strong></h2>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Sim! Seja você uma pessoa com unhas naturalmente fracas, que roem ou que usam produtos químicos constantemente (como esmaltes, acetona ou unhas postiças), a Punarnava pode ser uma excelente aliada na recuperação e fortalecimento das unhas.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity">
+<!-- /wp:separator --><p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Punarnava como Suplemento Natural</strong></h2>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Muitas pessoas têm optado por utilizar a planta em forma de extrato, cápsulas ou suplementos naturais. Inclusive, produtos que contêm o <strong><a href="https://celeiroonline.com/produto/cystinorm-original/">Extrato de Punarnava</a></strong> estão ganhando espaço por oferecerem uma solução prática para incluir os benefícios da planta na rotina diária, promovendo a saúde das unhas de dentro para fora.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity">
+<!-- /wp:separator --><p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Resultados Visíveis em Poucas Semanas</strong></h2>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Quem começa a usar a Punarnava regularmente geralmente nota os seguintes resultados:</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list"><!-- wp:list-item -->
+<li>Unhas mais grossas e resistentes</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list">
+<li>Redução da quebra e descamação</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list">
+<li>Crescimento acelerado e saudável</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list">
+<li>Mais brilho e aparência natural</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- /wp:list --></p>
+<p><!-- wp:paragraph --></p>
+<p>A chave está na constância e na forma correta de consumo.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity">
+<!-- /wp:separator --><p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Como Usar a Punarnava para Unhas Fortes</strong></h2>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Você pode utilizar a Punarnava de diferentes formas:</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading"><strong>1. Suplementação oral</strong></h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Cápsulas e extratos concentrados são a maneira mais prática e eficiente de absorver os compostos ativos da planta.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading"><strong>2. Chás e infusões</strong></h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Embora menos potentes, ainda oferecem benefícios gerais para o corpo, o que se reflete na saúde das unhas.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:heading {"level":3} --></p>
+<h3 class="wp-block-heading"><strong>3. Óleos ou loções tópicas</strong></h3>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Alguns produtos cosméticos utilizam a Punarnava em fórmulas tópicas para aplicar diretamente sobre as unhas e cutículas.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity">
+<!-- /wp:separator --><p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Cuidados Complementares Para Unhas Saudáveis</strong></h2>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Embora a Punarnava ajude bastante, vale lembrar de outras práticas que fortalecem a saúde das unhas:</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list"><!-- wp:list-item -->
+<li>Manter uma alimentação rica em vitaminas e minerais (biotina, zinco, ferro)</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list">
+<li>Evitar o uso excessivo de produtos químicos</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list">
+<li>Hidratar bem as mãos e cutículas</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list">
+<li>Usar luvas em tarefas domésticas</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list">
+<li>Evitar roer unhas ou cutículas</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- /wp:list --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity">
+<!-- /wp:separator --><p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Punarnava tem efeitos colaterais?</strong></h2>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Em geral, a Punarnava é bem tolerada, especialmente quando utilizada em doses recomendadas. No entanto, grávidas, lactantes ou pessoas com doenças renais devem consultar um profissional de saúde antes de iniciar o uso.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity">
+<!-- /wp:separator --><p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Punarnava é indicada apenas para unhas?</strong></h2>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Não! Os benefícios da Punarnava vão muito além:</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list"><!-- wp:list-item -->
+<li>Auxilia na saúde renal</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list">
+<li>Reduz retenção de líquidos</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list">
+<li>Melhora a função hepática</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list">
+<li>Combate inflamações</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<ul class="wp-block-list">
+<li style="list-style-type: none;">
+<ul class="wp-block-list">
+<li>Atua como antioxidante geral</li>
+</ul>
+</li>
+</ul>
+<p><!-- /wp:list-item --></p>
+<p><!-- /wp:list --></p>
+<p><!-- wp:paragraph --></p>
+<p>Ou seja, além de unhas mais bonitas, você ganha mais disposição, saúde e equilíbrio corporal.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity">
+<!-- /wp:separator --><p><!-- wp:heading --></p>
+<h2 class="wp-block-heading"><strong>Conclusão</strong></h2>
+<p><!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>A natureza nos oferece soluções surpreendentes e eficazes — e a Punarnava é um excelente exemplo disso. Se você busca unhas mais fortes, saudáveis e bonitas de forma natural, essa planta milenar pode ser a resposta. Incorporar o Extrato de Punarnava à sua rotina é um passo simples com resultados que vão muito além da estética. Aposte nessa aliada da saúde e sinta a diferença em pouco tempo.</p>
+<p><!-- /wp:paragraph --></p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

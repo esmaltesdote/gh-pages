@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livros Inspiradores para Estilistas: Leituras Essenciais para Criar, Inovar e se Destacar na Moda - Esmaltes Dote</title>
+    <meta name="description" content="
+O universo da moda está em constante transformação. Estilistas, designers e criadores precisam mais do que talento: precisam de referências, cultura visual e u">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <span>Esmaltes Dote</span>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Livros Inspiradores para Estilistas: Leituras Essenciais para Criar, Inovar e se Destacar na Moda</h1>
+            
+            
+                <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 2rem; line-height: 1.5;">
+O universo da moda está em constante transformação. Estilistas, designers e criadores precisam mais do que talento: precisam de referências, cultura visual e u</p>
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2025-09-09" style="color: var(--text-muted);">
+                        09/09/2025 13:04
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/livros-sobre-moda.jpg" alt="Livros Inspiradores para Estilistas: Leituras Essenciais para Criar, Inovar e se Destacar na Moda">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p><!-- wp:paragraph --></p>
+<p>O universo da moda está em constante transformação. Estilistas, designers e criadores precisam mais do que talento: precisam de referências, cultura visual e um olhar crítico sobre o passado, o presente e o futuro da moda. Nesse contexto, a leitura se torna uma ferramenta poderosa. Os <strong>livros inspiradores para estilistas</strong> oferecem desde biografias de grandes nomes da moda até análises sobre tendências, tecidos e processos criativos.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Se você é estudante, profissional ou apenas apaixonado por moda, este artigo reúne <strong>livros essenciais que podem transformar sua forma de criar e enxergar o mundo fashion</strong>. Confira nossa seleção com foco em inspiração, criatividade, técnica e história da moda.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Por que estilistas devem ler mais?</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Antes de apresentarmos os livros, vale refletir sobre a importância da leitura para quem trabalha com moda:</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list"><!-- wp:list-item --></p>
+<li><strong>Aprofundamento criativo</strong>: livros ampliam o repertório estético e cultural.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Referência histórica</strong>: compreender o que já foi feito é essencial para inovar.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Inspiração contínua</strong>: a leitura estimula novas ideias e visões.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Atualização constante</strong>: muitas obras discutem tendências e comportamentos de consumo.</li>
+<p>
+<!-- /wp:list-item --></ul>
+<p>
+<!-- /wp:list --></p>
+<p><!-- wp:paragraph --></p>
+<p>Assim como um croqui bem feito ou uma coleção coerente, <strong>a leitura é uma etapa estratégica no desenvolvimento de um estilista completo</strong>.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">1. <strong>"O Império do Efêmero" – Gilles Lipovetsky</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Este clássico da filosofia contemporânea discute o papel da moda na sociedade pós-moderna. Lipovetsky argumenta que a moda deixou de ser apenas uma expressão estética e se tornou um fenômeno cultural e econômico que influencia comportamento, consumo e identidade.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><strong>Por que ler?</strong><br>É uma leitura essencial para estilistas que desejam entender o impacto social da moda e criar coleções com propósito e profundidade.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">2. <strong>"Moda: Uma Filosofia" – Lars Svendsen</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Outro livro que ultrapassa a superfície das tendências. Svendsen aborda a moda como linguagem, símbolo e forma de comunicação. Ele questiona: por que nos vestimos de certas formas? Qual o papel da estética na vida cotidiana?</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><strong>Para quem é indicado?</strong><br>Para estilistas que desejam refletir sobre os conceitos por trás das roupas, e não apenas criar peças bonitas.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">3. <strong>"Alexander McQueen: Savage Beauty" – Andrew Bolton</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Este livro acompanha a exposição histórica do MET sobre um dos estilistas mais inovadores do século XXI. A obra reúne fotografias impressionantes, croquis, depoimentos e análises sobre a estética transgressora de McQueen.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><strong>O que você vai encontrar:</strong><br>Detalhes sobre processos criativos, técnicas de alfaiataria e o impacto emocional das coleções de McQueen.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">4. <strong>"The Fashion Sketchbook" – Bina Abling</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Uma leitura técnica, mas extremamente útil para estilistas em formação. Este livro ensina como fazer ilustrações de moda, croquis anatômicos, representar tecidos e montar portfólios impactantes.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><strong>Dica bônus de leitura técnica para estilistas:</strong><br>Combine esse título com “9 Heads” de Nancy Riegelman, outro clássico das ilustrações de moda.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">5. <strong>"Grace: A Memoir" – Grace Coddington</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Grace Coddington é uma das estilistas e diretoras criativas mais respeitadas da história da revista Vogue. Neste livro autobiográfico, ela compartilha sua trajetória desde modelo até braço direito de Anna Wintour.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><strong>Por que é inspirador?</strong><br>O livro mostra os bastidores do mundo da moda editorial, os desafios criativos e a importância de manter a autenticidade mesmo em ambientes competitivos.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">6. <strong>"Dior by Dior: The Autobiography of Christian Dior"</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Uma obra-prima para quem ama moda clássica e quer conhecer os bastidores da criação do icônico "New Look". O próprio Christian Dior conta como fundou a maison, desenvolveu suas coleções e enfrentou as pressões da indústria.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><strong>Indispensável para quem:</strong><br>Admira a alta costura, busca referências atemporais e deseja entender a construção de um império de moda.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">7. <strong>"Moda Intuitiva" – Andrea Forneck</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Este título brasileiro oferece um olhar leve e sensível sobre o processo criativo na moda. A autora incentiva os leitores a desenvolverem um estilo único e a respeitarem sua intuição na hora de criar coleções.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><strong>Ideal para:</strong><br>Estilistas que buscam se reconectar com sua essência criativa e encontrar autenticidade em um mercado saturado.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">8. <strong>"Patternmaking for Fashion Design" – Helen Joseph-Armstrong</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Embora mais técnico, esse livro é um verdadeiro manual para quem deseja dominar a modelagem. Da base ao acabamento, a obra é essencial para estilistas que desejam controlar todas as etapas do processo criativo, do papel ao tecido.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><strong>Destaque:</strong><br>Inclui instruções passo a passo, diagramas e orientações para criação de moldes profissionais.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">9. <strong>"100 Years of Fashion" – Cally Blackman</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Este livro é visualmente impactante e cobre um século de moda com fotografias, ilustrações e textos explicativos. Ele ajuda estilistas a entenderem como a moda evoluiu em resposta a contextos históricos e culturais.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><strong>Perfeito para:</strong><br>Buscar referências visuais, estudar estilos e movimentos e se inspirar para criações contemporâneas com um toque vintage.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">10. <strong>"Moda à Brasileira" – João Braga e Luís André do Prado</strong></h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Para quem deseja entender a moda nacional, esse livro é uma leitura obrigatória. Ele traça um panorama da história da moda no Brasil, desde os tempos coloniais até os estilistas contemporâneos.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><strong>Importância para estilistas brasileiros:</strong><br>Incentiva a valorização da identidade local, tecidos típicos, cultura regional e criatividade tropical.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Como escolher os melhores livros para seu estilo como estilista?</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Com tantas opções disponíveis, pode surgir a dúvida: <strong>qual livro escolher primeiro?</strong> Aqui vão algumas dicas para selecionar os títulos mais relevantes para sua trajetória:</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list"><!-- wp:list-item --></p>
+<li><strong>Estilistas iniciantes:</strong> comece por livros técnicos e históricos.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Estilistas experientes:</strong> opte por biografias e livros filosóficos.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Estudantes de moda:</strong> monte uma biblioteca básica com pelo menos 3 livros de ilustração, 2 de história da moda e 1 biografia inspiradora.</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Empreendedores da moda:</strong> invista também em livros sobre branding, marketing e comportamento do consumidor.</li>
+<p>
+<!-- /wp:list-item --></ul>
+<p>
+<!-- /wp:list --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Onde comprar livros de moda?</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Você pode encontrar os livros citados neste artigo em:</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:list --></p>
+<ul class="wp-block-list"><!-- wp:list-item --></p>
+<li><strong>Amazon</strong> (com versões físicas e eBooks)</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Saraiva e Livraria da Travessa</strong></li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Estante Virtual</strong> (ótimo para livros usados e edições raras)</li>
+<p>
+<!-- /wp:list-item --></p>
+<p><!-- wp:list-item --></p>
+<li><strong>Google Livros e Kindle Store</strong></li>
+<p>
+<!-- /wp:list-item --></ul>
+<p>
+<!-- /wp:list --></p>
+<p><!-- wp:paragraph --></p>
+<p>Além disso, não deixe de conferir o <a href="https://omelhorlivro.com.br/">blog O Melhor Livro</a> para conferir mais recomendações.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Dica bônus: Inclua livros de outras áreas na sua estante</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Estilistas não precisam ler apenas sobre moda. Livros sobre <strong>arte, arquitetura, psicologia, comportamento, marketing e sustentabilidade</strong> também agregam muito à visão criativa de um designer de moda. Lembre-se: tudo pode ser referência.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:separator --></p>
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+</p>
+<p><!-- wp:heading --></p>
+<h2 class="wp-block-heading">Conclusão: A leitura como pilar da moda criativa</h2>
+<p>
+<!-- /wp:heading --></p>
+<p><!-- wp:paragraph --></p>
+<p>Em um mercado cada vez mais visual e competitivo, <strong>a leitura se transforma em um diferencial competitivo e criativo</strong>. Estilistas que se inspiram em livros têm mais repertório, sensibilidade e capacidade de propor coleções com identidade. Ler é costurar ideias, experimentar estilos e construir uma moda com mais significado.</p>
+<p>
+<!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Portanto, se você deseja se destacar no mundo fashion, comece agora mesmo a montar sua biblioteca criativa. Afinal, a moda não nasce apenas dos tecidos, mas também das palavras.</p>
+<p>
+<!-- /wp:paragraph --></p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

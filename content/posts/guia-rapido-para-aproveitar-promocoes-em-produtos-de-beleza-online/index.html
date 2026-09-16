@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia rápido para aproveitar promoções em produtos de beleza online - Esmaltes Dote</title>
+    <meta name="description" content="Descubra como aproveitar promoções incríveis em produtos de beleza online com nosso guia rápido e fácil. Economize e arrase no visual!">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/beleza/" style="color:#ffffff;">Beleza</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Guia rápido para aproveitar promoções em produtos de beleza online</h1>
+            
+            
+                <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 2rem; line-height: 1.5;">Descubra como aproveitar promoções incríveis em produtos de beleza online com nosso guia rápido e fácil. Economize e arrase no visual!</p>
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-06-24" style="color: var(--text-muted);">
+                        24/06/2026 00:00
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/guia-rapido-para-aproveitar-promocoes-em-produtos-de-beleza-online.jpg" alt="Guia rápido para aproveitar promoções em produtos de beleza online">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p>O universo dos <strong>produtos de beleza</strong> est&aacute; em constante crescimento, e cada vez mais pessoas buscam maneiras inteligentes de adquirir seus favoritos sem comprometer o or&ccedil;amento. A internet oferece uma vasta gama de op&ccedil;&otilde;es, desde grandes marketplaces at&eacute; lojas especializadas, possibilitando encontrar <strong>promo&ccedil;&otilde;es imperd&iacute;veis</strong> e descontos exclusivos. Saber como identificar e aproveitar essas oportunidades pode transformar sua experi&ecirc;ncia de compra, garantindo produtos de qualidade por pre&ccedil;os acess&iacute;veis.</p>
+<p>Este guia apresenta estrat&eacute;gias e dicas valiosas para <strong>aproveitar promo&ccedil;&otilde;es em produtos de beleza online</strong>, garantindo que voc&ecirc; esteja sempre um passo &agrave; frente na busca por ofertas vantajosas.</p>
+<p>---</p>
+<h2>Por Que Comprar Produtos De Beleza Online?</h2>
+<p>Comprar <strong>produtos de beleza online</strong> tornou-se um h&aacute;bito popular devido &agrave; comodidade, variedade e pre&ccedil;os competitivos. Diferente das lojas f&iacute;sicas, os e-commerces oferecem acesso a marcas internacionais e nacionais em um &uacute;nico lugar, com a vantagem de ler avalia&ccedil;&otilde;es de outros consumidores antes de decidir pela compra.</p>
+<p>Al&eacute;m disso, a possibilidade de comparar pre&ccedil;os rapidamente e utilizar ferramentas digitais para encontrar descontos faz do com&eacute;rcio eletr&ocirc;nico um ambiente prop&iacute;cio para quem deseja economizar.</p>
+<h3>Vantagens de comprar produtos de beleza pela internet</h3>
+<p>- <strong>Variedade extensa</strong>: Desde maquiagens at&eacute; cuidados com a pele e cabelos, a oferta online &eacute; vasta.</p>
+<p>- <strong>Facilidade de pesquisa</strong>: Comparar marcas, ingredientes e pre&ccedil;os se torna muito mais simples.</p>
+<p>- <strong>Descontos exclusivos</strong>: Promo&ccedil;&otilde;es sazonais, cupons e ofertas rel&acirc;mpago s&atilde;o frequentes.</p>
+<p>- <strong>Entrega no conforto de casa</strong>: Evita deslocamentos e filas, especialmente em per&iacute;odos de alta demanda.</p>
+<p>- <strong>Avalia&ccedil;&otilde;es e recomenda&ccedil;&otilde;es</strong>: Coment&aacute;rios de outros usu&aacute;rios ajudam na decis&atilde;o.</p>
+<p>---</p>
+<h2>Como Identificar Promo&ccedil;&otilde;es Reais Em Produtos De Beleza</h2>
+<p>Com tanta oferta dispon&iacute;vel, &eacute; fundamental saber distinguir uma verdadeira promo&ccedil;&atilde;o de um pre&ccedil;o inflacionado disfar&ccedil;ado de desconto. Fique atento a alguns sinais que indicam uma oferta leg&iacute;tima.</p>
+<h3>Pesquise o pre&ccedil;o m&eacute;dio do produto</h3>
+<p>Antes de qualquer compra, &eacute; importante pesquisar o pre&ccedil;o m&eacute;dio do produto em diferentes lojas confi&aacute;veis. Isso ajuda a entender se o desconto anunciado realmente vale a pena ou se o pre&ccedil;o original foi inflacionado antecipadamente para parecer mais atrativo.</p>
+<h3>Verifique a validade das promo&ccedil;&otilde;es</h3>
+<p>Muitas lojas lan&ccedil;am <strong>promo&ccedil;&otilde;es por tempo limitado</strong> para estimular compras r&aacute;pidas. Fique atento &agrave;s datas de in&iacute;cio e t&eacute;rmino das ofertas para n&atilde;o perder a chance de aproveitar o desconto.</p>
+<h3>Leia as condi&ccedil;&otilde;es de uso dos cupons</h3>
+<p>Cupons de desconto podem ter regras espec&iacute;ficas, como valor m&iacute;nimo de compra, categorias eleg&iacute;veis ou exclus&otilde;es. Ler atentamente essas condi&ccedil;&otilde;es evita surpresas desagrad&aacute;veis no momento do pagamento.</p>
+<p>---</p>
+<h2>Dicas Para Aproveitar Promo&ccedil;&otilde;es Em Produtos De Beleza Online</h2>
+<p>Para garantir que cada compra seja uma oportunidade de economizar e adquirir produtos de qualidade, algumas estrat&eacute;gias s&atilde;o essenciais.</p>
+<h3>Assine newsletters e acompanhe redes sociais</h3>
+<p>Marcas e lojas frequentemente enviam promo&ccedil;&otilde;es exclusivas para quem est&aacute; inscrito em suas newsletters ou segue suas redes sociais. Essa &eacute; uma forma de receber cupons e ofertas antecipadas, al&eacute;m de ficar sabendo de lan&ccedil;amentos e eventos especiais.</p>
+<h3>Use comparadores de pre&ccedil;os e aplicativos de desconto</h3>
+<p>Ferramentas digitais ajudam a comparar pre&ccedil;os em tempo real e encontrar cupons v&aacute;lidos. Aplicativos especializados em promo&ccedil;&otilde;es s&atilde;o aliados poderosos para quem deseja fazer compras inteligentes.</p>
+<h3>Aproveite datas comemorativas e eventos de vendas</h3>
+<p>Datas como Black Friday, Dia da Mulher, Natal e anivers&aacute;rios de lojas s&atilde;o momentos em que as promo&ccedil;&otilde;es s&atilde;o mais agressivas. Planejar compras nessas &eacute;pocas pode resultar em economias significativas.</p>
+<h3>Cadastre-se em programas de fidelidade</h3>
+<p>Muitas lojas oferecem programas de pontos ou cashback para clientes recorrentes. Al&eacute;m de acumular vantagens, esses programas podem disponibilizar promo&ccedil;&otilde;es exclusivas para participantes.</p>
+<p>---</p>
+<h2>Cuidados Ao Comprar Produtos De Beleza Online</h2>
+<p>Embora as promo&ccedil;&otilde;es sejam tentadoras, &eacute; fundamental garantir que a experi&ecirc;ncia de compra seja segura e satisfat&oacute;ria.</p>
+<h3>Compre em lojas confi&aacute;veis</h3>
+<p>Prefira e-commerces reconhecidos e recomendados por outros consumidores. Verifique se o site possui <strong>certificado de seguran&ccedil;a</strong> (HTTPS) e pol&iacute;ticas claras de troca e devolu&ccedil;&atilde;o.</p>
+<h3>Confira a proced&ecirc;ncia dos produtos</h3>
+<p>Produtos de beleza falsificados ou vencidos podem trazer riscos &agrave; sa&uacute;de. Sempre confira a reputa&ccedil;&atilde;o do vendedor e a validade do produto antes de finalizar a compra.</p>
+<h3>Evite promo&ccedil;&otilde;es que parecem boas demais para ser verdade</h3>
+<p>Desconfie de ofertas que prometem descontos muito acima do mercado, especialmente em marcas de luxo ou lan&ccedil;amento. Esses podem ser ind&iacute;cios de fraudes ou produtos irregulares.</p>
+<p>---</p>
+<h2>Como Usar Cupons Para Economizar Em Produtos De Beleza</h2>
+<p>Os <strong>cupons de desconto</strong> s&atilde;o uma das formas mais eficazes de economizar nas compras online. Saber onde encontrar e como aplicar esses cupons &eacute; fundamental para garantir o pre&ccedil;o mais baixo.</p>
+<h3>Onde encontrar cupons v&aacute;lidos</h3>
+<p>- Sites especializados em cupons e promo&ccedil;&otilde;es</p>
+<p>- Newsletters e redes sociais das marcas</p>
+<p>- Marketplaces que oferecem cupons pr&oacute;prios</p>
+<h3>Como aplicar cupons corretamente</h3>
+<p>Durante o processo de compra, h&aacute; um campo espec&iacute;fico para inserir o c&oacute;digo do cupom. Ap&oacute;s digitar, &eacute; importante confirmar se o desconto foi aplicado antes de concluir o pagamento.</p>
+<p>---</p>
+<h2>Exemplos De Promo&ccedil;&otilde;es Comuns Em Produtos De Beleza Online</h2>
+<p>Para ter uma ideia das oportunidades dispon&iacute;veis, confira algumas promo&ccedil;&otilde;es frequentes no mercado digital:</p>
+<h3>Descontos progressivos</h3>
+<p>Quanto mais produtos voc&ecirc; compra, maior o desconto total aplicado. Promo&ccedil;&otilde;es como "leve 3, pague 2" s&atilde;o comuns em cosm&eacute;ticos e cuidados pessoais.</p>
+<h3>Frete gr&aacute;tis a partir de determinado valor</h3>
+<p>Al&eacute;m do desconto no produto, muitas lojas oferecem frete gr&aacute;tis para compras acima de um valor espec&iacute;fico, aumentando a economia.</p>
+<h3>Kits promocionais</h3>
+<p>Combina&ccedil;&otilde;es de produtos com pre&ccedil;o especial, como conjuntos de maquiagem ou tratamentos para cabelo, garantem economia e praticidade.</p>
+<p>---</p>
+<h2>Como Garantir A Qualidade Dos Produtos Comprados Online</h2>
+<p>A beleza est&aacute; diretamente ligada &agrave; sa&uacute;de e bem-estar, por isso produtos de qualidade s&atilde;o indispens&aacute;veis. Algumas pr&aacute;ticas ajudam a evitar problemas ao adquirir cosm&eacute;ticos pela internet.</p>
+<h3>Leia as avalia&ccedil;&otilde;es de outros compradores</h3>
+<p>Opini&otilde;es reais sobre o produto e o atendimento da loja s&atilde;o fundamentais para avaliar a proced&ecirc;ncia e qualidade.</p>
+<h3>Verifique a descri&ccedil;&atilde;o e ingredientes</h3>
+<p>Confira a composi&ccedil;&atilde;o do produto para evitar alergias ou incompatibilidades com seu tipo de pele ou cabelo.</p>
+<h3>Desconfie de pre&ccedil;os muito abaixo do mercado</h3>
+<p>Produtos muito baratos podem ser falsificados ou estar perto do vencimento.</p>
+<p>---</p>
+<h2>Ferramentas E Sites Que Facilitam A Busca Por Promo&ccedil;&otilde;es Em Produtos De Beleza</h2>
+<p>A tecnologia est&aacute; a seu favor para encontrar as melhores ofertas. Algumas plataformas s&atilde;o indispens&aacute;veis para quem quer economizar.</p>
+<h3>Marketplaces confi&aacute;veis</h3>
+<p>Lojas como Amazon, Mercado Livre e Sephora oferecem uma ampla variedade de produtos e promo&ccedil;&otilde;es frequentes.</p>
+<h3>Sites de cupons e descontos</h3>
+<p>Plataformas que re&uacute;nem cupons v&aacute;lidos e atualizados diariamente s&atilde;o &oacute;timas fontes para economizar.</p>
+<h3>Aplicativos de compara&ccedil;&atilde;o de pre&ccedil;os</h3>
+<p>Ferramentas que monitoram varia&ccedil;&otilde;es de pre&ccedil;os e alertam sobre promo&ccedil;&otilde;es ajudam a comprar no momento ideal.</p>
+<p>---</p>
+<h2>Dicas Finais Para Uma Experi&ecirc;ncia De Compra Segura E Econ&ocirc;mica</h2>
+<p>- Sempre confira a pol&iacute;tica de troca e devolu&ccedil;&atilde;o antes de comprar.</p>
+<p>- Prefira m&eacute;todos de pagamento seguros, como cart&otilde;es com prote&ccedil;&atilde;o contra fraudes.</p>
+<p>- Guarde comprovantes e confirma&ccedil;&otilde;es de compra.</p>
+<p>- Aproveite a tecnologia para monitorar pre&ccedil;os e receber notifica&ccedil;&otilde;es de promo&ccedil;&otilde;es.</p>
+<p>- Lembre-se de que a qualidade deve estar sempre em primeiro lugar.</p>
+<p>---</p>
+<p>&nbsp;</p>
+<p>---</p>
+<h2>Conclus&atilde;o</h2>
+<p>A utiliza&ccedil;&atilde;o estrat&eacute;gica de cupons pode ser decisiva para economizar em compras frequentes. Por exemplo, encontrar <a href="https://www.cupomdodiahoje.com.br/cupom-mercado-livre" target="_blank" rel="noopener">cupom do mercado livre hoje</a> permite adquirir itens essenciais com descontos consider&aacute;veis, facilitando o acesso a marcas renomadas e produtos de alta qualidade.</p>
+<p>A compra de <strong>produtos de beleza femina online</strong> pode ser uma experi&ecirc;ncia altamente satisfat&oacute;ria quando acompanhada de aten&ccedil;&atilde;o &agrave;s promo&ccedil;&otilde;es, pesquisa de pre&ccedil;os e cuidados com a proced&ecirc;ncia dos itens. Com as ferramentas e dicas certas, &eacute; poss&iacute;vel renovar o estoque de cosm&eacute;ticos, cuidados e maquiagens sem pesar no bolso.</p>
+<p>Aproveitar as oportunidades certas, utilizando cupons e acompanhando datas especiais, torna a aquisi&ccedil;&atilde;o desses produtos ainda mais vantajosa. Com planejamento e aten&ccedil;&atilde;o, a beleza pode estar ao alcance de todos, com economia e seguran&ccedil;a.</p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

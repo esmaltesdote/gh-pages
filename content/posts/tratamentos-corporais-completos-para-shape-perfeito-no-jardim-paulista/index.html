@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tratamentos corporais completos para shape perfeito no Jardim Paulista - Esmaltes Dote</title>
+    <meta name="description" content="Descubra tratamentos corporais completos no Jardim Paulista para conquistar o shape perfeito com saúde e bem-estar. Agende sua avaliação hoje!">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/beleza/" style="color:#ffffff;">Beleza</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Tratamentos corporais completos para shape perfeito no Jardim Paulista</h1>
+            
+            
+                <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 2rem; line-height: 1.5;">Descubra tratamentos corporais completos no Jardim Paulista para conquistar o shape perfeito com saúde e bem-estar. Agende sua avaliação hoje!</p>
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-09-18" style="color: var(--text-muted);">
+                        18/09/2026 00:00
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/tratamentos-corporais-completos-para-shape-perfeito-no-jardim-paulista.jpg" alt="Tratamentos corporais completos para shape perfeito no Jardim Paulista">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p>A busca pelo corpo ideal &eacute; uma realidade para muitas pessoas que desejam melhorar a autoestima, sa&uacute;de e bem-estar. O <strong>Jardim Paulista</strong>, bairro nobre e sofisticado da cidade de S&atilde;o Paulo, se destaca por oferecer uma ampla variedade de tratamentos corporais completos, que atendem &agrave;s necessidades de quem busca um <strong>shape perfeito</strong> com seguran&ccedil;a, tecnologia avan&ccedil;ada e profissionais qualificados.</p>
+<p>Este guia detalhado apresenta as principais op&ccedil;&otilde;es de tratamentos corporais dispon&iacute;veis na regi&atilde;o, os benef&iacute;cios de cada procedimento, a import&acirc;ncia de um acompanhamento profissional e como escolher o melhor servi&ccedil;o para alcan&ccedil;ar resultados eficazes e duradouros.</p>
+<p>---</p>
+<h2>Por Que Investir Em Tratamentos Corporais Completos?</h2>
+<p>Investir em <strong>tratamentos corporais</strong> vai al&eacute;m da est&eacute;tica. A combina&ccedil;&atilde;o de t&eacute;cnicas modernas e um acompanhamento multidisciplinar proporciona benef&iacute;cios que impactam diretamente na sa&uacute;de f&iacute;sica, mental e emocional. Al&eacute;m de melhorar a apar&ecirc;ncia, esses tratamentos auxiliam na melhora da circula&ccedil;&atilde;o sangu&iacute;nea, redu&ccedil;&atilde;o de medidas, combate &agrave; celulite, fortalecimento da musculatura e at&eacute; mesmo na preven&ccedil;&atilde;o de doen&ccedil;as relacionadas ao sedentarismo e sobrepeso.</p>
+<h3>Vantagens dos tratamentos corporais integrados</h3>
+<p>- <strong>Personaliza&ccedil;&atilde;o:</strong> Cada corpo possui caracter&iacute;sticas &uacute;nicas. Tratamentos completos s&atilde;o personalizados conforme o perfil do paciente, garantindo maior efic&aacute;cia.</p>
+<p>- <strong>Tecnologia de ponta:</strong> Equipamentos modernos permitem resultados mais r&aacute;pidos e seguros.</p>
+<p>- <strong>Acompanhamento multidisciplinar:</strong> Profissionais da &aacute;rea m&eacute;dica, fisioterapeutas, nutricionistas e esteticistas trabalham juntos para garantir o sucesso do protocolo.</p>
+<p>- <strong>Resultados duradouros:</strong> A combina&ccedil;&atilde;o de t&eacute;cnicas promove uma melhora consistente e sustent&aacute;vel.</p>
+<p>---</p>
+<h2>Principais Tratamentos Corporais Para Conquistar O Shape Perfeito</h2>
+<p>O Jardim Paulista oferece diversas cl&iacute;nicas e centros est&eacute;ticos especializados em tratamentos corporais. A seguir, os procedimentos mais procurados para remodelar o corpo e melhorar a silhueta.</p>
+<h3>1. Criolip&oacute;lise</h3>
+<p>A <strong>criolip&oacute;lise</strong> &eacute; um dos tratamentos mais eficazes para a redu&ccedil;&atilde;o localizada de gordura. A t&eacute;cnica utiliza o congelamento das c&eacute;lulas adiposas, que s&atilde;o eliminadas naturalmente pelo organismo ao longo das semanas seguintes ao procedimento.</p>
+<p><strong>Benef&iacute;cios:</strong></p>
+<p>- Redu&ccedil;&atilde;o de gordura localizada sem cirurgia</p>
+<p>- Procedimento n&atilde;o invasivo e indolor</p>
+<p>- Resultados vis&iacute;veis a partir de 30 dias</p>
+<p>- Pode ser aplicado em abd&ocirc;men, flancos, costas, coxas e bra&ccedil;os</p>
+<h3>2. Radiofrequ&ecirc;ncia</h3>
+<p>A <strong>radiofrequ&ecirc;ncia</strong> &eacute; um tratamento que usa ondas eletromagn&eacute;ticas para aquecer as camadas profundas da pele, estimulando a produ&ccedil;&atilde;o de col&aacute;geno e elastina. Isso promove o <strong>rejuvenescimento da pele</strong> e a melhora da firmeza.</p>
+<p><strong>Benef&iacute;cios:</strong></p>
+<p>- Redu&ccedil;&atilde;o da flacidez corporal</p>
+<p>- Melhora da textura da pele</p>
+<p>- Est&iacute;mulo &agrave; circula&ccedil;&atilde;o sangu&iacute;nea</p>
+<p>- Pode ser combinado com outros tratamentos para potencializar resultados</p>
+<h3>3. Drenagem linf&aacute;tica</h3>
+<p>A <strong>drenagem linf&aacute;tica</strong> &eacute; uma t&eacute;cnica de massagem manual que facilita a elimina&ccedil;&atilde;o de l&iacute;quidos acumulados e toxinas pelo sistema linf&aacute;tico. &Eacute; fundamental para quem sofre com incha&ccedil;o, reten&ccedil;&atilde;o de l&iacute;quidos e celulite.</p>
+<p><strong>Benef&iacute;cios:</strong></p>
+<p>- Redu&ccedil;&atilde;o do incha&ccedil;o e sensa&ccedil;&atilde;o de pernas cansadas</p>
+<p>- Melhora da circula&ccedil;&atilde;o linf&aacute;tica e sangu&iacute;nea</p>
+<p>- Acelera&ccedil;&atilde;o da recupera&ccedil;&atilde;o ap&oacute;s procedimentos est&eacute;ticos</p>
+<p>- Melhora da apar&ecirc;ncia da celulite</p>
+<h3>4. Endermoterapia</h3>
+<p>Tamb&eacute;m conhecida como <strong>massagem modeladora</strong>, a endermoterapia utiliza um equipamento com rolos que promovem uma massagem profunda na pele, auxiliando na quebra das c&eacute;lulas de gordura e melhorando a circula&ccedil;&atilde;o.</p>
+<p><strong>Benef&iacute;cios:</strong></p>
+<p>- Redu&ccedil;&atilde;o de medidas</p>
+<p>- Melhora da celulite e flacidez</p>
+<p>- Est&iacute;mulo &agrave; produ&ccedil;&atilde;o de col&aacute;geno</p>
+<p>- Procedimento n&atilde;o invasivo e relaxante</p>
+<h3>5. Ultracavita&ccedil;&atilde;o</h3>
+<p>A <strong>ultracavita&ccedil;&atilde;o</strong> &eacute; um tratamento que utiliza ondas ultrass&ocirc;nicas para destruir as c&eacute;lulas de gordura, que s&atilde;o posteriormente eliminadas pelo sistema linf&aacute;tico. &Eacute; indicado para gordura localizada e melhora do contorno corporal.</p>
+<p><strong>Benef&iacute;cios:</strong></p>
+<p>- Redu&ccedil;&atilde;o de medidas em &aacute;reas espec&iacute;ficas</p>
+<p>- Procedimento indolor e n&atilde;o invasivo</p>
+<p>- Resultados r&aacute;pidos com sess&otilde;es peri&oacute;dicas</p>
+<p>- Pode ser associado &agrave; drenagem linf&aacute;tica para potencializar a elimina&ccedil;&atilde;o de toxinas</p>
+<p>---</p>
+<h2>A Import&acirc;ncia Da Avalia&ccedil;&atilde;o M&eacute;dica E Exames Complementares</h2>
+<p>Antes de iniciar qualquer protocolo, &eacute; fundamental passar por uma <strong>avalia&ccedil;&atilde;o m&eacute;dica</strong> detalhada que identifica as condi&ccedil;&otilde;es de sa&uacute;de do paciente, limita&ccedil;&otilde;es e objetivos pessoais. Exames como a <strong>bioimped&acirc;ncia</strong> s&atilde;o essenciais para analisar a composi&ccedil;&atilde;o corporal, incluindo percentual de gordura, massa magra, &aacute;gua corporal e metabolismo basal.</p>
+<p>Na regi&atilde;o dos Jardins, quem procura uma <a href="https://clinicasculpte.com.br/medico-nutrologo-para-emagrecimento-em-sao-paulo/" target="_blank" rel="noopener">cl&iacute;nica de emagrecimento no Jardim Paulista</a> encontra estruturas que integram consulta m&eacute;dica, bioimped&acirc;ncia e protocolos corporais no mesmo endere&ccedil;o. Isso facilita o acompanhamento e a personaliza&ccedil;&atilde;o dos tratamentos, garantindo seguran&ccedil;a e efic&aacute;cia.</p>
+<p>---</p>
+<h2>Como Escolher A Cl&iacute;nica Ideal Para Tratamentos Corporais No Jardim Paulista</h2>
+<p>Para garantir resultados satisfat&oacute;rios e seguros, a escolha da cl&iacute;nica deve ser feita com cuidado, considerando alguns aspectos essenciais:</p>
+<h3>1. Credenciamento e qualifica&ccedil;&atilde;o dos profissionais</h3>
+<p>Verifique se os profissionais s&atilde;o devidamente registrados em seus conselhos de classe e possuem experi&ecirc;ncia comprovada nos tratamentos oferecidos. A equipe multidisciplinar &eacute; um diferencial importante.</p>
+<h3>2. Estrutura e tecnologia</h3>
+<p>Cl&iacute;nicas modernas oferecem equipamentos atualizados e ambientes confort&aacute;veis, que proporcionam uma experi&ecirc;ncia agrad&aacute;vel durante as sess&otilde;es.</p>
+<h3>3. Protocolos personalizados</h3>
+<p>Evite locais que oferecem tratamentos padr&atilde;o para todos. Avalia&ccedil;&otilde;es individualizadas e protocolos customizados garantem mais efic&aacute;cia.</p>
+<h3>4. Feedbacks e recomenda&ccedil;&otilde;es</h3>
+<p>Pesquisar opini&otilde;es de clientes e avalia&ccedil;&otilde;es online pode ajudar a identificar cl&iacute;nicas confi&aacute;veis e com bons resultados.</p>
+<p>---</p>
+<h2>Cuidados Complementares Para Potencializar Os Resultados</h2>
+<p>Al&eacute;m dos tratamentos corporais, algumas pr&aacute;ticas s&atilde;o fundamentais para manter e melhorar o <strong>shape perfeito</strong> conquistado.</p>
+<h3>Alimenta&ccedil;&atilde;o balanceada</h3>
+<p>Uma dieta saud&aacute;vel, rica em nutrientes e adequada ao metabolismo individual, &eacute; crucial para a redu&ccedil;&atilde;o de gordura e manuten&ccedil;&atilde;o da massa magra.</p>
+<h3>Atividades f&iacute;sicas regulares</h3>
+<p>Exerc&iacute;cios f&iacute;sicos contribuem para a tonifica&ccedil;&atilde;o muscular, melhora da circula&ccedil;&atilde;o e aumento do gasto energ&eacute;tico.</p>
+<h3>Hidrata&ccedil;&atilde;o adequada</h3>
+<p>Manter o corpo hidratado ajuda na elimina&ccedil;&atilde;o de toxinas e melhora o funcionamento do sistema linf&aacute;tico.</p>
+<h3>Sono de qualidade</h3>
+<p>O descanso &eacute; essencial para a recupera&ccedil;&atilde;o do organismo e para o equil&iacute;brio hormonal, que influencia diretamente no emagrecimento e na sa&uacute;de da pele.</p>
+<p>---</p>
+<h2>Tend&ecirc;ncias Em Tratamentos Corporais No Jardim Paulista</h2>
+<p>O mercado est&eacute;tico est&aacute; em constante evolu&ccedil;&atilde;o, e o Jardim Paulista acompanha as &uacute;ltimas novidades para oferecer o que h&aacute; de mais moderno em tratamentos corporais.</p>
+<h3>Terapias combinadas</h3>
+<p>Combinar t&eacute;cnicas como criolip&oacute;lise, radiofrequ&ecirc;ncia e drenagem linf&aacute;tica em um protocolo integrado potencializa os resultados, reduzindo medidas e melhorando a qualidade da pele.</p>
+<h3>Tratamentos com tecnologia h&iacute;brida</h3>
+<p>Equipamentos que unem diferentes tecnologias em uma &uacute;nica sess&atilde;o, como ultrassom e radiofrequ&ecirc;ncia, proporcionam resultados mais r&aacute;pidos e seguros.</p>
+<h3>Protocolos personalizados com acompanhamento digital</h3>
+<p>Aplicativos e plataformas online permitem o monitoramento dos resultados, ajustes no protocolo e comunica&ccedil;&atilde;o direta com a equipe, garantindo maior ades&atilde;o e motiva&ccedil;&atilde;o.</p>
+<p>---</p>
+<h2>Depoimentos Reais: Resultados Que Inspiram</h2>
+<p>Muitos pacientes que passaram por tratamentos corporais completos no Jardim Paulista relatam mudan&ccedil;as significativas na autoestima e qualidade de vida. Al&eacute;m da redu&ccedil;&atilde;o vis&iacute;vel de medidas, destacam a melhora da disposi&ccedil;&atilde;o, sensa&ccedil;&atilde;o de leveza e confian&ccedil;a no pr&oacute;prio corpo.</p>
+<p>---</p>
+<h2>Conclus&atilde;o</h2>
+<p>O Jardim Paulista &eacute; refer&ecirc;ncia quando o assunto &eacute; sa&uacute;de, est&eacute;tica e bem-estar. Com uma vasta oferta de tratamentos corporais completos, o bairro proporciona acesso a protocolos modernos, seguros e personalizados, que transformam o corpo e elevam a autoestima.</p>
+<p>Para alcan&ccedil;ar o <strong>shape perfeito</strong>, &eacute; essencial combinar tratamentos eficazes, avalia&ccedil;&atilde;o m&eacute;dica rigorosa e cuidados complementares como alimenta&ccedil;&atilde;o equilibrada e pr&aacute;tica de exerc&iacute;cios f&iacute;sicos. A escolha de uma cl&iacute;nica de confian&ccedil;a, com profissionais qualificados e tecnologia avan&ccedil;ada, faz toda a diferen&ccedil;a no sucesso do processo.</p>
+<p>Investir em tratamentos corporais completos no Jardim Paulista &eacute; investir em qualidade de vida, sa&uacute;de e bem-estar, com resultados que impactam positivamente o corpo e a mente.</p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

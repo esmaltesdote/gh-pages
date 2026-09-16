@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direitos do Estudante: Como se Proteger Legalmente - Esmaltes Dote</title>
+    <meta name="description" content="Saiba como proteger seus direitos como estudante e garantir segurança legal durante sua jornada acadêmica. Informação clara e prática!">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/blog/" style="color:#ffffff;">Blog</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Direitos do Estudante: Como se Proteger Legalmente</h1>
+            
+            
+                <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 2rem; line-height: 1.5;">Saiba como proteger seus direitos como estudante e garantir segurança legal durante sua jornada acadêmica. Informação clara e prática!</p>
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-07-05" style="color: var(--text-muted);">
+                        05/07/2026 21:00
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/direitos-do-estudante-como-se-proteger-legalmente.jpg" alt="Direitos do Estudante: Como se Proteger Legalmente">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p> Você já parou para pensar em quantas situações, dentro da vida escolar ou universitária, a gente poderia estar mais protegido se conhecesse nossos direitos? Sabe aquela sensação de "ser pego de surpresa” quando algo inesperado acontece, tipo uma nota que não bate, uma cobrança indevida ou até uma expulsão injusta? Pois é, muitos estudantes passam por perrengues justamente porque não sabem onde, como e quando se amparar. E olha, entender os direitos do estudante não é só para quem quer fazer barulho — é para todo mundo que quer estudar numa boa, sem medo de ser prejudicado.</p>
+<h2> Por que conhecer seus direitos faz toda a diferença?</h2>
+<p> Antes de qualquer coisa, deixa eu te perguntar: já se sentiu meio perdido numa conversa com a coordenação da faculdade ou naquela reunião da escola? Ou então, já ficou com a pulga atrás da orelha sobre uma regra que parece meio torta? Não se preocupe, isso é mais comum do que parece. O lance é que, muitas vezes, a gente entra numa instituição e acaba se deixando levar pela hierarquia — afinal, professores, diretores e coordenadores parecem estar sempre em cima do salto, né? Mas, na real, você tem voz e, principalmente, direitos que valem tanto quanto os deles.</p>
+<p> Conhecer esses direitos é como ter um manual secreto na mochila: você sabe onde pisar, onde pedir ajuda e, principalmente, quando não aceitar algo que vá contra o que está garantido para você por lei.</p>
+<h2> Quais são os principais direitos do estudante?</h2>
+<p> Vamos direto ao ponto — afinal, você quer saber o que pode e o que não pode, certo? Aqui vai um resumo do que você deve ter em mente, seja na escola, no colégio ou na faculdade:</p>
+<ul><li>  <strong>Direito à igualdade e não discriminação:</strong> Isso significa que nenhuma instituição pode tratar você diferente por causa de raça, gênero, religião, orientação sexual ou qualquer outra característica pessoal.</li><li> <strong>Liberdade de expressão:</strong> Você pode e deve se expressar, desde que respeite o espaço coletivo. Não é um passe livre para bagunça, mas é direito seu opinar e participar das decisões.</li><li> <strong>Sigilo e privacidade:</strong> Seus dados pessoais e suas avaliações são protegidos. Nada de sair espalhando sua nota ou informações pessoais sem autorização.</li><li> <strong>Transparência nas avaliações:</strong> A escola ou universidade precisa explicar os critérios usados nas provas e trabalhos. Se você acha que foi injustiçado, tem o direito de pedir revisão.</li><li> <strong>Acesso ao ensino e materiais:</strong> É direito seu ter acesso aos conteúdos, bibliografia, aulas e suporte necessário para acompanhar o curso.</li><li> <strong>Proteção contra abusos e violência:</strong> Seja bullying, assédio ou qualquer tipo de abuso, a instituição tem o dever de agir e proteger você.</li><li> <strong>Direito à assistência estudantil:</strong> Bolsas, auxílios, programas de inclusão e suporte para quem enfrenta dificuldades financeiras ou de saúde são garantidos, dependendo do caso.</li></ul>
+<p><br></p>
+<p> Tá vendo? Não é pouca coisa não. E tem mais: esses direitos estão embasados em leis federais, estaduais e até em normas internacionais que o Brasil respeita. Por exemplo, o Estatuto da Criança e do Adolescente (para estudantes menores) e a Lei de Diretrizes e Bases da Educação, que regula o ensino em geral.</p>
+<h2> Quando a coisa aperta: o que fazer em casos de conflito?</h2>
+<p> Imagina a seguinte cena: você foi prejudicado numa avaliação, tentou conversar com a coordenação, mas ninguém te dá uma resposta clara. Ou pior, foi alvo de discriminação dentro da sala. E agora? Respira fundo, porque agir na hora certa é essencial para evitar que a situação se complique.</p>
+<p> Primeiro, anote tudo — e eu quero dizer tudinho mesmo. Datas, nomes, o que foi dito, quem estava presente, mensagens, e-mails, provas. Esses detalhes são ouro puro na hora de defender seu ponto.</p>
+<p> Depois, tente resolver diretamente com a instituição, mas sem deixar de registrar essa tentativa. Se não rolar, aí sim é hora de buscar ajuda externa. Um <a href="https://alvesepassosgomes.com.br/direitoeducacional/" rel="noopener" target="_blank">Advogado estudantil</a> pode ser o parceiro que faltava nessa hora. Ele entende as leis, sabe como agir e pode te ajudar a garantir que seus direitos sejam respeitados — sem enrolação.</p>
+<p> Mas, sabe o que eu acho? Muitas vezes, as pessoas ficam com medo ou vergonha de falar sobre esses problemas. É como se reclamar fosse um tabu, um sinal de fraqueza. Nada disso! Defender seus direitos é um ato de coragem, e você não está sozinho nessa jornada.</p>
+<h2> Mais do que regras: o lado humano dos direitos estudantis</h2>
+<p> Falando sério, estudar não é só sentar numa cadeira, ouvir aulas e fazer provas. É um processo cheio de emoções, expectativas, frustrações e, claro, crescimento. E os direitos existem para garantir que essa experiência seja justa e respeitosa — afinal, quem nunca se sentiu pressionado, ansioso ou até desmotivado por conta de uma situação complicada na escola?</p>
+<p> Às vezes, o que parece um simples direito negado pode ser a gota d’água para um estudante que já está no limite. Por isso, as instituições precisam enxergar o estudante como um ser humano completo, com sentimentos e desafios, e não apenas como um número na matrícula.</p>
+<p> Se você está lendo isso e sente que já passou por algo assim, saiba que não é exagero. É real e merece atenção. E se você é educador, fica aqui um lembrete: olhar para o lado humano pode mudar completamente o ambiente da sua escola ou faculdade.</p>
+<h2> Direitos estudantis em tempos de pandemia: o que mudou?</h2>
+<p> Claro que não podia faltar uma pitada de contexto atual, né? A pandemia virou tudo de cabeça para baixo e trouxe à tona muitos desafios no campo do ensino. Aulas online, adiamento de provas, dificuldades de acesso à internet — tudo isso mexeu com os direitos dos estudantes.</p>
+<p> Por exemplo, muitos alunos tiveram que lutar para garantir a continuidade dos estudos, mesmo sem estrutura adequada. A lei teve que se adaptar para reconhecer essas novas realidades, e as instituições foram obrigadas a oferecer suporte como plataformas digitais gratuitas ou auxílio para aquisição de equipamentos.</p>
+<p> Se você passou ou ainda está passando por esses perrengues, saiba que existem canais oficiais para reclamar e buscar ajuda. Não deixe o desânimo tomar conta. Afinal, seu direito à educação não tira férias — mesmo quando a vida resolve dar uma reviravolta inesperada.</p>
+<h2> Como se preparar para garantir seus direitos todos os dias</h2>
+<p> Quer saber uma coisa? A melhor proteção não é só conhecer seus direitos, mas também criar uma rede de apoio e informação. Isso pode incluir:</p>
+<ul><li>  Participar de grêmios estudantis ou grupos de defesa dos direitos dentro da sua escola ou faculdade;</li><li> Manter contato com organizações que atuam na defesa do estudante;</li><li> Ler regulamentos internos e documentos oficiais para entender como a sua instituição funciona;</li><li> Guardar todos os documentos e comunicações importantes — e não descartar e-mails ou mensagens;</li><li> Buscar ajuda sempre que algo parecer errado — mesmo que seja só para tirar uma dúvida.</li></ul>
+<p><br></p>
+<p> Ah, e não esqueça: a comunicação é chave. Conversar com colegas, professores e até familiares pode abrir portas e trazer soluções inesperadas. Você não precisa passar por isso sozinho.</p>
+<h2> Quando recorrer à justiça faz sentido?</h2>
+<p> Nem sempre a conversa resolve, e aí? Pois é, recorrer à justiça pode ser uma saída, mas não precisa ser um bicho de sete cabeças. Quando seus direitos forem claramente violados e a instituição não tomar providências, um processo judicial pode garantir que a situação seja revista e corrigida.</p>
+<p> Claro, isso envolve tempo e paciência — ninguém quer ficar anos esperando uma decisão, né? Por isso, contar com um profissional que conhece o universo educacional é um diferencial enorme. Eles sabem navegar pelas burocracias e focar no que realmente importa: proteger você.</p>
+<p> Mas, pensa comigo: será que sempre precisa chegar a esse ponto? Muitas vezes, o diálogo aberto e informado resolve antes disso. Por isso, conhecer os seus direitos é o primeiro passo para evitar que as coisas saiam do controle.</p>
+<h2> Conclusão: seus direitos são sua melhor defesa</h2>
+<p> Olha, a vida de estudante já é cheia de desafios — provas, trabalhos, pressão, escolhas complicadas. Não precisa ainda carregar o peso de não saber para onde correr quando algo não vai bem. Saber que você tem direitos, que esses direitos valem e que existem pessoas e instituições para te apoiar faz toda a diferença.</p>
+<p> Então, da próxima vez que algo parecer injusto ou confuso, lembre-se: você não está sozinho, e seu conhecimento é sua melhor arma. Respire fundo, busque informação, pergunte, questione e, se precisar, peça ajuda. Afinal, seu direito à educação é sagrado — e proteger ele é tão importante quanto estudar para aquela prova difícil que está chegando.</p>
+<p> Tá na hora de assumir o protagonismo da sua jornada. Porque, no fim das contas, conhecimento é poder — e isso, meu amigo, ninguém pode tirar de você.</p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pano de Prato alvejado sem contra indicações - Esmaltes Dote</title>
+    <meta name="description" content="Descubra como usar pano de prato alvejado de forma segura, sem contraindicações, e mantenha sua cozinha limpa e higienizada com praticidade.">
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/blog/" style="color:#ffffff;">Blog</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Pano de Prato alvejado sem contra indicações</h1>
+            
+            
+                <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 2rem; line-height: 1.5;">Descubra como usar pano de prato alvejado de forma segura, sem contraindicações, e mantenha sua cozinha limpa e higienizada com praticidade.</p>
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-10-10" style="color: var(--text-muted);">
+                        10/10/2026 00:00
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/pano-de-prato-alvejado-sem-contra-indicacoes.jpg" alt="Pano de Prato alvejado sem contra indicações">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p>O <strong>pano de prato alvejado</strong> &eacute; um item essencial em qualquer cozinha, conhecido por sua apar&ecirc;ncia limpa e acabamento branco, que transmite sensa&ccedil;&atilde;o de higiene. Por ser um produto amplamente utilizado para secar lou&ccedil;as, m&atilde;os e at&eacute; mesmo para manipula&ccedil;&atilde;o de alimentos, &eacute; fundamental entender suas caracter&iacute;sticas, vantagens e cuidados para garantir que seu uso seja seguro e eficiente, sem apresentar riscos &agrave; sa&uacute;de.</p>
+<p>Por exemplo, a linha <a href="https://www.omundodostecidos.com.br/diferenca-entre-os-tecidos-alvejados" target="_blank" rel="noopener">pp24 santa margarida</a> &eacute; reconhecida no mercado por oferecer panos de prato alvejado que passam por processos certificados e rigorosos testes de seguran&ccedil;a. Essa aten&ccedil;&atilde;o aos detalhes assegura que o tecido n&atilde;o contenha res&iacute;duos qu&iacute;micos nocivos e mant&eacute;m suas propriedades de absor&ccedil;&atilde;o e resist&ecirc;ncia, promovendo um uso seguro, pr&aacute;tico e duradouro.</p>
+<h2>O Que &Eacute; Pano De Prato Alvejado?</h2>
+<p>O termo <strong>alvejado</strong> refere-se ao processo de branqueamento do tecido, que elimina impurezas e manchas naturais das fibras, deixando o pano com um tom branco e uniforme. Este processo &eacute; comumente aplicado em panos de prato feitos de algod&atilde;o ou misturas t&ecirc;xteis, melhorando a est&eacute;tica e facilitando a higieniza&ccedil;&atilde;o.</p>
+<p>Al&eacute;m de sua apar&ecirc;ncia, o pano de prato alvejado &eacute; valorizado por sua <strong>maciez e alta absor&ccedil;&atilde;o</strong>, caracter&iacute;sticas que o tornam ideal para o ambiente da cozinha. A aus&ecirc;ncia de corantes ou pigmentos reduz a possibilidade de alergias ou irrita&ccedil;&otilde;es causadas por tinturas qu&iacute;micas, o que refor&ccedil;a a ideia de que este tipo de tecido &eacute; mais seguro para o uso cotidiano.</p>
+<h2>Diferen&ccedil;as Entre Pano De Prato Alvejado E N&atilde;o Alvejado</h2>
+<p>Enquanto o pano de prato n&atilde;o alvejado mant&eacute;m a cor natural do algod&atilde;o, geralmente amarelada ou bege, o pano alvejado passa por um processo qu&iacute;mico que o deixa branco e mais uniforme. Essa diferen&ccedil;a n&atilde;o &eacute; apenas est&eacute;tica, pois o processo de alvejamento tamb&eacute;m ajuda a eliminar bact&eacute;rias e res&iacute;duos que o tecido pode conter, tornando o pano mais <strong>higi&ecirc;nico e seguro para o uso alimentar</strong>.</p>
+<p>No entanto, &eacute; importante destacar que o processo de alvejamento deve ser realizado de forma controlada para evitar o uso excessivo de agentes qu&iacute;micos que possam danificar o tecido ou deix&aacute;-lo com res&iacute;duos prejudiciais. Produtos de qualidade passam por uma etapa rigorosa de lavagem e neutraliza&ccedil;&atilde;o para garantir que o pano fique livre de subst&acirc;ncias t&oacute;xicas.</p>
+<h2>Vantagens Do Pano De Prato Alvejado Sem Contraindica&ccedil;&otilde;es</h2>
+<p>O uso do pano de prato alvejado apresenta diversas vantagens quando o produto &eacute; fabricado e tratado corretamente, sem contraindica&ccedil;&otilde;es para a sa&uacute;de do usu&aacute;rio. Entre os benef&iacute;cios mais evidentes est&atilde;o:</p>
+<p>- <strong>Maior higiene</strong>: O processo de branqueamento ajuda a eliminar microrganismos presentes no tecido.</p>
+<p>- <strong>Seguran&ccedil;a para a pele</strong>: Por n&atilde;o conter corantes, diminui o risco de irrita&ccedil;&otilde;es e alergias.</p>
+<p>- <strong>Durabilidade</strong>: Panos bem tratados resistem melhor &agrave;s lavagens frequentes e ao uso di&aacute;rio intenso.</p>
+<p>- <strong>Facilidade de limpeza</strong>: O branco do pano facilita a identifica&ccedil;&atilde;o de sujeiras e manchas, incentivando a lavagem constante.</p>
+<p>- <strong>Versatilidade</strong>: Pode ser usado para diversas fun&ccedil;&otilde;es na cozinha, desde secar lou&ccedil;as at&eacute; proteger alimentos.</p>
+<p>Essas caracter&iacute;sticas fazem do pano de prato alvejado uma escolha segura e pr&aacute;tica para quem busca qualidade e higiene na cozinha, sem se preocupar com os efeitos adversos que alguns produtos t&ecirc;xteis podem causar.</p>
+<h2>Cuidados Essenciais Para Manter O Pano De Prato Alvejado Seguro</h2>
+<p>Mesmo com todas as vantagens, o uso de panos de prato alvejado requer alguns cuidados para garantir que o produto continue seguro e eficiente. A falta de higieniza&ccedil;&atilde;o adequada pode transformar o pano em um ambiente prop&iacute;cio para a prolifera&ccedil;&atilde;o de bact&eacute;rias e fungos, causando riscos &agrave; sa&uacute;de.</p>
+<h3>Lavagem Correta</h3>
+<p>A lavagem frequente &eacute; indispens&aacute;vel. Para isso, recomenda-se utilizar &aacute;gua quente e sab&atilde;o neutro, evitando produtos abrasivos que possam danificar as fibras. Al&eacute;m disso, a exposi&ccedil;&atilde;o ao sol ap&oacute;s a lavagem ajuda na desinfec&ccedil;&atilde;o natural do tecido.</p>
+<h3>Evitar Contamina&ccedil;&atilde;o Cruzada</h3>
+<p>O pano de prato deve ser reservado exclusivamente para a cozinha e n&atilde;o ser usado para outras finalidades, como limpeza de superf&iacute;cies pesadas ou contato com produtos qu&iacute;micos. Isso evita a contamina&ccedil;&atilde;o cruzada, que pode levar &agrave; prolifera&ccedil;&atilde;o de microrganismos perigosos.</p>
+<h3>Substitui&ccedil;&atilde;o Peri&oacute;dica</h3>
+<p>Mesmo que o pano pare&ccedil;a limpo, a substitui&ccedil;&atilde;o peri&oacute;dica &eacute; recomendada, pois o desgaste natural das fibras reduz a capacidade de absor&ccedil;&atilde;o e pode acumular sujeiras invis&iacute;veis a olho nu.</p>
+<h2>A Import&acirc;ncia Da Qualidade Do Produto: Um Caso Pr&aacute;tico</h2>
+<p>A escolha do pano de prato alvejado adequado faz toda a diferen&ccedil;a para garantir que n&atilde;o haja contraindica&ccedil;&otilde;es no uso. Produtos de fabricantes renomados s&atilde;o submetidos a rigorosos controles de qualidade, desde a sele&ccedil;&atilde;o do algod&atilde;o at&eacute; o processo de alvejamento e acabamento final.</p>
+<h2>Pano De Prato Alvejado E Sustentabilidade</h2>
+<p>Nos dias atuais, a sustentabilidade &eacute; um fator cada vez mais valorizado pelos consumidores. Optar por panos de prato alvejado produzidos de forma respons&aacute;vel, utilizando processos que minimizam o impacto ambiental, &eacute; uma escolha consciente.</p>
+<p>Muitos fabricantes investem em t&eacute;cnicas de alvejamento ecologicamente corretas, que reduzem o uso de agentes qu&iacute;micos agressivos e promovem o reaproveitamento da &aacute;gua e de res&iacute;duos. Al&eacute;m disso, panos de algod&atilde;o org&acirc;nico alvejado s&atilde;o uma alternativa que alia qualidade, seguran&ccedil;a e respeito ao meio ambiente.</p>
+<h2>Mitos E Verdades Sobre O Uso Do Pano De Prato Alvejado</h2>
+<h3>Mito: Pano de Prato Alvejado &eacute; Perigoso para a Sa&uacute;de</h3>
+<p>Essa &eacute; uma informa&ccedil;&atilde;o incorreta. Quando fabricado e tratado adequadamente, o pano de prato alvejado &eacute; seguro para o uso di&aacute;rio, n&atilde;o apresentando contraindica&ccedil;&otilde;es. O branqueamento remove impurezas e reduz microrganismos, tornando-o at&eacute; mais higi&ecirc;nico do que os panos n&atilde;o tratados.</p>
+<h3>Verdade: O Pano Deve Ser Lavado Frequentemente</h3>
+<p>Sim, mesmo o pano mais seguro precisa de lavagem constante para manter seu estado ideal. A falta de higieniza&ccedil;&atilde;o pode tornar o pano um vetor para bact&eacute;rias, independentemente do tipo de tecido.</p>
+<h3>Mito: O Pano Alvejado Desgasta Mais R&aacute;pido</h3>
+<p>Nem sempre. A qualidade do algod&atilde;o e o processo de acabamento influenciam muito mais na durabilidade do que o fato de o pano ser alvejado ou n&atilde;o. Produtos de qualidade, como a linha pp24 santa margarida, demonstram boa resist&ecirc;ncia, mesmo ap&oacute;s v&aacute;rias lavagens.</p>
+<h2>Como Escolher O Melhor Pano De Prato Alvejado Para Sua Cozinha</h2>
+<p>A escolha do pano de prato ideal deve levar em conta alguns aspectos essenciais para garantir um produto funcional, dur&aacute;vel e seguro:</p>
+<p>- <strong>Material</strong>: Prefira algod&atilde;o 100% ou misturas que garantam alta absor&ccedil;&atilde;o.</p>
+<p>- <strong>Processo de alvejamento</strong>: Opte por marcas que informem o processo e garantam a aus&ecirc;ncia de res&iacute;duos qu&iacute;micos nocivos.</p>
+<p>- <strong>Textura e gramatura</strong>: Panos mais grossos absorvem melhor, mas precisam ser macios para n&atilde;o riscar lou&ccedil;as delicadas.</p>
+<p>- <strong>Recomenda&ccedil;&otilde;es de uso e cuidado</strong>: Produtos acompanhados de instru&ccedil;&otilde;es claras facilitam a manuten&ccedil;&atilde;o e prolongam a vida &uacute;til.</p>
+<p>- <strong>Avalia&ccedil;&otilde;es de consumidores</strong>: Buscar feedback real ajuda a evitar frustra&ccedil;&otilde;es com produtos de baixa qualidade.</p>
+<p>Ao seguir essas dicas, a experi&ecirc;ncia com o pano de prato alvejado ser&aacute; muito mais satisfat&oacute;ria e segura.</p>
+<h2>Dicas Pr&aacute;ticas Para Preservar O Pano De Prato Alvejado</h2>
+<p>Para que o pano de prato alvejado mantenha suas caracter&iacute;sticas e continue livre de contraindica&ccedil;&otilde;es, algumas a&ccedil;&otilde;es simples podem ser adotadas no dia a dia:</p>
+<p>- Lave o pano ap&oacute;s cada uso, evitando que res&iacute;duos alimentares sequem e se fixem nas fibras.</p>
+<p>- Use &aacute;gua quente e sab&atilde;o neutro, evitando alvejantes adicionais que podem enfraquecer o tecido.</p>
+<p>- Deixe o pano secar completamente antes de guard&aacute;-lo para impedir a forma&ccedil;&atilde;o de mofo.</p>
+<p>- N&atilde;o utilize o mesmo pano para diferentes fun&ccedil;&otilde;es, evitando contamina&ccedil;&atilde;o e prolifera&ccedil;&atilde;o de bact&eacute;rias.</p>
+<p>- Substitua o pano ao menor sinal de desgaste, manchas permanentes ou odor desagrad&aacute;vel.</p>
+<h2>Conclus&atilde;o</h2>
+<p>O <strong>pano de prato alvejado sem contraindica&ccedil;&otilde;es</strong> &eacute; uma escolha excelente para quem busca higiene, seguran&ccedil;a e praticidade na cozinha. Seu processo de branqueamento, aliado &agrave; qualidade do material e aos cuidados adequados, garante um produto funcional e seguro, que pode ser utilizado diariamente sem riscos &agrave; sa&uacute;de.</p>
+<p>Optar por produtos confi&aacute;veis e seguir as recomenda&ccedil;&otilde;es de uso e manuten&ccedil;&atilde;o s&atilde;o passos essenciais para preservar a efic&aacute;cia e a durabilidade do pano de prato. Assim, &eacute; poss&iacute;vel desfrutar de uma cozinha mais organizada, limpa e segura, valorizando n&atilde;o apenas a est&eacute;tica, mas tamb&eacute;m o cuidado com a sa&uacute;de de toda a fam&iacute;lia.</p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

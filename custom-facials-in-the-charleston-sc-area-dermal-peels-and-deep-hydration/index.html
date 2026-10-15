@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Facials in the Charleston, SC Area: Dermal Peels and Deep Hydration - Esmaltes Dote</title>
+    <meta name="description" content="">
+    
+    
+    <link rel="canonical" href="https://esmaltesdote.com.br/custom-facials-in-the-charleston-sc-area-dermal-peels-and-deep-hydration/" />
+    
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/so-para-eles/" style="color:#ffffff;">Só para Eles</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Custom Facials in the Charleston, SC Area: Dermal Peels and Deep Hydration</h1>
+            
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-10-15" style="color: var(--text-muted);">
+                        15/10/2026 14:58
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/custom-facials-in-the-charleston-sc-area-dermal-peels-and-deep-hydration.webp?v=1792076321" alt="Custom Facials in the Charleston, SC Area: Dermal Peels and Deep Hydration">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <div id="model-response-message-contentr_7ea53708cef6acaf" class="markdown markdown-main-panel md-content enable-luminous-fast-follows enable-updated-hr-color stronger" dir="ltr" style="--animation-duration: 400ms; --fade-animation-function: ease-out; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" aria-busy="false" aria-live="polite">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Maintaining epidermal health and long-term dermal vitality requires an approach rooted in cellular biology, cosmetic chemistry, and localized environmental defense. Across the historic coastal plains of the Lowcountry&mdash;from downtown Charleston and West Ashley to Hanahan, Mount Pleasant, and Daniel Island&mdash;skin is exposed to extreme climatic variables. High summer temperatures paired with persistent ambient relative humidity above 80% overstimulate the sebaceous glands, while heavy solar ultraviolet (UV) radiation accelerates photoaging, hyperpigmentation, and collagen breakdown. Conversely, continuous transitions into refrigerated air-conditioned indoor spaces trigger trans-epidermal water loss (TEWL), leaving the skin paradoxically oily on the surface yet severely dehydrated at the cellular level.</div>
+<br>
+<div class="md-has-block-component" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><span class="text-block-with-attachment" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><span class="attachment-container search-images" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----></span><span style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Investing in <a href="https://brazilianspabyluci.com/service/facial-treatments/"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="2" data-index-in-node="13">custom facials in the Charleston, SC area</strong> </a>provides an essential clinical solution that moves beyond standard, generic spa menus. Rather than applying a single uniform protocol to every complexion, professional clinical estheticians design individualized treatment pathways that balance chemical exfoliation with deep lipid-barrier restoration. By combining targeted chemical peels, ultrasonic pore clearance, pharmaceutical-grade humectants, and electrolyte-infused occlusive matrices, bespoke skin therapies effectively treat acne, melasma, and premature solar elastosis. This technical analysis explores the dermal science, peel acid classifications, ultrasonic infusion physics, barrier-repair mechanisms, and seasonal aftercare protocols that define <strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="2" data-index-in-node="767">custom facials in the Charleston, SC area</strong>.</span></span></div>
+<br>
+<h2 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="5">Dermal Diagnostics: Skin Typing and Lowcountry Environmental Stressors</h2>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">A successful clinical facial begins with a comprehensive diagnostic evaluation of the cutaneous barrier. The human skin functions as a protective shield governed by an acidic hydrolipidic surface film known as the acid mantle (optimum pH 4.5 to 5.5). In the coastal Lowcountry climate, this barrier is under continuous environmental stress.</div>
+<br><!----><!----><!----><!----><!----><!----><!----><!---->
+<div class="code-block ng-tns-c3641845170-755 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation" style="display: block; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-hveid="0" data-ved="0CAAQhtANahgKEwip7OTqkbyXAxUAAAAAHQAAAAAQ8wo"><!---->
+<div class="formatted-code-block-internal-container ng-tns-c3641845170-755" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="animated-opacity ng-tns-c3641845170-755" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<pre class="ng-tns-c3641845170-755" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><code class="code-container formatted ng-tns-c3641845170-755 no-decoration-radius" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" role="text" data-test-id="code-content">+-----------------------------------------------------------------------------------------+
+|                                DERMAL STRESS RESPONSE MATRIX                            |
++--------------------------+-----------------------+------------------+-------------------+
+| Environmental Variable   | Biological Impact     | Cellular Reaction| Clinical Manifest |
++--------------------------+-----------------------+------------------+-------------------+
+| Intense Solar UVA / UVB  | DNA Photodamage       | Melanocyte Surge | Melasma, Sunspots |
+| High Ambient Humidity    | Sebaceous Overdrive   | Follicular Plugs | Comedones, Acne   |
+| Continuous Air Cond.     | TEWL Acceleration     | Lipid Depletion  | Dehydrated Flaking|
+| Coastal Airborne Salinity| Osmotic Gradient Shift| Barrier Stripping| Reactive Erythema |
++--------------------------+-----------------------+------------------+-------------------+
+</code></pre>
+<!----></div>
+</div>
+</div>
+<!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="8">The Paradox of Oily Yet Dehydrated Skin</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">A frequent diagnostic finding in coastal South Carolina is dehydrated oily skin:</div>
+<br>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="10">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="10,0,0" data-index-in-node="0">The Sebaceous Mechanism:</strong> High atmospheric heat triggers sebaceous glands to produce excess sebum (squalene, wax esters, and triglycerides) to protect the skin from drying out.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="10,1,0" data-index-in-node="0">The Dehydration Factor:</strong> Air conditioning and sun exposure simultaneously strip water molecules from the stratum corneum. Clients often respond by using aggressive foaming cleansers or alcohol-based astringents, stripping away natural ceramides and cholesterol.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="10,2,0" data-index-in-node="0">Barrier Breakdown:</strong> This cycle damages the acid mantle, allowing opportunistic bacteria (<em style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="10,2,0" data-index-in-node="88">Cutibacterium acnes</em>) to flourish within clogged pores, while the compromised lipid matrix allows cellular water to evaporate rapidly.</div>
+</li>
+</ul>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="11">Diagnostic Skin Typing</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Prior to selecting active treatment ingredients, the esthetician analyzes three core parameters:</div>
+<br>
+<ol style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" start="1" data-path-to-node="13">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="13,0,0" data-index-in-node="0">Fitzpatrick Phototype (Types I through VI):</strong> Establishes the risk profile for post-inflammatory hyperpigmentation (PIH), which dictates the safety thresholds for chemical peel acid selection.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="13,1,0" data-index-in-node="0">Sebum vs. Hydration Differential:</strong> Distinguishes between alipidic skin (lacking natural oil) and dehydrated skin (lacking cellular water).</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="13,2,0" data-index-in-node="0">Vascular Reactivity:</strong> Assesses capillary fragility, erythema, and sub-clinical inflammation characteristic of rosacea, which is often exacerbated by coastal heat.</div>
+</li>
+</ol>
+<h2 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="15">Dermal Peel Chemistries: Alpha, Beta, and Enzymatic Exfoliation</h2>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Custom facials use targeted chemical peels to dissolve the intercellular desmosome bonds holding dead, keratinized skin cells together, stimulating cellular turnover and collagen synthesis without abrasive physical scrubbing.</div>
+<br><!----><!----><!----><!----><!----><!----><!----><!---->
+<div class="code-block ng-tns-c3641845170-756 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation" style="display: block; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-hveid="0" data-ved="0CAAQhtANahgKEwip7OTqkbyXAxUAAAAAHQAAAAAQ9Ao"><!---->
+<div class="formatted-code-block-internal-container ng-tns-c3641845170-756" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="animated-opacity ng-tns-c3641845170-756" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<pre class="ng-tns-c3641845170-756" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><code class="code-container formatted ng-tns-c3641845170-756 no-decoration-radius" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" role="text" data-test-id="code-content">       [ Client Dermal Diagnostics &amp; Fitzpatrick Evaluation ]
+                                 |
+                                 v
+       [ Pre-Cleanse: Lipid Degreasing &amp; Acid Mantle Prep ]
+                                 |
+        +------------------------+------------------------+
+        |                        |                        |
+[ Alpha-Hydroxy (AHA) ]   [ Beta-Hydroxy (BHA) ]   [ Natural Enzymes ]
+        |                        |                        |
+(Lactic / Glycolic Acid)  (Lipophilic Salicylic)   (Bromelain / Papain)
+        |                        |                        |
+(Hydration / Pigment)     (Pore Decongest / Sebum) (Sensitive Skin Types)
+        |                        |                        |
+        +------------------------+------------------------+
+                                 |
+                                 v
+       [ Timed Chemical Neutralization &amp; Calming Application ]
+                                 |
+                                 v
+       [ Ultrasonic Sonophoresis Deep Hydration Infusion ]
+</code></pre>
+<!----></div>
+</div>
+</div>
+<!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="18">Alpha-Hydroxy Acids (AHAs): Glycolic and Lactic Science</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">AHAs are water-soluble organic carboxylic acids derived from natural sugars:</div>
+<br>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="20">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="20,0,0" data-index-in-node="0">Lactic Acid (Sour Milk / Sugar Ferment):</strong> The gold standard for dry, sun-damaged, and hyperpigmented coastal skin. Operating at a larger molecular size than glycolic acid, lactic acid penetrates the epidermis more slowly and evenly, minimizing irritation. Beyond breaking desmosome bonds, lactic acid functions as a natural humectant that stimulates the production of ceramides within the stratum granulosum, dramatically boosting skin moisture retention.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="20,1,0" data-index-in-node="0">Glycolic Acid (Sugar Cane):</strong> Featuring the smallest molecular structure of all AHAs, glycolic acid rapidly penetrates deep into the upper layers of the dermis. It stimulates fibroblasts to synthesize new collagen and glycosaminoglycans, smoothing fine lines, refining rough texture, and clearing stubborn surface discoloration.</div>
+</li>
+</ul>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="21">Beta-Hydroxy Acids (BHAs): Salicylic Acid Mechanisms</h3>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="22">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="22,0,0" data-index-in-node="0">Lipophilic Follicular Penetration:</strong> Unlike water-soluble AHAs, salicylic acid is oil-soluble (lipophilic). This unique chemistry allows it to dissolve through sebum, penetrating deep into the sebaceous follicle lining.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="22,1,0" data-index-in-node="0">Comedolytic and Anti-Inflammatory Action:</strong> Inside the pore, salicylic acid exfoliates trapped dead skin cells and dissolves hardened sebum plugs. Naturally related to aspirin (acetylsalicylic acid), it exerts potent anti-inflammatory effects that calm cystic acne lesions, papules, and rosacea flare-ups.</div>
+</li>
+</ul>
+<!----><!----><!----><!----><!----><!----><!----><!---->
+<div class="code-block ng-tns-c3641845170-757 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation" style="display: block; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-hveid="0" data-ved="0CAAQhtANahgKEwip7OTqkbyXAxUAAAAAHQAAAAAQ9Qo"><!---->
+<div class="formatted-code-block-internal-container ng-tns-c3641845170-757" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="animated-opacity ng-tns-c3641845170-757" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<pre class="ng-tns-c3641845170-757" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><code class="code-container formatted ng-tns-c3641845170-757 no-decoration-radius" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" role="text" data-test-id="code-content">+-----------------------------------------------------------------------------------------+
+|                                CHEMICAL PEEL SELECTION SPECTRUM                         |
++--------------------------+-----------------------+------------------+-------------------+
+| Acid Formulation         | Molecular Weight      | Solubility       | Target Skin Goals |
++--------------------------+-----------------------+------------------+-------------------+
+| Lactic Acid (30% - 50%)  | 90.08 g/mol (Medium)  | Water-Soluble    | Hydration, Melasma|
+| Glycolic Acid (20% - 40%)| 76.05 g/mol (Small)   | Water-Soluble    | Fine Lines, Aging |
+| Salicylic Acid (10%-20%) | 138.12 g/mol (Large)  | Oil-Soluble      | Acne, Congestion  |
+| Mandelic Acid (20%-30%)  | 152.15 g/mol (Large)  | Lipophilic/Water | High Fitzpatrick  |
+| Papaya/Pineapple Enzyme  | High (Macromolecule)  | Water-Dispersed  | Sensitive Barrier |
++--------------------------+-----------------------+------------------+-------------------+
+</code></pre>
+<!----></div>
+</div>
+</div>
+<!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="24">Enzymatic Resurfacing for Reactive Complexions</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">For clients presenting with sunburn, active dermatitis, or compromised skin barriers, chemical acids may be too aggressive:</div>
+<br>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="26">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="26,0,0" data-index-in-node="0">Biological Digestion:</strong> Natural proteolytic fruit enzymes (papain from papaya and bromelain from pineapple) work by hydrolyzing and digesting dead keratin proteins on the skin surface.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="26,1,0" data-index-in-node="0">Non-Acidic Safety:</strong> Because enzymes do not alter skin pH and only digest dead proteins without affecting living cells, they provide effective smoothing and brightening with zero peeling downtime or redness.</div>
+</li>
+</ul>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">The video below demonstrates how professional estheticians formulate, apply, and monitor clinical chemical peels to maximize cellular renewal while preserving the skin's barrier integrity:</div>
+<br>
+<div class="attachment-container unknown md-has-block-component" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+<div class="carousel-scroll-area" style="--carousel-item-max-width: 708px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" role="group">
+<div class="carousel-container" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="base-video-card has-metadata" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" tabindex="0" role="button" aria-label="CHEMICAL PEEL | Guide by Master Esthetician" data-hveid="1">
+<div class="base-video-container" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<div class="base-video-thumbnail ng-star-inserted" style="background-image: url('https://i.ytimg.com/vi/RB9JXUOLVbg/maxresdefault.jpg'); font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">&nbsp;</div>
+<div class="base-video-scrim ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">&nbsp;</div>
+<div class="base-video-platform-icon-container ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><img style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" src="data:image/png;base64,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" width="192" height="192"></div>
+<!---->
+<div class="base-video-player-icon ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!----><!----><!----><!----></div>
+<div class="base-video-timestamp-badge ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">2:50</div>
+<!----><!----></div>
+<div class="base-video-metadata ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="base-video-title ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" title="CHEMICAL PEEL | Guide by Master Esthetician">CHEMICAL PEEL | Guide by Master Esthetician</div>
+<!---->
+<div class="base-video-subtitle ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><span class="base-video-platform-name ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">YouTube</span><!----><span class="base-video-separator ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"> &middot; </span><!----><span class="base-video-creator-name ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Dr. P. Daniel Ward MD Utah Facial Plastics</span><!----></div>
+<!----></div>
+<!----></div>
+<!----><!----><!----><!----><!---->
+<div class="base-video-card has-metadata" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" tabindex="0" role="button" aria-label="How to Apply a Professional Chemical Peel" data-hveid="2">
+<div class="base-video-container" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<div class="base-video-thumbnail ng-star-inserted" style="background-image: url('https://i.ytimg.com/vi/-8pl6zV8o6w/maxresdefault.jpg'); font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">&nbsp;</div>
+<div class="base-video-scrim ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">&nbsp;</div>
+<div class="base-video-platform-icon-container ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><img style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" src="data:image/png;base64,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" width="192" height="192"></div>
+<!---->
+<div class="base-video-player-icon ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!----><!----><!----><!----></div>
+<div class="base-video-timestamp-badge ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">13:43</div>
+<!----><!----></div>
+<div class="base-video-metadata ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="base-video-title ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" title="How to Apply a Professional Chemical Peel">How to Apply a Professional Chemical Peel</div>
+<!---->
+<div class="base-video-subtitle ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><span class="base-video-platform-name ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">YouTube</span><!----><span class="base-video-separator ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"> &middot; </span><!----><span class="base-video-creator-name ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Advanced Rejuvenating Concepts</span><!----></div>
+<!----></div>
+<!----></div>
+<!----><!----><!----><!----><!---->
+<div class="base-video-card has-metadata" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" tabindex="0" role="button" aria-label="Let's talk about Chemical Peels | Esthetician Jennifer" data-hveid="3">
+<div class="base-video-container" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<div class="base-video-thumbnail ng-star-inserted" style="background-image: url('https://i.ytimg.com/vi/sCtDnk62upA/maxresdefault.jpg'); font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">&nbsp;</div>
+<div class="base-video-scrim ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">&nbsp;</div>
+<div class="base-video-platform-icon-container ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><img style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" src="data:image/png;base64,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" width="192" height="192"></div>
+<!---->
+<div class="base-video-player-icon ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!----><!----><!----><!----></div>
+<div class="base-video-timestamp-badge ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">3:10</div>
+<!----><!----></div>
+<div class="base-video-metadata ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="base-video-title ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" title="Let's talk about Chemical Peels | Esthetician Jennifer">Let's talk about Chemical Peels | Esthetician Jennifer</div>
+<!---->
+<div class="base-video-subtitle ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><span class="base-video-platform-name ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">YouTube</span><!----><span class="base-video-separator ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"> &middot; </span><!----><span class="base-video-creator-name ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Silhouette Aesthetics</span><!----></div>
+<!----></div>
+<!----></div>
+<!----><!----><!----><!----><!----><!----></div>
+</div>
+<!----><!----><button class="mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-badge mat-mdc-button-disabled mat-unthemed mat-badge-overlap mat-badge-above mat-badge-after mat-badge-small mat-badge-hidden ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" disabled="disabled" aria-label="Rolar o carrossel para a esquerda"><!----><!----><!----><!----></button><!----><!----><!----><!----><button class="mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-badge mat-unthemed mat-badge-overlap mat-badge-above mat-badge-after mat-badge-small mat-badge-hidden ng-star-inserted" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" aria-label="Rolar o carrossel para a direita"><!----><!----><!----><!----></button><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+<h2 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="30">Deep Hydration Infusion: Sonophoresis and Hyaluronic Acid Formulations</h2>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Following exfoliation, the stratum corneum is primed for the deep delivery of active, barrier-restoring nutrients. Applying topical serums alone results in limited penetration; clinical facials utilize advanced delivery technologies like ultrasonic sonophoresis.</div>
+<br><!----><!----><!----><!----><!----><!----><!----><!---->
+<div class="code-block ng-tns-c3641845170-758 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation" style="display: block; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-hveid="0" data-ved="0CAAQhtANahgKEwip7OTqkbyXAxUAAAAAHQAAAAAQ9wo"><!---->
+<div class="formatted-code-block-internal-container ng-tns-c3641845170-758" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="animated-opacity ng-tns-c3641845170-758" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<pre class="ng-tns-c3641845170-758" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><code class="code-container formatted ng-tns-c3641845170-758 no-decoration-radius" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" role="text" data-test-id="code-content">                  [ Ultrasonic Sonophoresis Wave Delivery ]
+       28 kHz Low-Frequency Ultrasonic Transducer Application
+                                    |
+                                    v
+       Acoustic Cavitation Generates Microscopic Vibration Pores
+                                    |
+        +---------------------------+---------------------------+
+        |                                                       |
+        v                                                       v
+  [ High-Molecular Hyaluronic ]             [ Low-Molecular Hyaluronic ]
+  Forms breathable moisture shield          Penetrates deep into dermis;
+  on the stratum corneum surface.           Pulls water into cellular tissue.
+</code></pre>
+<!----></div>
+</div>
+</div>
+<!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="33">The Physics of Ultrasonic Sonophoresis</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Ultrasonic skin therapy devices operate at low-frequency sound vibrations (typically 24 kHz to 28 kHz):</div>
+<br>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="35">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="35,0,0" data-index-in-node="0">Acoustic Micro-Cavitation:</strong> Sound waves passing over the skin create rapid pressure changes, forming microscopic vapor bubbles within the intercellular lipid bilayers. When these bubbles collapse, they temporarily disrupt the lipid barrier, creating reversible micro-channels in the skin.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="35,1,0" data-index-in-node="0">Enhanced Topical Permeability:</strong> This process, known as sonophoresis, increases the transdermal delivery of hydrophilic molecules (such as hyaluronic acid, peptides, and vitamin serums) by up to 400% compared to manual topical application, delivering hydration deep into the living epidermal layers.</div>
+</li>
+</ul>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="36">Multi-Weight Hyaluronic Acid Science</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Professional hydration serums use multiple molecular weights of sodium hyaluronate to hydrate every level of the skin:</div>
+<br>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="38">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="38,0,0" data-index-in-node="0">Low-Molecular Weight (<span class="math-inline" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-math="&lt; 50\text{ kDa}" data-index-in-node="22">$&lt; 50\text{ kDa}$</span>):</strong> Small molecules travel through sonophoresis channels into the deeper strata, binding moisture within cellular tissue and stimulating natural hyaluronic acid production.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="38,1,0" data-index-in-node="0">Medium-Molecular Weight (<span class="math-inline" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-math="100\text{ to }300\text{ kDa}" data-index-in-node="25">$100\text{ to }300\text{ kDa}$</span>):</strong> Supports intercellular cohesion and strengthens the skin's moisture barrier.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="38,2,0" data-index-in-node="0">High-Molecular Weight (<span class="math-inline" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-math="&gt; 1,000\text{ kDa}" data-index-in-node="23">$&gt; 1,000\text{ kDa}$</span>):</strong> Larger molecules remain on the skin surface, forming a breathable, non-comedogenic shield that locks in moisture and prevents trans-epidermal water loss.</div>
+</li>
+</ul>
+<h2 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="40">Barrier Restoration: Electrolyte Hydro-Jelly Masks and Lipid Envelopment</h2>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">The final phase of a custom facial locks active hydration deep into the dermal tissue while calming any residual inflammation from the exfoliation process.</div>
+<br><!----><!----><!----><!----><!----><!----><!----><!---->
+<div class="code-block ng-tns-c3641845170-759 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation" style="display: block; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-hveid="0" data-ved="0CAAQhtANahgKEwip7OTqkbyXAxUAAAAAHQAAAAAQ-Ao"><!---->
+<div class="formatted-code-block-internal-container ng-tns-c3641845170-759" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="animated-opacity ng-tns-c3641845170-759" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<pre class="ng-tns-c3641845170-759" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><code class="code-container formatted ng-tns-c3641845170-759 no-decoration-radius" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" role="text" data-test-id="code-content">+-------------------------------------------------------------------------+
+|                  BARRIER RESTORATION OCCLUSIVE PHASES                   |
++-------------------------------------------------------------------------+
+| [ Phase 1: Calming Serums ]    -&gt; Niacinamide (B3), Panthenol (B5), Zinc|
+| [ Phase 2: Hydro-Jelly Mask ]  -&gt; Vacuum-seal alginate &amp; electrolytes   |
+| [ Phase 3: Cryo-Globe Massage] -&gt; Vasoconstriction calms facial redness |
+| [ Phase 4: Lipid Envelopment ] -&gt; Ceramides, squalane, &amp; fatty acids    |
+| [ Phase 5: Mineral Defense ]   -&gt; Micronized zinc oxide physical barrier|
++-------------------------------------------------------------------------+
+</code></pre>
+<!----></div>
+</div>
+</div>
+<!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="43">The Occlusive Power of Alginate Hydro-Jelly Masks</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Hydro-jelly masks use refined marine alginate extracted from brown seaweed combined with potassium, magnesium, and sodium electrolytes:</div>
+<br>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="45">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="45,0,0" data-index-in-node="0">The Vacuum Seal Effect:</strong> Mixed with purified water, the mask forms a cool, pliable paste that molds to every facial contour, including closed eyelids and lips. As it sets over 15 to 20 minutes, it creates an airtight, vacuum-like seal over the face.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="45,1,0" data-index-in-node="0">Forcing Hydration Inward:</strong> The impermeable seal prevents moisture from evaporating into the air, forcing active hydrating serums, peptides, and botanical nutrients deep into the freshly exfoliated skin.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="45,2,0" data-index-in-node="0">Electrolyte Replenishment:</strong> Electrolytes regulate intracellular water balance, helping dehydrated skin cells retain moisture long after the treatment ends.</div>
+</li>
+</ul>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="46">Lipid Barrier Envelopment</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">The treatment concludes by sealing the stratum corneum with physiological lipids:</div>
+<br>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="48">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="48,0,0" data-index-in-node="0">The 3:1:1:1 Lipid Matrix:</strong> The skin barrier relies on a balanced ratio of ceramides, cholesterol, and free fatty acids. Applying a customized barrier-repair cream restores this lipid matrix, rebuilding the acid mantle.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="48,1,0" data-index-in-node="0">Cryo-Globe Vasoconstriction:</strong> Massaging the face with frozen surgical-steel cryo-globes cools the tissue, constricting superficial capillaries to reduce redness, soothe sensory nerves, and firm facial contours.</div>
+</li>
+</ul>
+<h2 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="50">Coastal Climate Defense: Maintaining Skin Health in Charleston</h2>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Protecting facial treatment results in the humid Lowcountry requires consistent at-home habits tailored to regional environmental conditions.</div>
+<br><!----><!----><!----><!----><!----><!----><!----><!---->
+<div class="code-block ng-tns-c3641845170-760 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation" style="display: block; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-hveid="0" data-ved="0CAAQhtANahgKEwip7OTqkbyXAxUAAAAAHQAAAAAQ-Qo"><!---->
+<div class="formatted-code-block-internal-container ng-tns-c3641845170-760" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="animated-opacity ng-tns-c3641845170-760" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<pre class="ng-tns-c3641845170-760" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><code class="code-container formatted ng-tns-c3641845170-760 no-decoration-radius" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" role="text" data-test-id="code-content">+-----------------------------------------------------------------------------------------+
+|                               COASTAL HOME CARE MATRIX                                  |
++--------------------------+-----------------------+------------------+-------------------+
+| Environmental Variable   | Cutaneous Threat      | At-Home Product  | Application Timing|
++--------------------------+-----------------------+------------------+-------------------+
+| High Humidity &amp; Heat     | Clogged Pores, Sebum  | BHA Salicylic 2% | 2x per Week PM    |
+| Strong Solar UV Rays     | Collagen Breakdown    | Zinc Oxide SPF 30| Every Morning/Re-Up|
+| Air Conditioning TEWL    | Surface Dehydration   | Multi-Weight HA  | Twice Daily on Damp|
+| City Dust &amp; Salt Spray   | Free Radical Oxidation| Vitamin C / EAP  | Daily Every AM    |
++--------------------------+-----------------------+------------------+-------------------+
+</code></pre>
+<!----></div>
+</div>
+</div>
+<!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="53">The Post-Peel Protection Protocol</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">During the 72-hour window following a chemical peel:</div>
+<br>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="55">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="55,0,0" data-index-in-node="0">Avoid Heat and Sweating:</strong> Skip hot showers, steam saunas, hot yoga, and intense workouts. Perspiration carries salts and body toxins into open, sensitized pores, which can trigger contact dermatitis or blistering.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="55,1,0" data-index-in-node="0">Strict Sun Defense:</strong> Newly exfoliated skin is highly susceptible to UV-induced hyperpigmentation. Apply a broad-spectrum, physical mineral sunscreen containing zinc oxide or titanium dioxide every morning, reapplying every two hours when outdoors.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="55,2,0" data-index-in-node="0">Hands-Off Policy:</strong> Allow natural micro-flaking to shed on its own. Picking, scratching, or using physical facial scrubs on peeling skin can cause scarring and uneven pigmentation.</div>
+</li>
+</ul>
+<h2 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="57">Frequently Asked Questions (FAQ)</h2>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="58">What distinguishes custom facials in the Charleston, SC area from standard spa facials?</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">A standard spa facial typically follows a fixed, pre-packaged routine focused on light relaxation. A custom clinical facial begins with a thorough diagnostic analysis of your specific skin type, addressing individual concerns like acne, sun damage, melasma, or dehydration. The esthetician customizes each step&mdash;selecting specific peel acids, exfoliation strengths, ultrasonic infusion serums, and barrier-repair masks tailored to your skin's immediate needs and the local climate.</div>
+<br>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="60">Will a chemical peel cause my skin to peel off in large, noticeable sheets?</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">No. Modern clinical peels used during custom facials use buffered, superficial alpha- and beta-hydroxy formulations designed for progressive results without heavy downtime. Most clients experience subtle micro-flaking similar to light dry skin, or no visible peeling at all, while still achieving cell renewal, reduced pore congestion, and a smoother complexion.</div>
+<br>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="62">How often should I schedule a custom clinical facial in Charleston?</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">For general skin health and maintenance, scheduling a custom facial every 4 to 6 weeks is ideal, aligning with the natural 28-day skin cell turnover cycle. If you are actively addressing specific concerns like stubborn cystic acne, deep hyperpigmentation, or severe sun damage, an initial series of 3 to 6 targeted peels spaced 2 to 3 weeks apart delivers the best corrective results.</div>
+<br>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="64">Can I get a chemical peel or custom facial during the hot summer months?</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Yes, provided you take proper sun precautions. Light lactic acid, mandelic acid, and fruit enzyme peels are safe and beneficial in the summer because they clear sweat-induced pore congestion and hydrate sun-exposed skin. However, you must commit to daily broad-spectrum mineral sunscreen use (SPF 30+) and avoid direct, prolonged sunbathing for at least 7 days following treatment.</div>
+<br>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="66">Is ultrasonic skin scrubbing safe for sensitive skin or rosacea?</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Yes. Ultrasonic skin scrubbing uses high-frequency sound vibrations (24,000 to 28,000 Hz) to create micro-bubbles in water on the skin, lifting excess sebum, dead skin cells, and blackheads without manual pinching, squeezing, or abrasive friction. This makes it an ideal deep-cleansing method for sensitive, thin, or rosacea-prone skin that reacts poorly to aggressive manual extractions.</div>
+</div>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

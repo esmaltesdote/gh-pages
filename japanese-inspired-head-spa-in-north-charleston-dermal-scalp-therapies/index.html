@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese-Inspired Head Spa in North Charleston: Dermal Scalp Therapies - Esmaltes Dote</title>
+    <meta name="description" content="">
+    
+    
+    <link rel="canonical" href="https://esmaltesdote.com.br/japanese-inspired-head-spa-in-north-charleston-dermal-scalp-therapies/" />
+    
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/maquiagem/" style="color:#ffffff;">Maquiagem</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Japanese-Inspired Head Spa in North Charleston: Dermal Scalp Therapies</h1>
+            
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-10-15" style="color: var(--text-muted);">
+                        15/10/2026 15:28
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/japanese-inspired-head-spa-in-north-charleston-dermal-scalp-therapies.webp?v=1792078083" alt="Japanese-Inspired Head Spa in North Charleston: Dermal Scalp Therapies">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <div id="model-response-message-contentr_f286896decb814b5" class="markdown markdown-main-panel md-content enable-luminous-fast-follows enable-updated-hr-color stronger" dir="ltr" style="--animation-duration: 400ms; --fade-animation-function: ease-out; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" aria-busy="false" aria-live="polite">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Maintaining long-term follicular viability and balanced scalp physiology requires an approach rooted in dermatological science, cellular trichology, and targeted hydrotherapy. Across the coastal South Carolina Lowcountry&mdash;including the rapidly expanding commercial and residential corridors of North Charleston, Hanahan, and Goose Creek&mdash;the local climate presents distinct challenges for the cranial epidermis. Persistent relative humidity above 80%, high summer heat, airborne maritime salinity, and fine particulate matter stimulate excessive sebum secretion from the sebaceous glands. When oxidized sebum combines with synthetic styling polymers, aerosolized dry shampoos, and municipal tap water minerals, it forms hardened crystalline plugs around the follicular infundibulum. Left untreated, this buildup suffocates developing hair shafts, leading to persistent pruritus, micro-inflammation, chronic flaking, and premature follicular miniaturization.</div>
+<br>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">A specialized <a href="https://parkcircleheadspa.com/contact/"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="2" data-index-in-node="14">Japanese-inspired head spa in North Charleston</strong></a> provides an advanced, restorative solution to these chronic scalp conditions. Moving far beyond traditional, superficial salon shampoo services, authentic Japanese head spa methodology treats the scalp as a direct extension of facial skin. By integrating high-resolution trichoscopic diagnostics, enzymatic desquamation, warm ultrasonic mist encapsulation, circular hydrotherapy waterfalls, and cranial shiatsu acupressure, these multi-step clinical rituals systematically clear follicular blockages, regulate the epidermal acid mantle, and stimulate microvascular blood flow to the hair papilla. This technical guide examines the dermal histology of the scalp, multi-step hydrotherapy protocols, active botanical formulations, neuromuscular decompression techniques, and climate-specific maintenance protocols provided by a <strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="2" data-index-in-node="886">Japanese-inspired head spa in North Charleston</strong>.</div>
+<br>
+<h2 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="4">Cranial Dermal Histology and Lowcountry Environmental Stress</h2>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">The scalp features the highest concentration of hair follicles and sebaceous glands on the human body, supported by a dense network of micro-capillaries and sensory nerve fibers. Operating within an optimal acidic pH range of 4.5 to 5.5, the scalp&rsquo;s hydrolipidic film serves as the primary barrier against environmental pathogens and excessive moisture loss.</div>
+<br><!----><!----><!----><!----><!----><!----><!----><!---->
+<div class="code-block ng-tns-c3641845170-339 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation" style="display: block; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-hveid="0" data-ved="0CAAQhtANahgKEwihhq3GoryXAxUAAAAAHQAAAAAQlAQ"><!---->
+<div class="formatted-code-block-internal-container ng-tns-c3641845170-339" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="animated-opacity ng-tns-c3641845170-339" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<pre class="ng-tns-c3641845170-339" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><code class="code-container formatted ng-tns-c3641845170-339 no-decoration-radius" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" role="text" data-test-id="code-content">+-----------------------------------------------------------------------------------------+
+|                               CRANIAL EPIDERMAL STRESS MATRIX                           |
++--------------------------+-----------------------+------------------+-------------------+
+| Environmental Variable   | Biological Impact     | Cellular Reaction| Clinical Manifest |
++--------------------------+-----------------------+------------------+-------------------+
+| Persistent Heat/Humidity | Sebaceous Overdrive   | Excess Squalene  | Oily Roots, Odor  |
+| Airborne Ocean Salinity  | Osmotic Moisture Drop | Dehydrated Dermis| Reactive Pruritus |
+| Aerosol Dry Shampoos     | Polymer Occlusion     | Keratinized Plugs| Follicular Choking|
+| Hard Mineral Tap Water   | Calcium / Mag Binding | Brittle Cuticles | Breakage, Dullness|
+| Trapped Perspiration     | Fungal Proliferation  | Malassezia Surge | Dandruff Flaking  |
++--------------------------+-----------------------+------------------+-------------------+
+</code></pre>
+<!----></div>
+</div>
+</div>
+<!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="7">Pathophysiology of Follicular Occlusion</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">When atmospheric heat and persistent humidity trigger the sebaceous glands, they secrete excessive amounts of sebum&mdash;a complex mixture of triglycerides, squalene, and wax esters.</div>
+<br>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="9">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="9,0,0" data-index-in-node="0">Microbial Proliferation:</strong> The lipophilic yeast <em style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="9,0,0" data-index-in-node="46">Malassezia globosa</em>, an ordinary resident of the scalp microbiome, feeds on these excess triglycerides. As it metabolizes the sebum, it releases irritating free fatty acids (principally oleic acid) directly onto the stratum corneum.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="9,1,0" data-index-in-node="0">Inflammatory Desquamation:</strong> In sensitive or predisposed skin, oleic acid breaches the stratum corneum, inciting micro-inflammation and prompting the scalp to shed skin cells prematurely in clumps. This manifests as greasy scales, erythema, and relentless itchiness.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="9,2,0" data-index-in-node="0">Keratinized Cast Formation:</strong> Concurrently, oxidized oils merge with dead keratinocytes and residual styling agents, forming hardened plugs inside the funnel of the hair follicle. This mechanical blockage restricts the hair shaft&rsquo;s diameter and limits microvascular nutrient delivery to the hair bulb, gradually starving the hair root.</div>
+</li>
+</ul>
+<h2 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="11">Trichoscopic Diagnostics: 200x Polarized Epiluminescence</h2>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Every comprehensive therapeutic ritual at a <strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="12" data-index-in-node="44">Japanese-inspired head spa in North Charleston</strong> begins with an objective dermatological screening utilizing a high-resolution, polarized trichoscope capable of 50x to 200x optical magnification.</div>
+<br><!----><!----><!----><!----><!----><!----><!----><!---->
+<div class="code-block ng-tns-c3641845170-340 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation" style="display: block; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-hveid="0" data-ved="0CAAQhtANahgKEwihhq3GoryXAxUAAAAAHQAAAAAQlQQ"><!---->
+<div class="formatted-code-block-internal-container ng-tns-c3641845170-340" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="animated-opacity ng-tns-c3641845170-340" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<pre class="ng-tns-c3641845170-340" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><code class="code-container formatted ng-tns-c3641845170-340 no-decoration-radius" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" role="text" data-test-id="code-content">       [ Client Trichological Consultation &amp; Intake ]
+                             |
+                             v
+       [ 200x Polarized Epiluminescence Scalp Surface Scan ]
+                             |
+        +--------------------+--------------------+
+        |                                         |
+  [ Hyper-Seborrheic State ]              [ Dehydrated &amp; Reactive ]
+        |                                         |
+(Yellowish Sebum Collars;                (Micro-Fissures in Strata;
+ Plugged Follicular Funnels)              Arborizing Red Capillaries)
+        |                                         |
+        +--------------------+--------------------+
+                             |
+                             v
+       [ Tailored Enzymatic &amp; Hydrotherapy Treatment Path ]
+                             |
+                             v
+       [ Post-Treatment Epiluminescence Comparative Audit ]
+</code></pre>
+<!----></div>
+</div>
+</div>
+<!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="14">High-Magnification Trichological Biomarkers</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Digital polarized light filters allow the technician to evaluate deep epidermal layers without glare, establishing a precise visual baseline:</div>
+<br>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="16">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="16,0,0" data-index-in-node="0">The Pristine Follicular Unit:</strong> A healthy scalp appears translucent, light ivory, or pale blue-white. Each follicular opening sits inside a slight circular depression, hosting two to four thick terminal hair shafts, completely clear of debris, redness, or scale.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="16,1,0" data-index-in-node="0">Seborrheic Congestion:</strong> Characterized by waxy, yellow-amber rings forming collars around the base of hair shafts, with liquid sebum pooling across inter-follicular valleys.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="16,2,0" data-index-in-node="0">Vascular Erythema:</strong> Indicated by visible, branched micro-capillaries (arborizing blood vessels) that signify chronic neurogenic inflammation and a weakened skin barrier.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="16,3,0" data-index-in-node="0">Perifollicular Keratosis:</strong> Characterized by white, dry, powdery hyperkeratotic rings tightly hugging the hair shaft, signaling moisture depletion and compacted dead surface skin.</div>
+</li>
+</ul>
+<h2 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="18">Step-by-Step Japanese Hydrotherapy Protocols and Halo Waterfalls</h2>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">The core philosophy of the Japanese head spa methodology combines precision botanical chemistry with structured water rituals, using the soothing power of continuous warm water to heal both scalp and mind.</div>
+<br><!----><!----><!----><!----><!----><!----><!----><!---->
+<div class="code-block ng-tns-c3641845170-341 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation" style="display: block; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-hveid="0" data-ved="0CAAQhtANahgKEwihhq3GoryXAxUAAAAAHQAAAAAQlgQ"><!---->
+<div class="formatted-code-block-internal-container ng-tns-c3641845170-341" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="animated-opacity ng-tns-c3641845170-341" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<pre class="ng-tns-c3641845170-341" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><code class="code-container formatted ng-tns-c3641845170-341 no-decoration-radius" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" role="text" data-test-id="code-content">+-------------------------------------------------------------------------+
+|                JAPANESE HEAD SPA SERVICE DELIVERY PROTOCOL              |
++-------------------------------------------------------------------------+
+| [ Phase 1: Micro-Mist Vapor ]     -&gt; Softens hardened sebum plugs       |
+| [ Phase 2: Enzymatic Scalp Purge] -&gt; Breaks down keratin without grit   |
+| [ Phase 3: Halo Waterfall Flow ]  -&gt; Continuous warm herbal hydro-flush |
+| [ Phase 4: Shiatsu Acupressure ]  -&gt; Relieves galea aponeurotica tension|
+| [ Phase 5: Deep Stem Conditioning]-&gt; Replenishes cuticle cortex lipids  |
+| [ Phase 6: Tonic Acid Balancing ] -&gt; Locks cuticles at optimal 5.5 pH   |
++-------------------------------------------------------------------------+
+</code></pre>
+<!----></div>
+</div>
+</div>
+<!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="21">Ultrasonic Vapor Encapsulation</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Before applying cleansers or treatments, the guest's head is gently enclosed in an ergonomic micro-mist steam dome:</div>
+<br>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="23">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="23,0,0" data-index-in-node="0">Acoustic Mist Technology:</strong> Ultrasonic transducers vibrate water at high frequency, generating an ultra-fine mist of droplets measuring 1 to 3 microns.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="23,1,0" data-index-in-node="0">Thermal Keratin Softening:</strong> Operating at a comfortable 104&deg;F (40&deg;C), this mist envelopes the cranial vault. The microscopic moisture droplets penetrate deep into the hair cuticles and follicular funnels, softening hardened sebum plugs, clearing out environmental dust, and loosening dry flakes without drying out the skin.</div>
+</li>
+</ul>
+<!----><!----><!----><!----><!----><!----><!----><!---->
+<div class="code-block ng-tns-c3641845170-342 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation" style="display: block; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-hveid="0" data-ved="0CAAQhtANahgKEwihhq3GoryXAxUAAAAAHQAAAAAQlwQ"><!---->
+<div class="formatted-code-block-internal-container ng-tns-c3641845170-342" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="animated-opacity ng-tns-c3641845170-342" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<pre class="ng-tns-c3641845170-342" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><code class="code-container formatted ng-tns-c3641845170-342 no-decoration-radius" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" role="text" data-test-id="code-content">                  [ Hydro-Flush Kinetic Energy Flow ]
+       Filtered, Dechlorinated Water Heated to 102&deg;F - 104&deg;F
+                                    |
+                                    v
+       Perforated Golden Halo Arch Suspended Over Cranial Zone
+                                    |
+        +---------------------------+---------------------------+
+        |                                                       |
+        v                                                       v
+  [ Non-Abrasive Debris Clearance ]         [ Parasympathetic Reset ]
+  Gently washes away emulsified             Rhythmic acoustic water flow
+  oils and broken-down impurities.          triggers deep mental relaxation.
+</code></pre>
+<!----></div>
+</div>
+</div>
+<!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="25">The Golden Halo Waterfall (Circulation Flow)</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">The visual and sensory highlight of the Japanese head spa ritual is the continuous halo shower arch:</div>
+<br>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="27">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="27,0,0" data-index-in-node="0">Continuous Kinetic Rinsing:</strong> A curved, perforated metallic arch releases a steady, warm ribbon of botanical-infused, dechlorinated water across the forehead, temples, and base of the skull.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="27,1,0" data-index-in-node="0">Zero-Friction Cleansing:</strong> The gentle, continuous movement of water naturally sweeps away emulsified oils and exfoliating treatments without the aggressive rubbing that can irritate sensitive skin.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="27,2,0" data-index-in-node="0">Parasympathetic Downregulation:</strong> The rhythmic sound and constant warmth of the flowing water stimulate mechanoreceptors across the scalp, calming a stressed sympathetic nervous system and shifting the body into deep parasympathetic relaxation.</div>
+</li>
+</ul>
+<h2 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="29">Botanical Alchemy: Active Exfoliation and Acid-Mantle Balancing</h2>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Achieving a clean, healthy scalp requires targeted botanical ingredients designed to dissolve deep oil plugs without stripping essential moisture from the hair strands.</div>
+<br><!----><!----><!----><!----><!----><!----><!----><!---->
+<div class="code-block ng-tns-c3641845170-343 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation" style="display: block; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-hveid="0" data-ved="0CAAQhtANahgKEwihhq3GoryXAxUAAAAAHQAAAAAQmAQ"><!---->
+<div class="formatted-code-block-internal-container ng-tns-c3641845170-343" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="animated-opacity ng-tns-c3641845170-343" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<pre class="ng-tns-c3641845170-343" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><code class="code-container formatted ng-tns-c3641845170-343 no-decoration-radius" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" role="text" data-test-id="code-content">+-----------------------------------------------------------------------------------------+
+|                               ACTIVE BOTANICAL COMPLEX MATRIX                           |
++--------------------------+-----------------------+------------------+-------------------+
+| Active Ingredient        | Source Origin         | Biochemical Role | Clinical Action   |
++--------------------------+-----------------------+------------------+-------------------+
+| Salicylic Acid (BHA)     | Willow Bark Extract   | Lipophilic Peeler| Dissolves Oil Clots|
+| Papain &amp; Bromelain       | Papaya &amp; Pineapple    | Proteolytic Hydro| Sloughs Dead Skin |
+| Fermented Rice Inositol  | Traditional Oryza     | Cuticle Penetrant| Repairs Hair Core |
+| Japanese Hinokitiol      | Aomori Hiba Cypress   | Terpenoid Extract| Anti-Fungal Shield|
+| Camellia Sinensis (Tea)  | Green Tea Leaves      | EGCG Bioflavonoid| Antioxidant Guard |
++--------------------------+-----------------------+------------------+-------------------+
+</code></pre>
+<!----></div>
+</div>
+</div>
+<!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="32">Precision Lipophilic and Enzymatic Peels</h3>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="33">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="33,0,0" data-index-in-node="0">Salicylic Acid (BHA):</strong> Unlike water-soluble alpha-hydroxy acids, oil-soluble salicylic acid dissolves straight through the sebum sitting inside the follicular funnel, clearing out stubborn oil plugs and dead skin cells.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="33,1,0" data-index-in-node="0">Fruit Enzymes:</strong> Proteolytic enzymes derived from papaya (papain) and pineapple (bromelain) break peptide bonds in dead surface protein without scratching the scalp like harsh walnut or apricot scrubs can.</div>
+</li>
+</ul>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="34">Restoring the Hydrolipidic Barrier</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Following deep pore cleansing, the scalp is nourished with natural plant extracts to restore its protective acid mantle (pH 5.0 to 5.5):</div>
+<br>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="36">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="36,0,0" data-index-in-node="0">Hinokitiol:</strong> Extracted from Japanese cypress wood, hinokitiol naturally limits <em style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="36,0,0" data-index-in-node="78">Malassezia</em> overgrowth, soothes redness, and calms persistent itching.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="36,1,0" data-index-in-node="0">Green Tea Polyphenols:</strong> Packed with epigallocatechin gallate (EGCG), green tea extracts protect hair root cells from free radicals caused by intense coastal UV exposure.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="36,2,0" data-index-in-node="0">Fermented Rice Inositol:</strong> Nutrient-rich inositol penetrates deeply into damaged hair cuticles, repairing inner protein structures and leaving hair soft, shiny, and resilient against coastal humidity.</div>
+</li>
+</ul>
+<h2 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="38">Cranial Shiatsu Acupressure and Neuromuscular Decompression</h2>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Physical stress, desk posture, and daily commuting cause muscle contractions across the neck, jaw, and shoulders. These tight muscles restrict blood flow through the cranial aponeurosis (the fibrous layer covering the top of the skull), limiting the delivery of essential nutrients to the hair roots.</div>
+<br><!----><!----><!----><!----><!----><!----><!----><!---->
+<div class="code-block ng-tns-c3641845170-344 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation" style="display: block; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-hveid="0" data-ved="0CAAQhtANahgKEwihhq3GoryXAxUAAAAAHQAAAAAQmQQ"><!---->
+<div class="formatted-code-block-internal-container ng-tns-c3641845170-344" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="animated-opacity ng-tns-c3641845170-344" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<pre class="ng-tns-c3641845170-344" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><code class="code-container formatted ng-tns-c3641845170-344 no-decoration-radius" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" role="text" data-test-id="code-content">                  [ Microvascular Stimulatory Sequence ]
+        Acupoint Triggering: Baihui (GV20) &amp; Fengchi (GB20)
+                                    |
+                                    v
+        Myofascial Shearing Across the Galea Aponeurotica
+                                    |
+        +---------------------------+---------------------------+
+        |                                                       |
+        v                                                       v
+  [ Capillary Vasodilation ]                [ Lymphatic Fluid Flush ]
+  Floods dermal papilla cells with          Drains metabolic cellular waste
+  fresh oxygen, zinc, and biotin.           toward deep cervical lymph nodes.
+</code></pre>
+<!----></div>
+</div>
+</div>
+<!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="41">Activating Vital Cranial Acupressure Points</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">During the therapeutic hydrotherapy bath, technicians apply calibrated finger pressure to traditional Eastern acupoints:</div>
+<br>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="43">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="43,0,0" data-index-in-node="0">Baihui (GV 20):</strong> Located at the apex of the skull, where the center line meets the tops of the ears. Applying steady, rhythmic pressure here eases mental fatigue, relieves headaches, and improves microcirculation to the hair roots.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="43,1,0" data-index-in-node="0">Fengchi (GB 20):</strong> Found in the soft depressions below the base of the skull on either side of the neck muscles. Working these points releases tension caused by prolonged computer work and improves blood flow to the head.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="43,2,0" data-index-in-node="0">Taiyang (Temples):</strong> Gentle circular pressure on the temples relaxes the jaw and eases eye strain.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="43,3,0" data-index-in-node="0">Galea Mobilization:</strong> Technicians place their palms against the scalp, gently shifting the skin over the skull. This physical shearing breaks up connective tissue adhesions, allowing blood vessels to expand and carry fresh oxygen, amino acids, and trace minerals directly to the hair bulbs.</div>
+</li>
+</ul>
+<h2 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="45">Coastal Climate Defense: Maintaining Scalp Health in North Charleston</h2>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Living along coastal South Carolina presents specific atmospheric conditions that require consistent, customized scalp care between professional head spa appointments.</div>
+<br><!----><!----><!----><!----><!----><!----><!----><!---->
+<div class="code-block ng-tns-c3641845170-345 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation" style="display: block; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-hveid="0" data-ved="0CAAQhtANahgKEwihhq3GoryXAxUAAAAAHQAAAAAQmgQ"><!---->
+<div class="formatted-code-block-internal-container ng-tns-c3641845170-345" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div class="animated-opacity ng-tns-c3641845170-345" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><!---->
+<pre class="ng-tns-c3641845170-345" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><code class="code-container formatted ng-tns-c3641845170-345 no-decoration-radius" style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" role="text" data-test-id="code-content">+-------------------------------------------------------------------------+
+|                  COASTAL SCALP MAINTENANCE CHECKLIST                    |
++-------------------------------------------------------------------------+
+| [&radic;] Pre-rinse hair with fresh water before swimming in the ocean or pool|
+| [&radic;] Use a sulfate-free, pH-balanced (5.5) clarifying cleanser bi-weekly |
+| [&radic;] Apply a lightweight, mineral-based UV-blocking mist along the part  |
+| [&radic;] Install a showerhead filter to remove calcium, chlorine, and copper  |
+| [&radic;] Avoid sleeping with wet hair to prevent fungal overgrowth           |
++-------------------------------------------------------------------------+
+</code></pre>
+<!----></div>
+</div>
+</div>
+<!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!---->
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="48">Preventing Chlorine and Saltwater Damage</h3>
+<ul style="padding-inline-start: 32px; font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="49">
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="49,0,0" data-index-in-node="0">Freshwater Pre-Saturation:</strong> Hair fibers absorb moisture like a sponge. Saturating the hair with fresh shower water before swimming fills the porous cortex, preventing the strands from soaking up excess salt or pool chemicals.</div>
+</li>
+<li style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;"><strong style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="49,1,0" data-index-in-node="0">Filtering Tap Water:</strong> Municipal tap water in coastal areas often carries trace minerals like calcium and magnesium, which bind to the scalp and cause dullness, dryness, and itchiness. Installing a multi-stage showerhead filter helps prevent mineral deposits and protects the scalp's natural balance.</div>
+</li>
+</ul>
+<h2 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="51">Frequently Asked Questions (FAQ)</h2>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="52">What is the difference between a traditional salon shampoo and a Japanese-inspired head spa in North Charleston?</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">A traditional salon shampoo is a quick, functional 5-to-10-minute wash focused entirely on prepping the hair for cutting or styling. A specialized Japanese-inspired head spa is a 60-to-90-minute clinical scalp therapy that includes 200x microscopic scalp analysis, ultrasonic steam treatments, gentle enzymatic exfoliation, circular halo hydrotherapy, and deep cranial acupressure. It treats the scalp as an extension of the face, cleansing follicles, balancing the skin microbiome, and releasing deep physical tension.</div>
+<br>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="54">How often should a Japanese head spa treatment be scheduled?</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">For general scalp wellness, scheduling a treatment every 4 to 6 weeks is ideal, aligning with the natural 28-day skin cellular renewal cycle. Clients addressing specific issues like oily dandruff, persistent product buildup, or severe scalp tightness benefit from an initial series of bi-weekly appointments to rebalance the scalp before transitioning to monthly maintenance.</div>
+<br>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="56">Can a Japanese head spa help with hair loss and thinning?</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">While a head spa cannot cure genetic hair loss (such as androgenetic alopecia), it creates the healthiest possible environment for hair growth. Clearing hardened sebum plugs, soothing inflammation, and boosting microvascular blood flow to the hair roots ensures that emerging strands receive essential oxygen and nutrients, preventing premature shedding caused by clogged, irritated follicles.</div>
+<br>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="58">Are these scalp treatments safe for color-treated, bleached, or keratin-treated hair?</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">Yes. Treatments utilize gentle, sulfate-free cleansers, natural enzymes, and pH-balanced plant botanicals that cleanse the scalp without stripping hair color or compromising keratin treatments. The combination of ultrasonic mist and deeply conditioning nutrient masks seals the outer hair cuticles, locking in moisture and leaving color-treated hair shiny and vibrant.</div>
+<br>
+<h3 style="font-family: Google Sans, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;" data-path-to-node="60">What should be avoided immediately following a head spa session?</h3>
+<div style="font-family: Google Sans Text, sans-serif !important; line-height: 1.15 !important; margin-top: 0px !important; margin-left: 0px !important; margin-right: 0px !important;">For the first 24 to 48 hours following a head spa treatment, avoid applying dry shampoo, silicone-heavy styling products, and chemical hair dye. The scalp's pores and hair cuticles are freshly exfoliated, deeply cleansed, and balanced, so giving the skin time to breathe without heavy product buildup extends the benefits of the treatment.</div>
+</div>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

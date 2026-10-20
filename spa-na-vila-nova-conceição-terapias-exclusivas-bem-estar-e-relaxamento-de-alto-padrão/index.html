@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spa na Vila Nova Conceição: Terapias Exclusivas, Bem-Estar e Relaxamento de Alto Padrão - Esmaltes Dote</title>
+    <meta name="description" content="">
+    
+    
+    <link rel="canonical" href="https://esmaltesdote.com.br/spa-na-vila-nova-conceição-terapias-exclusivas-bem-estar-e-relaxamento-de-alto-padrão/" />
+    
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/beleza/" style="color:#ffffff;">Beleza</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Spa na Vila Nova Conceição: Terapias Exclusivas, Bem-Estar e Relaxamento de Alto Padrão</h1>
+            
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-10-20" style="color: var(--text-muted);">
+                        20/10/2026 14:01
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/spa-na-vila-nova-conceicao-terapias-exclusivas-bem-estar-e-relaxamento-de-alto-padrao.webp?v=1792504861" alt="Spa na Vila Nova Conceição: Terapias Exclusivas, Bem-Estar e Relaxamento de Alto Padrão">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p>A busca por momentos de tranquilidade e autocuidado tem ganhado cada vez mais espa&ccedil;o na rotina intensa das grandes cidades. Em S&atilde;o Paulo, a regi&atilde;o da Vila Nova Concei&ccedil;&atilde;o se destaca como um verdadeiro ref&uacute;gio para quem deseja experienciar <strong>terapias exclusivas</strong> e um ambiente voltado para o <strong>bem-estar</strong> e o <strong>relaxamento de alto padr&atilde;o</strong>. Com uma infraestrutura sofisticada, os estabelecimentos dessa &aacute;rea oferecem uma combina&ccedil;&atilde;o perfeita entre modernidade, conforto e t&eacute;cnicas avan&ccedil;adas para proporcionar uma experi&ecirc;ncia &uacute;nica aos seus clientes.</p>
+<p>O conceito de spa transcende o simples ato de relaxar; trata-se de um espa&ccedil;o dedicado ao equil&iacute;brio f&iacute;sico, mental e emocional. Localizado em um dos bairros mais nobres da capital paulista, o <a href="https://www.laprat.com.br/spa-na-vila-nova-conceicao/" target="_blank" rel="noopener">spa na Vila Nova Concei&ccedil;&atilde;o</a> representa essa uni&atilde;o entre o luxo e a sa&uacute;de, atraindo um p&uacute;blico exigente que valoriza tratamentos personalizados e atendimento diferenciado. Este cen&aacute;rio favorece a oferta de terapias exclusivas que atendem desde as necessidades b&aacute;sicas de relaxamento at&eacute; interven&ccedil;&otilde;es sofisticadas para revitaliza&ccedil;&atilde;o corporal e facial.</p>
+<h2>A Import&acirc;ncia Do Bem-Estar No Estilo De Vida Urbano</h2>
+<p>Vivendo em um ambiente urbano repleto de est&iacute;mulos e press&otilde;es constantes, o corpo e a mente demandam cuidados especiais para manter o equil&iacute;brio. O estresse di&aacute;rio, a polui&ccedil;&atilde;o e a rotina acelerada contribuem para o desgaste f&iacute;sico e emocional, impactando diretamente a qualidade de vida. Por isso, investir em momentos de pausa para o autocuidado &eacute; fundamental.</p>
+<p>A regi&atilde;o da Vila Nova Concei&ccedil;&atilde;o, conhecida por sua atmosfera tranquila e arborizada, oferece um cen&aacute;rio prop&iacute;cio para quem busca fugir do ritmo fren&eacute;tico da cidade sem precisar se deslocar para longe. O spa localizado neste bairro valoriza essa conex&atilde;o com a natureza e privilegia ambientes que estimulam a sensa&ccedil;&atilde;o de paz e harmonia.</p>
+<h3>Benef&iacute;cios das Terapias Exclusivas para o Corpo e a Mente</h3>
+<p>As terapias exclusivas dispon&iacute;veis nesse tipo de ambiente v&atilde;o muito al&eacute;m de massagens convencionais. Elas s&atilde;o desenvolvidas para atuar em diferentes camadas do organismo, promovendo benef&iacute;cios que envolvem:</p>
+<p>- <strong>Redu&ccedil;&atilde;o do estresse e ansiedade</strong></p>
+<p>- <strong>Melhora da circula&ccedil;&atilde;o sangu&iacute;nea</strong></p>
+<p>- <strong>Al&iacute;vio de tens&otilde;es musculares</strong></p>
+<p>- <strong>Estimula&ccedil;&atilde;o do sistema imunol&oacute;gico</strong></p>
+<p>- <strong>Aumento da disposi&ccedil;&atilde;o e energia</strong></p>
+<p>- <strong>Melhora na qualidade do sono</strong></p>
+<p>- <strong>Revitaliza&ccedil;&atilde;o da pele e do corpo</strong></p>
+<p>Alguns tratamentos utilizam t&eacute;cnicas milenares combinadas com inova&ccedil;&otilde;es tecnol&oacute;gicas, garantindo resultados vis&iacute;veis e duradouros. Al&eacute;m disso, a personaliza&ccedil;&atilde;o dos servi&ccedil;os assegura que as necessidades individuais sejam respeitadas, proporcionando uma experi&ecirc;ncia verdadeiramente transformadora.</p>
+<h2>Terapias Exclusivas E Personalizadas: Um Diferencial De Alto Padr&atilde;o</h2>
+<p>A exclusividade &eacute; um dos grandes atrativos dos spas localizados na Vila Nova Concei&ccedil;&atilde;o. Cada cliente &eacute; recebido com atendimento dedicado, onde profissionais capacitados avaliam as condi&ccedil;&otilde;es f&iacute;sicas e emocionais para indicar a terapia mais adequada. Essa abordagem personalizada &eacute; essencial para garantir que a experi&ecirc;ncia de bem-estar seja completa e eficaz.</p>
+<h3>T&eacute;cnicas Corporais Avan&ccedil;adas</h3>
+<p>Entre as op&ccedil;&otilde;es mais procuradas, destacam-se as massagens terap&ecirc;uticas que combinam diferentes t&eacute;cnicas para atuar em pontos espec&iacute;ficos do corpo. Massagem sueca, shiatsu, drenagem linf&aacute;tica e reflexologia s&atilde;o algumas das modalidades que podem ser integradas conforme a necessidade do cliente.</p>
+<p>Al&eacute;m das massagens, tratamentos com pedras quentes, aromaterapia e t&eacute;cnicas de relaxamento profundo tamb&eacute;m fazem parte do portf&oacute;lio. Essas pr&aacute;ticas s&atilde;o reconhecidas por sua capacidade de liberar tens&otilde;es acumuladas, melhorar a circula&ccedil;&atilde;o e promover uma sensa&ccedil;&atilde;o intensa de calma.</p>
+<h3>Tratamentos Faciais de &Uacute;ltima Gera&ccedil;&atilde;o</h3>
+<p>O cuidado com a pele do rosto &eacute; um aspecto fundamental para quem busca rejuvenescimento e sa&uacute;de est&eacute;tica. Os spas da regi&atilde;o investem em tecnologias como laser, radiofrequ&ecirc;ncia e microagulhamento para estimular a produ&ccedil;&atilde;o de col&aacute;geno e renovar as c&eacute;lulas da pele.</p>
+<p>Os tratamentos faciais s&atilde;o combinados com produtos naturais e org&acirc;nicos, garantindo um resultado saud&aacute;vel e sustent&aacute;vel. Al&eacute;m disso, as terapias incluem limpeza profunda, hidrata&ccedil;&atilde;o intensiva e massagens faciais que promovem a tonifica&ccedil;&atilde;o e o brilho natural.</p>
+<h2>Estrutura E Ambiente: O Ref&uacute;gio Perfeito Para O Relaxamento</h2>
+<p>O ambiente &eacute; parte crucial da experi&ecirc;ncia em qualquer spa. Na Vila Nova Concei&ccedil;&atilde;o, os espa&ccedil;os s&atilde;o planejados para oferecer conforto extremo e uma atmosfera acolhedora. A arquitetura e o design de interiores valorizam elementos naturais, criando um cen&aacute;rio que favorece o relaxamento e a conex&atilde;o consigo mesmo.</p>
+<h3>Ambientes Integrados com a Natureza</h3>
+<p>Muitos estabelecimentos contam com jardins internos, &aacute;reas verdes e luz natural abundante, caracter&iacute;sticas que potencializam o efeito calmante das terapias. A presen&ccedil;a da natureza ajuda a reduzir a ansiedade e estimula a sensa&ccedil;&atilde;o de bem-estar, contribuindo para uma recupera&ccedil;&atilde;o mais r&aacute;pida dos n&iacute;veis de energia.</p>
+<p>A decora&ccedil;&atilde;o utiliza cores suaves, mobili&aacute;rio ergon&ocirc;mico e aromas delicados para compor um espa&ccedil;o que convida &agrave; tranquilidade. A m&uacute;sica ambiente, cuidadosamente selecionada, complementa o cen&aacute;rio, tornando o momento ainda mais prazeroso.</p>
+<h3>Infraestrutura Completa para o Conforto</h3>
+<p>Al&eacute;m das salas de atendimento, os spas oferecem &aacute;reas de descanso com lounges confort&aacute;veis, saunas, piscinas aquecidas e espa&ccedil;os para medita&ccedil;&atilde;o. Esses recursos proporcionam uma experi&ecirc;ncia integrada, onde o relaxamento come&ccedil;a desde o momento da chegada.</p>
+<p>O atendimento exclusivo, aliado &agrave; infraestrutura de alta qualidade, faz com que cada visita seja especial, estimulando o retorno e a fideliza&ccedil;&atilde;o dos clientes.</p>
+<h2>A Import&acirc;ncia Da Qualifica&ccedil;&atilde;o Profissional</h2>
+<p>O sucesso das terapias oferecidas est&aacute; diretamente relacionado &agrave; forma&ccedil;&atilde;o e experi&ecirc;ncia dos profissionais envolvidos. No bairro, os spas investem em equipes multidisciplinares compostas por fisioterapeutas, esteticistas, massoterapeutas e terapeutas hol&iacute;sticos que atuam de maneira integrada.</p>
+<h3>Atualiza&ccedil;&atilde;o Cont&iacute;nua e T&eacute;cnicas Inovadoras</h3>
+<p>Para garantir o padr&atilde;o elevado dos servi&ccedil;os, os profissionais participam regularmente de cursos e workshops que abordam novas t&eacute;cnicas e tend&ecirc;ncias do mercado. Esse compromisso com a qualifica&ccedil;&atilde;o permite que os tratamentos sejam aplicados com precis&atilde;o e seguran&ccedil;a, respeitando as particularidades de cada cliente.</p>
+<p>A combina&ccedil;&atilde;o entre conhecimento t&eacute;cnico e sensibilidade humana &eacute; fundamental para criar um ambiente acolhedor e eficaz, onde o cliente se sente valorizado e cuidado.</p>
+<h2>Como Escolher O Melhor Spa Para Suas Necessidades</h2>
+<p>A variedade de op&ccedil;&otilde;es na regi&atilde;o pode gerar d&uacute;vidas na hora de escolher o local ideal para investir em seu bem-estar. Alguns crit&eacute;rios importantes para uma escolha acertada incluem:</p>
+<p>- <strong>Reputa&ccedil;&atilde;o e avalia&ccedil;&otilde;es de clientes</strong></p>
+<p>- <strong>Diversidade de tratamentos oferecidos</strong></p>
+<p>- <strong>Qualifica&ccedil;&atilde;o da equipe</strong></p>
+<p>- <strong>Infraestrutura e ambiente</strong></p>
+<p>- <strong>Personaliza&ccedil;&atilde;o dos servi&ccedil;os</strong></p>
+<p>- <strong>Localiza&ccedil;&atilde;o e facilidade de acesso</strong></p>
+<p>Visitar o espa&ccedil;o antes de reservar um tratamento pode ajudar a perceber se o ambiente transmite a sensa&ccedil;&atilde;o de conforto e acolhimento desejada. Um atendimento pr&eacute;vio com profissionais para esclarecer d&uacute;vidas tamb&eacute;m contribui para uma experi&ecirc;ncia mais segura e satisfat&oacute;ria.</p>
+<h2>Tend&ecirc;ncias E Novidades No Universo Dos Spas De Luxo</h2>
+<p>O mercado de bem-estar est&aacute; em constante evolu&ccedil;&atilde;o, incorporando tecnologias e pr&aacute;ticas inovadoras para atender &agrave;s demandas dos clientes mais exigentes. Entre as tend&ecirc;ncias que ganham destaque est&atilde;o:</p>
+<h3>Terapias Integrativas e Hol&iacute;sticas</h3>
+<p>As abordagens que consideram o ser humano de forma integral, unindo corpo, mente e esp&iacute;rito, t&ecirc;m conquistado espa&ccedil;o significativo. T&eacute;cnicas como a reiki, medita&ccedil;&atilde;o guiada, cromoterapia e yoga s&atilde;o frequentemente inclu&iacute;das nos pacotes oferecidos pelos spas de alto padr&atilde;o.</p>
+<h3>Sustentabilidade e Produtos Naturais</h3>
+<p>O uso de ingredientes org&acirc;nicos, veganos e cruelty-free &eacute; uma preocupa&ccedil;&atilde;o crescente, alinhada &agrave; consci&ecirc;ncia ambiental dos consumidores. Spas que adotam pr&aacute;ticas sustent&aacute;veis, desde a escolha dos produtos at&eacute; o descarte de res&iacute;duos, se destacam no mercado.</p>
+<h3>Tecnologia a Favor do Relaxamento</h3>
+<p>Dispositivos que utilizam luzes LED, ultrassom e outras inova&ccedil;&otilde;es s&atilde;o incorporados para otimizar os resultados dos tratamentos. Al&eacute;m disso, aplicativos e plataformas digitais facilitam o agendamento e o acompanhamento personalizado dos servi&ccedil;os.</p>
+<h2>Considera&ccedil;&otilde;es Finais: Um Investimento Para O Corpo E A Alma</h2>
+<p>A experi&ecirc;ncia de relaxar e cuidar de si mesmo em um ambiente sofisticado e acolhedor &eacute; uma forma poderosa de renovar as energias e melhorar a qualidade de vida. O bairro da Vila Nova Concei&ccedil;&atilde;o oferece um cen&aacute;rio privilegiado para quem busca combinar luxo, exclusividade e resultados efetivos em terapias de bem-estar.</p>
+<p>Investir em tratamentos personalizados e em um espa&ccedil;o que prioriza o conforto e a excel&ecirc;ncia reflete diretamente na sa&uacute;de f&iacute;sica e mental. O equil&iacute;brio proporcionado por essas experi&ecirc;ncias contribui para uma vida mais plena, produtiva e feliz.</p>
+<p>Seja para aliviar o estresse do dia a dia, tratar o corpo ou simplesmente desfrutar de momentos de paz, a escolha por um spa de alto padr&atilde;o se revela uma decis&atilde;o acertada para quem valoriza o cuidado integral e a qualidade de vida.</p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

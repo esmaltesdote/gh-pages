@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preenchimento Labial: Técnicas Modernas, Harmonização Natural e Cuidados Pós-Procedimento - Esmaltes Dote</title>
+    <meta name="description" content="">
+    
+    
+    <link rel="canonical" href="https://esmaltesdote.com.br/preenchimento-labial-técnicas-modernas-harmonização-natural-e-cuidados-pós-procedimento/" />
+    
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/maquiagem/" style="color:#ffffff;">Maquiagem</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Preenchimento Labial: Técnicas Modernas, Harmonização Natural e Cuidados Pós-Procedimento</h1>
+            
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-10-22" style="color: var(--text-muted);">
+                        22/10/2026 17:17
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/preenchimento-labial-tecnicas-modernas-harmonizacao-natural-e-cuidados-pos-procedimento.webp?v=1792689423" alt="Preenchimento Labial: Técnicas Modernas, Harmonização Natural e Cuidados Pós-Procedimento">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p>A busca por l&aacute;bios volumosos e bem definidos vem ganhando cada vez mais destaque no universo da est&eacute;tica facial. A valoriza&ccedil;&atilde;o da beleza natural, aliada a procedimentos minimamente invasivos, tem transformado o modo como muitas pessoas conquistam um sorriso mais atraente e harm&ocirc;nico. Entre as op&ccedil;&otilde;es mais procuradas, o <a href="https://parisvegasbeauty.com.br/servicos/labios/" target="_blank" rel="noopener">preenchimento labial</a> destaca-se por sua efic&aacute;cia e resultados rapidamente vis&iacute;veis, al&eacute;m de oferecer possibilidades que respeitam a individualidade de cada rosto.</p>
+<p>Com o avan&ccedil;o da tecnologia e o aprimoramento das t&eacute;cnicas, &eacute; poss&iacute;vel alcan&ccedil;ar um efeito natural e equilibrado, evitando exageros que podem comprometer a express&atilde;o facial. Al&eacute;m do procedimento em si, os cuidados ap&oacute;s a aplica&ccedil;&atilde;o s&atilde;o essenciais para garantir a durabilidade e a seguran&ccedil;a do resultado. Detalhes sobre m&eacute;todos modernos, a import&acirc;ncia da harmoniza&ccedil;&atilde;o facial e orienta&ccedil;&otilde;es para o p&oacute;s-tratamento s&atilde;o fundamentais para quem deseja investir nesse tipo de interven&ccedil;&atilde;o est&eacute;tica.</p>
+<h2>T&eacute;cnicas Modernas Para Real&ccedil;ar Os L&aacute;bios</h2>
+<p>O campo da est&eacute;tica facial tem se beneficiado de inova&ccedil;&otilde;es constantes, proporcionando abordagens mais precisas e personalizadas. As t&eacute;cnicas atuais v&atilde;o muito al&eacute;m do simples aumento do volume, focando na <strong>harmonia facial</strong> e na preserva&ccedil;&atilde;o do aspecto natural.</p>
+<h3>&Aacute;cido Hialur&ocirc;nico: O Padr&atilde;o Ouro</h3>
+<p>O uso do &aacute;cido hialur&ocirc;nico &eacute; a t&eacute;cnica mais difundida e segura para dar forma e volume aos l&aacute;bios. Trata-se de uma subst&acirc;ncia presente naturalmente no organismo, o que reduz riscos de rejei&ccedil;&atilde;o ou alergias. Al&eacute;m disso, sua capacidade de atrair e reter &aacute;gua ajuda a manter a hidrata&ccedil;&atilde;o local, conferindo um aspecto saud&aacute;vel.</p>
+<p>Os profissionais utilizam diferentes densidades e formula&ccedil;&otilde;es do &aacute;cido para adequar o procedimento &agrave;s necessidades espec&iacute;ficas, seja para corrigir assimetrias, definir o contorno ou aumentar o volume. A aplica&ccedil;&atilde;o &eacute; feita com agulhas finas ou c&acirc;nulas, minimizando o desconforto e os hematomas.</p>
+<h3>T&eacute;cnicas Avan&ccedil;adas de Aplica&ccedil;&atilde;o</h3>
+<p>Novas t&eacute;cnicas de inje&ccedil;&atilde;o permitem um resultado mais sutil e natural, evitando o efeito "boca de pato" que pode ocorrer com abordagens antigas. Entre elas, destacam-se:</p>
+<p>- <strong>Microinje&ccedil;&otilde;es em pontos estrat&eacute;gicos</strong>: Realizam-se pequenas doses em &aacute;reas espec&iacute;ficas para modelar os l&aacute;bios sem exageros.</p>
+<p>- <strong>T&eacute;cnica de cross-linking</strong>: Utiliza &aacute;cido hialur&ocirc;nico com diferentes n&iacute;veis de dureza para criar volumiza&ccedil;&atilde;o e sustenta&ccedil;&atilde;o progressiva.</p>
+<p>- <strong>Uso de c&acirc;nulas</strong>: Ferramentas curvas que causam menos trauma e facilitam a distribui&ccedil;&atilde;o uniforme do produto.</p>
+<h3>Alternativas ao &Aacute;cido Hialur&ocirc;nico</h3>
+<p>Embora o &aacute;cido hialur&ocirc;nico seja a escolha preferida, existem outras op&ccedil;&otilde;es, como:</p>
+<p>- <strong>Preenchimentos com hidroxiapatita de c&aacute;lcio</strong>: Indicado para quem busca resultados mais duradouros, mas com menor reversibilidade.</p>
+<p>- <strong>Lipofilling (enxerto de gordura)</strong>: T&eacute;cnica que utiliza gordura retirada do pr&oacute;prio paciente, oferecendo uma alternativa natural, por&eacute;m mais invasiva.</p>
+<p>Cada m&eacute;todo possui vantagens e limita&ccedil;&otilde;es, e a escolha deve ser feita com base em avalia&ccedil;&atilde;o profissional detalhada.</p>
+<h2>A Import&acirc;ncia Da Harmoniza&ccedil;&atilde;o Facial Para Um Resultado Natural</h2>
+<p>O segredo para um sorriso encantador est&aacute; na harmonia entre os elementos do rosto. O aumento labial isolado pode gerar desequil&iacute;brios, por isso, &eacute; fundamental considerar o conjunto facial.</p>
+<h3>Avalia&ccedil;&atilde;o Personalizada</h3>
+<p>Antes de qualquer procedimento, &eacute; imprescind&iacute;vel realizar uma an&aacute;lise minuciosa das propor&ccedil;&otilde;es faciais, linhas de express&atilde;o e estrutura &oacute;ssea. A compreens&atilde;o do formato do rosto, da dist&acirc;ncia entre nariz e queixo e do sorriso natural ajuda a definir a melhor abordagem.</p>
+<h3>T&eacute;cnicas Integradas de Harmoniza&ccedil;&atilde;o</h3>
+<p>A harmoniza&ccedil;&atilde;o facial pode envolver procedimentos complementares, tais como:</p>
+<p>- <strong>Preenchimento do sulco nasolabial</strong> para suavizar linhas entre o nariz e a boca.</p>
+<p>- <strong>Aplica&ccedil;&atilde;o de toxina botul&iacute;nica</strong> para relaxar m&uacute;sculos espec&iacute;ficos e melhorar a simetria.</p>
+<p>- <strong>Contorno do queixo e mand&iacute;bula</strong> para equilibrar a parte inferior do rosto.</p>
+<p>Essa combina&ccedil;&atilde;o de t&eacute;cnicas proporciona um resultado mais natural, evitando exageros e mantendo a expressividade.</p>
+<h3>Estilo e Prefer&ecirc;ncia Pessoal</h3>
+<p>Outro ponto fundamental &eacute; respeitar o desejo do paciente, alinhando expectativas com o que &eacute; tecnicamente vi&aacute;vel. A comunica&ccedil;&atilde;o clara sobre o efeito desejado contribui para satisfa&ccedil;&atilde;o plena.</p>
+<h2>Cuidados Essenciais Ap&oacute;s O Procedimento</h2>
+<p>A etapa que sucede a interven&ccedil;&atilde;o &eacute; t&atilde;o crucial quanto a aplica&ccedil;&atilde;o para garantir seguran&ccedil;a, conforto e durabilidade do resultado.</p>
+<h3>Orienta&ccedil;&otilde;es Imediatas</h3>
+<p>Logo ap&oacute;s a aplica&ccedil;&atilde;o, &eacute; comum que a regi&atilde;o apresente incha&ccedil;o, vermelhid&atilde;o ou pequenos hematomas. Algumas recomenda&ccedil;&otilde;es para minimizar esses efeitos incluem:</p>
+<p>- Aplicar compressas frias nas primeiras 24 a 48 horas.</p>
+<p>- Evitar exposi&ccedil;&atilde;o direta ao sol e ambientes muito quentes.</p>
+<p>- N&atilde;o realizar massagens ou fric&ccedil;&otilde;es na &aacute;rea tratada.</p>
+<p>- Manter a cabe&ccedil;a elevada para reduzir o incha&ccedil;o.</p>
+<h3>Alimenta&ccedil;&atilde;o e Hidrata&ccedil;&atilde;o</h3>
+<p>Manter-se bem hidratado favorece a recupera&ccedil;&atilde;o e o aspecto saud&aacute;vel da pele. Al&eacute;m disso, evitar alimentos muito quentes, picantes ou &aacute;cidos nas primeiras 48 horas pode prevenir desconfortos.</p>
+<h3>Uso de Cosm&eacute;ticos e Maquiagem</h3>
+<p>Recomenda-se evitar o uso de batons ou cremes nos l&aacute;bios nas primeiras 24 horas para reduzir o risco de irrita&ccedil;&atilde;o ou infec&ccedil;&atilde;o. Ap&oacute;s esse per&iacute;odo, o uso de produtos hipoalerg&ecirc;nicos &eacute; indicado.</p>
+<h3>Sinais de Alerta</h3>
+<p>Embora os riscos sejam baixos, &eacute; importante ficar atento a sintomas que possam indicar complica&ccedil;&otilde;es, tais como:</p>
+<p>- Dor intensa e persistente.</p>
+<p>- Aumento significativo do incha&ccedil;o ap&oacute;s 72 horas.</p>
+<p>- Forma&ccedil;&atilde;o de n&oacute;dulos duros ou altera&ccedil;&otilde;es na colora&ccedil;&atilde;o.</p>
+<p>- Febre ou sensa&ccedil;&atilde;o geral de mal-estar.</p>
+<p>Em casos assim, a avalia&ccedil;&atilde;o m&eacute;dica imediata &eacute; imprescind&iacute;vel.</p>
+<h3>Manuten&ccedil;&atilde;o e Reaplica&ccedil;&atilde;o</h3>
+<p>Os resultados costumam durar entre 6 a 12 meses, variando conforme o metabolismo individual e o tipo de produto utilizado. Sess&otilde;es de manuten&ccedil;&atilde;o s&atilde;o recomendadas para preservar o efeito, respeitando sempre o intervalo adequado para evitar sobrecargas.</p>
+<h2>Benef&iacute;cios E Riscos Associados</h2>
+<h3>Vantagens</h3>
+<p>- Procedimento r&aacute;pido e minimamente invasivo.</p>
+<p>- Resultados imediatos e revers&iacute;veis (no caso do &aacute;cido hialur&ocirc;nico).</p>
+<p>- Melhora da autoestima e da apar&ecirc;ncia facial.</p>
+<p>- Possibilidade de corre&ccedil;&atilde;o de assimetrias e imperfei&ccedil;&otilde;es.</p>
+<h3>Poss&iacute;veis Complica&ccedil;&otilde;es</h3>
+<p>- Rea&ccedil;&otilde;es al&eacute;rgicas (raras).</p>
+<p>- Pequenos hematomas e incha&ccedil;o tempor&aacute;rio.</p>
+<p>- Infec&ccedil;&otilde;es se cuidados inadequados forem tomados.</p>
+<p>- Resultados insatisfat&oacute;rios em casos de aplica&ccedil;&atilde;o errada.</p>
+<p>Escolher um profissional capacitado e seguir rigorosamente as orienta&ccedil;&otilde;es de cuidado s&atilde;o passos essenciais para minimizar riscos.</p>
+<h2>Escolhendo O Profissional Ideal Para A Aplica&ccedil;&atilde;o</h2>
+<p>A qualifica&ccedil;&atilde;o do especialista faz toda a diferen&ccedil;a para o sucesso do procedimento. Alguns crit&eacute;rios importantes a considerar incluem:</p>
+<p>- Forma&ccedil;&atilde;o em medicina est&eacute;tica, dermatologia ou &aacute;reas correlatas.</p>
+<p>- Experi&ecirc;ncia comprovada em t&eacute;cnicas modernas.</p>
+<p>- Portf&oacute;lio com resultados naturais e harmoniosos.</p>
+<p>- Ambiente seguro e com infraestrutura adequada.</p>
+<p>Consultar refer&ecirc;ncias e avalia&ccedil;&otilde;es de outros pacientes pode ajudar na decis&atilde;o.</p>
+<h2>Conclus&atilde;o: O Caminho Para L&aacute;bios Bonitos E Saud&aacute;veis</h2>
+<p>O processo de transforma&ccedil;&atilde;o est&eacute;tica dos l&aacute;bios evoluiu significativamente, permitindo alcan&ccedil;ar resultados que valorizam a beleza natural e respeitam as caracter&iacute;sticas individuais. A combina&ccedil;&atilde;o de t&eacute;cnicas avan&ccedil;adas, a busca pela harmoniza&ccedil;&atilde;o facial e a observ&acirc;ncia dos cuidados p&oacute;s-interven&ccedil;&atilde;o s&atilde;o fundamentais para garantir satisfa&ccedil;&atilde;o, seguran&ccedil;a e durabilidade.</p>
+<p>Investir em procedimentos realizados por profissionais qualificados, com o uso de materiais de qualidade e protocolos atualizados, &eacute; o melhor caminho para conquistar um sorriso mais confiante e atraente. Al&eacute;m disso, manter uma rotina de cuidados e acompanhamento pode prolongar os efeitos e preservar a sa&uacute;de da regi&atilde;o tratada.</p>
+<p>A est&eacute;tica labial, quando feita com responsabilidade e t&eacute;cnica, tem o poder de transformar n&atilde;o apenas a apar&ecirc;ncia, mas tamb&eacute;m a autoestima e o bem-estar de quem opta por ela.</p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

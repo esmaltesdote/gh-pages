@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otomodelação com Fios: A Técnica Sem Cortes para Corrigir a Orelha de Abano Rapidamente - Esmaltes Dote</title>
+    <meta name="description" content="">
+    
+    
+    <link rel="canonical" href="https://esmaltesdote.com.br/otomodelação-com-fios-a-técnica-sem-cortes-para-corrigir-a-orelha-de-abano-rapidamente/" />
+    
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/maquiagem/" style="color:#ffffff;">Maquiagem</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Otomodelação com Fios: A Técnica Sem Cortes para Corrigir a Orelha de Abano Rapidamente</h1>
+            
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-09-28" style="color: var(--text-muted);">
+                        28/09/2026 14:29
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/otomodelacao-com-fios-a-tecnica-sem-cortes-para-corrigir-a-orelha-de-abano-rapidamente.webp?v=1790605773" alt="Otomodelação com Fios: A Técnica Sem Cortes para Corrigir a Orelha de Abano Rapidamente">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p>A busca por solu&ccedil;&otilde;es est&eacute;ticas menos invasivas tem ganhado cada vez mais espa&ccedil;o na medicina e na est&eacute;tica. Entre os procedimentos que chamam aten&ccedil;&atilde;o por sua efic&aacute;cia e baixo grau de agressividade est&aacute; a <strong><a href="https://luquiniclinic.com.br/otomodelacao" target="_blank" rel="noopener">otomodela&ccedil;&atilde;o</a> com fios</strong>, uma t&eacute;cnica inovadora para corrigir a orelha de abano sem a necessidade de cortes, anestesia geral ou longos per&iacute;odos de recupera&ccedil;&atilde;o. Ideal para pessoas que desejam melhorar a apar&ecirc;ncia das orelhas de forma r&aacute;pida, segura e discreta, essa t&eacute;cnica tem revolucionado o tratamento desse problema t&atilde;o comum.</p>
+<h2>O Que &Eacute; A Orelha De Abano?</h2>
+<p>A <strong>orelha de abano</strong> &eacute; uma condi&ccedil;&atilde;o em que a orelha se projeta mais do que o habitual, distanciando-se da cabe&ccedil;a em um &acirc;ngulo percept&iacute;vel. Essa caracter&iacute;stica pode gerar inc&ocirc;modo est&eacute;tico e afetar a autoestima de crian&ccedil;as, adolescentes e adultos. Embora n&atilde;o cause problemas funcionais, o impacto psicol&oacute;gico pode ser significativo, levando muitas pessoas a buscarem corre&ccedil;&otilde;es cir&uacute;rgicas tradicionais.</p>
+<h2>M&eacute;todos Tradicionais Para Corre&ccedil;&atilde;o Da Orelha De Abano</h2>
+<p>Historicamente, a corre&ccedil;&atilde;o da orelha de abano envolve a otoplastia, um procedimento cir&uacute;rgico que requer incis&atilde;o, anestesia geral ou local, e um per&iacute;odo de recupera&ccedil;&atilde;o que pode variar de semanas a meses. A otoplastia &eacute; eficaz, mas apresenta algumas desvantagens:</p>
+<p>- <strong>Cicatrizes vis&iacute;veis</strong>, mesmo que pequenas, que podem incomodar o paciente.</p>
+<p>- <strong>Risco de infec&ccedil;&otilde;es e complica&ccedil;&otilde;es</strong> inerentes a qualquer procedimento cir&uacute;rgico.</p>
+<p>- <strong>Tempo de recupera&ccedil;&atilde;o prolongado</strong>, com restri&ccedil;&otilde;es para atividades f&iacute;sicas e exposi&ccedil;&atilde;o ao sol.</p>
+<p>- <strong>Dor e desconforto</strong> no p&oacute;s-operat&oacute;rio.</p>
+<p>Devido a esses fatores, muitos pacientes buscam alternativas menos invasivas, que ofere&ccedil;am resultados r&aacute;pidos e naturais sem a necessidade de cortes.</p>
+<h2>A T&eacute;cnica Inovadora Da Otomodela&ccedil;&atilde;o Com Fios</h2>
+<p>A otomodela&ccedil;&atilde;o com fios surge como uma solu&ccedil;&atilde;o moderna para quem deseja corrigir a orelha de abano sem passar por cirurgia. Trata-se de um procedimento minimamente invasivo, realizado em consult&oacute;rio, que utiliza fios especiais para reposicionar a orelha, promovendo seu alinhamento mais pr&oacute;ximo ao cr&acirc;nio.</p>
+<h3>Como Funciona a Otomodela&ccedil;&atilde;o?</h3>
+<p>Durante o procedimento, s&atilde;o inseridos fios de sustenta&ccedil;&atilde;o sob a pele da orelha, que atuam como um "fio guia" para moldar e fixar a cartilagem na posi&ccedil;&atilde;o desejada. Esses fios s&atilde;o biocompat&iacute;veis e absorv&iacute;veis, proporcionando um efeito lifting e reposicionamento gradual da orelha.</p>
+<p>O resultado &eacute; natural e imediato, com poucas ou nenhuma marca vis&iacute;vel, e a recupera&ccedil;&atilde;o &eacute; r&aacute;pida, permitindo que o paciente retome suas atividades cotidianas em pouco tempo.</p>
+<h3>Vantagens da T&eacute;cnica</h3>
+<p>- <strong>Aus&ecirc;ncia de cortes e cicatrizes</strong>.</p>
+<p>- <strong>Procedimento r&aacute;pido</strong>: dura cerca de 30 a 60 minutos.</p>
+<p>- <strong>Anestesia local</strong>, minimizando riscos.</p>
+<p>- <strong>Recupera&ccedil;&atilde;o acelerada</strong>, com m&iacute;nimo desconforto.</p>
+<p>- <strong>Resultado natural e duradouro</strong>.</p>
+<p>- <strong>Baixo risco de complica&ccedil;&otilde;es</strong>.</p>
+<h2>Quem Pode Se Beneficiar Da Otomodela&ccedil;&atilde;o?</h2>
+<p>Essa t&eacute;cnica &eacute; indicada principalmente para pessoas com orelhas de abano de grau leve a moderado, que buscam uma corre&ccedil;&atilde;o est&eacute;tica r&aacute;pida e sem interven&ccedil;&otilde;es cir&uacute;rgicas invasivas. Crian&ccedil;as a partir de 7 anos, adolescentes e adultos podem ser candidatos, desde que a avalia&ccedil;&atilde;o m&eacute;dica confirme a viabilidade do tratamento.</p>
+<p>Pacientes com orelhas muito grandes ou com deformidades complexas podem ainda precisar de procedimentos tradicionais, mas a otomodela&ccedil;&atilde;o representa uma excelente op&ccedil;&atilde;o para a maioria dos casos comuns.</p>
+<h2>A Profundidade Da Otomodela&ccedil;&atilde;o Na Corre&ccedil;&atilde;o Da Orelha De Abano</h2>
+<p>A otomodela&ccedil;&atilde;o, t&eacute;cnica que utiliza fios para moldar a estrutura cartilaginosa da orelha, atua diretamente na anatomia do pavilh&atilde;o auricular. Essa interven&ccedil;&atilde;o permite um reposicionamento eficaz sem que seja necess&aacute;rio romper a integridade da pele ou da cartilagem, o que reduz significativamente o trauma ao tecido.</p>
+<p>O segredo desse m&eacute;todo est&aacute; no uso de fios especialmente desenvolvidos para criar uma tens&atilde;o controlada na cartilagem, promovendo a remodela&ccedil;&atilde;o progressiva da forma da orelha. Essa abordagem respeita a vasculariza&ccedil;&atilde;o local, diminuindo riscos de necrose ou cicatrizes hipertr&oacute;ficas, comuns em cirurgias convencionais.</p>
+<p>Al&eacute;m disso, a t&eacute;cnica de otomodela&ccedil;&atilde;o favorece a estimula&ccedil;&atilde;o da produ&ccedil;&atilde;o natural de col&aacute;geno ao redor dos fios, o que refor&ccedil;a a fixa&ccedil;&atilde;o da orelha na nova posi&ccedil;&atilde;o e contribui para a durabilidade do resultado. Por ser um procedimento realizado em ambiente ambulatorial, sem necessidade de interna&ccedil;&atilde;o, a comodidade e seguran&ccedil;a s&atilde;o pontos fortes, atraindo pacientes que buscam solu&ccedil;&otilde;es pr&aacute;ticas e eficazes.</p>
+<h2>Passo A Passo Do Procedimento</h2>
+<p>O processo de corre&ccedil;&atilde;o da orelha de abano por meio da otomodela&ccedil;&atilde;o com fios pode ser descrito em etapas simples:</p>
+<p>1. <strong>Avalia&ccedil;&atilde;o e planejamento</strong>: o especialista analisa a estrutura das orelhas, identifica o grau de proje&ccedil;&atilde;o e define o melhor posicionamento para o reposicionamento.</p>
+<p>2. <strong>Prepara&ccedil;&atilde;o local</strong>: aplica-se anestesia local para garantir conforto durante o procedimento.</p>
+<p>3. <strong>Inser&ccedil;&atilde;o dos fios</strong>: os fios s&atilde;o introduzidos cuidadosamente com agulhas finas, posicionando-os estrategicamente para remodelar a cartilagem.</p>
+<p>4. <strong>Fixa&ccedil;&atilde;o e ajuste</strong>: o profissional ajusta a tens&atilde;o dos fios para assegurar o alinhamento correto da orelha.</p>
+<p>5. <strong>Finaliza&ccedil;&atilde;o</strong>: ap&oacute;s a inser&ccedil;&atilde;o, o paciente recebe orienta&ccedil;&otilde;es para cuidados p&oacute;s-procedimento, que s&atilde;o m&iacute;nimos.</p>
+<p>A t&eacute;cnica &eacute; praticamente indolor e o paciente pode observar a mudan&ccedil;a imediatamente ap&oacute;s o procedimento, o que &eacute; um diferencial em rela&ccedil;&atilde;o &agrave;s cirurgias tradicionais.</p>
+<h2>Cuidados E Resultados P&oacute;s-Procedimento</h2>
+<p>Ap&oacute;s a otomodela&ccedil;&atilde;o, alguns cuidados simples garantem o sucesso do tratamento:</p>
+<p>- Evitar traumas e impacto na regi&atilde;o auricular.</p>
+<p>- Utilizar faixa ou curativo protetor, se recomendado pelo m&eacute;dico, especialmente durante o sono.</p>
+<p>- N&atilde;o realizar atividades f&iacute;sicas intensas nos primeiros dias.</p>
+<p>- Manter a higiene adequada para prevenir infec&ccedil;&otilde;es.</p>
+<p>Os resultados geralmente s&atilde;o permanentes, pois a cartilagem se acomoda na nova posi&ccedil;&atilde;o com o suporte dos fios e da cicatriza&ccedil;&atilde;o natural. Em alguns casos, pode ser necess&aacute;rio um retoque para otimizar o resultado.</p>
+<h2>Compara&ccedil;&atilde;o Entre Otomodela&ccedil;&atilde;o E Otoplastia Tradicional</h2>
+<p>| Aspecto | Otomodela&ccedil;&atilde;o com Fios | Otoplastia Tradicional |</p>
+<p>|--------------------------|------------------------------------|--------------------------------------------|</p>
+<p>| Tipo de procedimento | Minimimamente invasivo | Cir&uacute;rgico com cortes |</p>
+<p>| Tempo de procedimento | 30 a 60 minutos | 1 a 2 horas |</p>
+<p>| Anestesia | Local | Local ou geral |</p>
+<p>| Cicatrizes | N&atilde;o vis&iacute;veis | Pode apresentar cicatrizes vis&iacute;veis |</p>
+<p>| Tempo de recupera&ccedil;&atilde;o | Poucos dias | Semanas a meses |</p>
+<p>| Risco de complica&ccedil;&otilde;es | Baixo | Moderado a alto |</p>
+<p>| Resultado | Natural e imediato | Natural, por&eacute;m com per&iacute;odo de incha&ccedil;o e dor |</p>
+<p>A otomodela&ccedil;&atilde;o destaca-se como uma alternativa pr&aacute;tica e eficiente, especialmente para quem busca corre&ccedil;&atilde;o r&aacute;pida e com m&iacute;nimo desconforto.</p>
+<h2>Perguntas Frequentes Sobre A T&eacute;cnica</h2>
+<h3>A otomodela&ccedil;&atilde;o d&oacute;i?</h3>
+<p>O procedimento &eacute; realizado com anestesia local, o que minimiza qualquer desconforto durante a aplica&ccedil;&atilde;o dos fios. Ap&oacute;s o procedimento, pode haver uma leve sensibilidade, mas geralmente n&atilde;o h&aacute; dor intensa.</p>
+<h3>Os fios utilizados s&atilde;o permanentes?</h3>
+<p>Os fios s&atilde;o absorv&iacute;veis e biocompat&iacute;veis, desenhados para serem absorvidos pelo organismo ao longo do tempo, enquanto promovem a remodela&ccedil;&atilde;o definitiva da cartilagem.</p>
+<h3>Existe risco de rejei&ccedil;&atilde;o ou alergia?</h3>
+<p>A chance de rejei&ccedil;&atilde;o &eacute; muito baixa, pois os materiais usados s&atilde;o testados e aprovados para uso m&eacute;dico. &Eacute; importante realizar uma avalia&ccedil;&atilde;o detalhada antes do procedimento.</p>
+<h3>Quanto tempo dura o resultado?</h3>
+<p>O resultado &eacute; duradouro, pois a cartilagem da orelha adota a nova forma com o suporte dos fios e da cicatriza&ccedil;&atilde;o, mas o paciente deve seguir as orienta&ccedil;&otilde;es m&eacute;dicas para manuten&ccedil;&atilde;o.</p>
+<h2>Considera&ccedil;&otilde;es Finais Sobre A Corre&ccedil;&atilde;o Da Orelha De Abano Sem Cirurgia</h2>
+<p>A otomodela&ccedil;&atilde;o com fios apresenta-se como uma revolu&ccedil;&atilde;o no tratamento da orelha de abano, oferecendo uma op&ccedil;&atilde;o segura, r&aacute;pida e eficaz para quem deseja melhorar sua apar&ecirc;ncia sem enfrentar os riscos e o tempo de recupera&ccedil;&atilde;o da cirurgia tradicional. Com resultados naturais e alta satisfa&ccedil;&atilde;o dos pacientes, essa t&eacute;cnica tem conquistado espa&ccedil;o como escolha preferencial para corre&ccedil;&atilde;o est&eacute;tica das orelhas projetadas.</p>
+<p>Para pessoas que desejam corrigir a orelha de abano e valorizam procedimentos minimamente invasivos, consultar um especialista qualificado para avalia&ccedil;&atilde;o &eacute; o primeiro passo rumo a um visual mais harmonioso e confian&ccedil;a renovada.</p>
+<p>---</p>
+<p><strong>Palavras-chave importantes:</strong> otomodela&ccedil;&atilde;o com fios, corre&ccedil;&atilde;o da orelha de abano, t&eacute;cnica sem cortes, procedimento minimamente invasivo, otoplastia sem cirurgia, fios absorv&iacute;veis, tratamento r&aacute;pido para orelha de abano.</p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

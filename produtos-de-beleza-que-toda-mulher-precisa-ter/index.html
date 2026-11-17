@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos de beleza que toda mulher precisa ter - Esmaltes Dote</title>
+    <meta name="description" content="">
+    
+    
+    <link rel="canonical" href="https://esmaltesdote.com.br/produtos-de-beleza-que-toda-mulher-precisa-ter/" />
+    
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/blog/" style="color:#ffffff;">Blog</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Produtos de beleza que toda mulher precisa ter</h1>
+            
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-11-17" style="color: var(--text-muted);">
+                        17/11/2026 12:19
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/produtos-de-beleza-que-toda-mulher-precisa-ter.webp?v=1794917980" alt="Produtos de beleza que toda mulher precisa ter">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p>A rotina de cuidados com a beleza &eacute; essencial para manter a autoestima elevada e real&ccedil;ar a naturalidade de cada mulher. Embora o mundo dos cosm&eacute;ticos seja vasto e repleto de op&ccedil;&otilde;es, existem <strong>produtos de beleza</strong> fundamentais que n&atilde;o podem faltar no n&eacute;cessaire. Ter esses itens &agrave; m&atilde;o facilita a vida, garante praticidade e proporciona resultados incr&iacute;veis no dia a dia.</p>
+<p>Al&eacute;m disso, escolher o que realmente funciona pode ser um desafio diante da infinidade de lan&ccedil;amentos no mercado. Por isso, conhecer o <a href="https://rankingdosmelhores.com" target="_blank" rel="noopener">ranking dos melhores</a> produtos, baseado em efic&aacute;cia, qualidade e recomenda&ccedil;&otilde;es, ajuda a tomar decis&otilde;es mais assertivas e investir em cosm&eacute;ticos que entregam benef&iacute;cios reais.</p>
+<h2>Cuidados Essenciais Para A Pele</h2>
+<p>A pele &eacute; o maior &oacute;rg&atilde;o do corpo e merece aten&ccedil;&atilde;o especial. Independentemente do tipo de pele, alguns produtos s&atilde;o indispens&aacute;veis para garantir sa&uacute;de, hidrata&ccedil;&atilde;o e prote&ccedil;&atilde;o.</p>
+<h3>Protetor solar: o item indispens&aacute;vel</h3>
+<p>O <strong>protetor solar</strong> &eacute; o aliado n&uacute;mero um para evitar o envelhecimento precoce, manchas e at&eacute; o c&acirc;ncer de pele. Ele deve ser usado diariamente, mesmo em dias nublados ou quando se est&aacute; em ambientes internos, pois a radia&ccedil;&atilde;o UV pode penetrar atrav&eacute;s das janelas.</p>
+<p>Para escolher o protetor ideal, prefira f&oacute;rmulas que ofere&ccedil;am amplo espectro (UVA e UVB), com FPS 30 ou superior. Existem vers&otilde;es espec&iacute;ficas para peles oleosas, secas ou sens&iacute;veis, o que torna poss&iacute;vel adaptar o produto &agrave;s necessidades individuais.</p>
+<h3>Hidratante facial para todos os tipos de pele</h3>
+<p>A hidrata&ccedil;&atilde;o &eacute; fundamental para manter a barreira cut&acirc;nea saud&aacute;vel e evitar o ressecamento. <strong>Hidratantes faciais</strong> com ingredientes como &aacute;cido hialur&ocirc;nico, ceramidas e niacinamida s&atilde;o &oacute;timas op&ccedil;&otilde;es que promovem elasticidade e suavidade.</p>
+<p>Mulheres com pele oleosa podem optar por texturas em gel ou fluidas, que n&atilde;o deixam sensa&ccedil;&atilde;o pesada. J&aacute; quem tem pele seca deve investir em f&oacute;rmulas mais densas e nutritivas.</p>
+<h3>S&eacute;runs com ativos potentes</h3>
+<p>Os <strong>s&eacute;runs</strong> s&atilde;o concentrados de ativos que potencializam o tratamento da pele. Entre os mais populares est&atilde;o os com vitamina C, que iluminam e uniformizam o tom, e os com retinol, que estimulam a renova&ccedil;&atilde;o celular e combatem rugas.</p>
+<p>Incorporar um s&eacute;rum &agrave; rotina noturna ou diurna, dependendo do produto, &eacute; uma forma eficaz de alcan&ccedil;ar resultados vis&iacute;veis em pouco tempo.</p>
+<h2>Produtos Para Maquiagem Que Fazem Diferen&ccedil;a</h2>
+<p>Ter uma maquiagem pr&aacute;tica e eficiente ajuda a valorizar os tra&ccedil;os naturais e revela a beleza &uacute;nica de cada mulher. Existem produtos-chave que facilitam esse processo, garantindo um acabamento profissional.</p>
+<h3>Base: escolha perfeita para um acabamento uniforme</h3>
+<p>A <strong>base</strong> &eacute; fundamental para uniformizar o tom da pele, disfar&ccedil;ar imperfei&ccedil;&otilde;es e criar uma tela perfeita para o restante da maquiagem. &Eacute; importante escolher um produto que combine com o seu tipo de pele e tom, para evitar o efeito m&aacute;scara.</p>
+<p>Bases com acabamento natural ou luminoso s&atilde;o ideais para o dia a dia, enquanto as mais matte podem ser preferidas por quem tem pele oleosa.</p>
+<h3>Corretivo para real&ccedil;ar pontos espec&iacute;ficos</h3>
+<p>O <strong>corretivo</strong> &eacute; o aliado para esconder olheiras, manchas e pequenas imperfei&ccedil;&otilde;es. Aplicado em pontos estrat&eacute;gicos, ele ilumina o rosto e d&aacute; um aspecto descansado.</p>
+<p>Tons mais claros que a pele s&atilde;o indicados para iluminar, enquanto os que se aproximam do tom natural ajudam a camuflar.</p>
+<h3>M&aacute;scara de c&iacute;lios para abrir o olhar</h3>
+<p>Para destacar os olhos, a <strong>m&aacute;scara de c&iacute;lios</strong> &eacute; indispens&aacute;vel. Ela alonga, d&aacute; volume e define os fios, abrindo o olhar.</p>
+<p>Existem vers&otilde;es &agrave; prova d&rsquo;&aacute;gua, ideais para quem busca maior durabilidade durante o dia. Escolha aquela que melhor atende &agrave;s suas necessidades e estilo.</p>
+<h3>Batom: toque final e express&atilde;o pessoal</h3>
+<p>Um bom <strong>batom</strong> pode transformar o visual e expressar personalidade. Al&eacute;m das cores cl&aacute;ssicas, como vermelho e nude, h&aacute; op&ccedil;&otilde;es hidratantes que cuidam dos l&aacute;bios enquanto proporcionam cor.</p>
+<p>Ter ao menos duas op&ccedil;&otilde;es &ndash; uma vibrante e outra neutra &ndash; ajuda a compor diferentes looks.</p>
+<h2>Itens Para Cuidados Com Os Cabelos</h2>
+<p>Cabelos bem cuidados s&atilde;o sin&ocirc;nimo de sa&uacute;de e beleza. Incorporar produtos adequados &agrave; rotina capilar faz toda a diferen&ccedil;a na apar&ecirc;ncia e no toque dos fios.</p>
+<h3>Shampoo e condicionador adequados ao tipo de cabelo</h3>
+<p>Escolher o <strong>shampoo</strong> e o <strong>condicionador</strong> certos &eacute; o primeiro passo para manter cabelos limpos e hidratados. Cada tipo de cabelo &ndash; seco, oleoso, misto, cacheado &ndash; exige f&oacute;rmulas espec&iacute;ficas que respeitem suas caracter&iacute;sticas.</p>
+<p>Produtos com ingredientes naturais, como &oacute;leos vegetais e extratos, s&atilde;o excelentes para nutrir e fortalecer.</p>
+<h3>M&aacute;scara de hidrata&ccedil;&atilde;o profunda</h3>
+<p>Uma <strong>m&aacute;scara capilar</strong> potente deve fazer parte da rotina semanal para recuperar a sa&uacute;de dos fios, especialmente ap&oacute;s processos qu&iacute;micos ou exposi&ccedil;&atilde;o ao sol.</p>
+<p>Ela proporciona nutri&ccedil;&atilde;o intensa, reduz o frizz e deixa o cabelo macio e brilhante.</p>
+<h3>&Oacute;leo capilar para brilho e prote&ccedil;&atilde;o</h3>
+<p>O <strong>&oacute;leo capilar</strong> &eacute; vers&aacute;til e ajuda a controlar o frizz, proteger contra agress&otilde;es externas e dar um brilho extra. Pode ser aplicado nas pontas ou em todo o comprimento, dependendo da necessidade.</p>
+<p>&Oacute;leos como argan, coco e jojoba s&atilde;o os mais indicados para uso di&aacute;rio.</p>
+<h2>Produtos Para Unhas Bem Cuidadas</h2>
+<p>Unhas bonitas complementam qualquer visual e demonstram cuidado e aten&ccedil;&atilde;o aos detalhes.</p>
+<h3>Base fortalecedora para unhas fr&aacute;geis</h3>
+<p>A <strong>base fortalecedora</strong> &eacute; essencial para quem sofre com unhas quebradi&ccedil;as ou que descamam facilmente. Ela cria uma camada protetora e ajuda no crescimento saud&aacute;vel.</p>
+<h3>Esmaltes de qualidade e cores vers&aacute;teis</h3>
+<p>Ter uma sele&ccedil;&atilde;o de <strong>esmaltes</strong> com cores cl&aacute;ssicas, como vermelho, nude e vinho, permite variar conforme a ocasi&atilde;o, mantendo sempre as unhas bonitas e bem cuidadas.</p>
+<h3>Removedor de esmalte eficiente e suave</h3>
+<p>Um bom <strong>removedor de esmalte</strong> que n&atilde;o resseca as unhas e cut&iacute;culas faz toda a diferen&ccedil;a para manter a sa&uacute;de das unhas.</p>
+<h2>Ferramentas Indispens&aacute;veis Para A Rotina De Beleza</h2>
+<p>Al&eacute;m dos produtos, algumas ferramentas facilitam a aplica&ccedil;&atilde;o e os cuidados, garantindo resultados profissionais em casa.</p>
+<h3>Pinc&eacute;is e esponjas para maquiagem</h3>
+<p>Investir em <strong>pinc&eacute;is e esponjas</strong> de qualidade garante uma aplica&ccedil;&atilde;o uniforme e acabamento impec&aacute;vel. Cada tipo de pincel tem uma fun&ccedil;&atilde;o espec&iacute;fica, como aplicar base, sombra ou blush.</p>
+<h3>Pin&ccedil;a e cortador de unhas</h3>
+<p>Manter a <strong>pin&ccedil;a</strong> afiada e o <strong>cortador de unhas</strong> em boas condi&ccedil;&otilde;es permite um cuidado preciso e evita machucados.</p>
+<h3>Secador e chapinha</h3>
+<p>Para quem gosta de variar o penteado, ter um <strong>secador</strong> e uma <strong>chapinha</strong> de qualidade &eacute; fundamental. Eles ajudam a modelar o cabelo e d&atilde;o acabamento profissional.</p>
+<h2>Dicas Para Manter A Beleza Natural</h2>
+<p>Al&eacute;m dos produtos, adotar h&aacute;bitos saud&aacute;veis &eacute; essencial para potencializar os resultados e garantir uma beleza duradoura.</p>
+<h3>Alimenta&ccedil;&atilde;o equilibrada e hidrata&ccedil;&atilde;o</h3>
+<p>Consumir alimentos ricos em vitaminas, minerais e antioxidantes favorece a sa&uacute;de da pele, cabelos e unhas. Beber bastante &aacute;gua mant&eacute;m o corpo hidratado e a pele com vi&ccedil;o natural.</p>
+<h3>Rotina de sono adequada</h3>
+<p>Ter uma boa noite de sono &eacute; fundamental para a regenera&ccedil;&atilde;o celular e para evitar olheiras e incha&ccedil;os no rosto.</p>
+<h3>Pr&aacute;tica regular de exerc&iacute;cios f&iacute;sicos</h3>
+<p>Exerc&iacute;cios estimulam a circula&ccedil;&atilde;o sangu&iacute;nea e promovem o bem-estar geral, refletindo diretamente na apar&ecirc;ncia.</p>
+<h2>Considera&ccedil;&otilde;es Finais</h2>
+<p>Ter um conjunto de <strong>produtos de beleza</strong> essenciais ajuda a criar uma rotina pr&aacute;tica, eficiente e personalizada. Desde os cuidados com a pele at&eacute; a maquiagem e os cabelos, cada item tem sua import&acirc;ncia para real&ccedil;ar a beleza natural e cuidar da sa&uacute;de.</p>
+<p>Investir em produtos de qualidade, adaptados ao seu tipo de pele e cabelo, e manter h&aacute;bitos saud&aacute;veis s&atilde;o os segredos para um visual sempre impec&aacute;vel e radiante. Dessa forma, &eacute; poss&iacute;vel sentir-se confiante todos os dias, destacando o melhor de si com simplicidade e eleg&acirc;ncia.</p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>

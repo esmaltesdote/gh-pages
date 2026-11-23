@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Como melhorar a autoestima no dia a dia - Esmaltes Dote</title>
+    <meta name="description" content="">
+    
+    
+    <link rel="canonical" href="https://esmaltesdote.com.br/como-melhorar-a-autoestima-no-dia-a-dia/" />
+    
+    
+    
+    
+    <link rel="icon" href="/static/uploads/ico.JPG" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/uploads/ico.JPG">
+    
+
+    <link rel="stylesheet" href="/themes/gshow_pop_v2/assets/css/style.css?v=2.0">
+    <!-- Bootstrap Icons (Usado internamente pelo CMS e para redes sociais) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Algumas lógicas do CMS dependem de classes Bootstrap puras (RaioX). Injetamos a versão ultra-leve do bootstrap apenas para os blocos do CMS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Sistema de Paletas de Cores -->
+    
+
+    
+</head>
+<body>
+<header class="gs-header">
+    <div class="gs-header__container">
+        <!-- Lado Esquerdo -->
+        <div class="gs-header__left">
+            <button class="gs-header__menu-btn" id="gs-menu-toggle" aria-label="Abrir Menu">
+                <i class="bi bi-list"></i>
+                <span class="gs-header__menu-text">MENU</span>
+            </button>
+
+            <a href="/" class="gs-header__logo">
+                
+                    <img src="/static/uploads/logo-dote.webp" alt="Esmaltes Dote">
+                
+            </a>
+        </div>
+
+        <!-- Centro: Nome do Site com fonte fina -->
+        <a href="/" class="gs-header__center">
+            Esmaltes Dote
+        </a>
+
+        <!-- Lado Direito: Buscar -->
+        <div class="gs-header__right">
+            <button class="gs-header__right-item" id="gs-search-toggle" aria-label="Pesquisar" style="background:none; border:none; color:#fff;">
+                <i class="bi bi-search"></i>
+                <span style="text-transform: uppercase;">Buscar</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay de Busca (Search Modal) -->
+<div class="gs-search-overlay" id="gs-search-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; padding:2rem;">
+    <button id="gs-search-close" style="position:absolute; top:20px; right:30px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    <div style="max-width:600px; margin: 4rem auto 0; text-align:center;">
+        <input type="text" id="gs-search-input" placeholder="O que você está procurando?" style="width:100%; padding:1rem; font-size:1.5rem; border:none; border-bottom:2px solid var(--accent-color); background:transparent; color:#fff; outline:none; font-family:var(--font-ui);">
+        <div id="gs-search-results" style="margin-top:2rem; text-align:left; max-height:60vh; overflow-y:auto; font-family:var(--font-ui);"></div>
+    </div>
+</div>
+
+<!-- Sub-Barra de Categoria (Rosa Escuro) -->
+<div class="gs-header__subbar">
+    
+        <a href="/categoria/beleza/" style="color:#ffffff;">Beleza</a>
+    
+</div>
+
+<!-- Overlay Escuro do Menu -->
+<div class="gs-overlay" id="gs-overlay"></div>
+
+<!-- Menu Oculto (Offcanvas) -->
+<nav class="gs-nav-offcanvas" id="gs-offcanvas">
+    <button class="gs-nav-offcanvas__close" id="gs-menu-close" aria-label="Fechar Menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <br><br>
+    
+        <a href="/">INÍCIO</a>
+        
+            <a href="/categoria/blog/">Blog</a>
+        
+            <a href="/categoria/beleza/">Beleza</a>
+        
+            <a href="/categoria/maquiagem/">Maquiagem</a>
+        
+            <a href="/categoria/moda/">Moda</a>
+        
+            <a href="/categoria/so-para-eles/">Só para Eles</a>
+        
+            <a href="/categoria/unhas/">Unhas</a>
+        
+    
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MENU HAMBURGUER LOGIC ---
+        const toggleBtn = document.getElementById('gs-menu-toggle');
+        const closeBtn = document.getElementById('gs-menu-close');
+        const offcanvas = document.getElementById('gs-offcanvas');
+        const overlay = document.getElementById('gs-overlay');
+
+        function openMenu() {
+            offcanvas.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            offcanvas.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (overlay) overlay.addEventListener('click', closeMenu);
+
+        // --- SEARCH LOGIC ---
+        const searchToggle = document.getElementById('gs-search-toggle');
+        const searchOverlay = document.getElementById('gs-search-overlay');
+        const searchClose = document.getElementById('gs-search-close');
+        const searchInput = document.getElementById('gs-search-input');
+        const searchResults = document.getElementById('gs-search-results');
+        let postsData = [];
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener('click', function() {
+                searchOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                searchInput.focus();
+                
+                // Fetch posts.json only once
+                if (postsData.length === 0) {
+                    fetch('/posts.json')
+                        .then(response => response.json())
+                        .then(data => { postsData = data; })
+                        .catch(err => console.error('Erro ao carregar pesquisa', err));
+                }
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                if (query.length < 2) return;
+                
+                const filtered = postsData.filter(post => post.title.toLowerCase().includes(query));
+                
+                if (filtered.length === 0) {
+                    searchResults.innerHTML = '<p style="color:#aaa; text-align:center; padding:1rem;">Nenhum resultado encontrado.</p>';
+                    return;
+                }
+                
+                filtered.forEach(post => {
+                    const link = document.createElement('a');
+                    link.href = '/' + post.slug + '/';
+                    link.style.display = 'flex';
+                    link.style.gap = '15px';
+                    link.style.alignItems = 'center';
+                    link.style.padding = '10px 0';
+                    link.style.borderBottom = '1px solid #333';
+                    link.style.color = '#fff';
+                    link.style.textDecoration = 'none';
+                    
+                    let imgHtml = post.image ? `<img src="${post.image}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">` : `<div style="width:60px; height:60px; background:#444; border-radius:4px;"></div>`;
+                    
+                    link.innerHTML = imgHtml + `<div><div style="font-size:0.8rem; color:#aaa;">${post.date || ''}</div><div style="font-weight:700;">${post.title}</div></div>`;
+                    searchResults.appendChild(link);
+                });
+            });
+        }
+    });
+</script>
+
+<main class="container" style="padding-top: 3rem;">
+    <article>
+        <header class="post-header">
+            
+            <h1 class="post-title">Como melhorar a autoestima no dia a dia</h1>
+            
+            
+
+            <div class="post-meta" style="margin-top: 1rem; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 1rem 0; max-width: 760px; margin-left: auto; margin-right: auto;">
+                
+                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        
+                            <i class="bi bi-person-circle" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        
+                        <span style="font-weight: 700; color: var(--text-main);">Por <a href="/autor/maria-miranda/" style="color: var(--accent-color);">Maria Miranda</a></span>
+                    </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; flex: 1 1 auto;">
+                    <time datetime="2026-11-20" style="color: var(--text-muted);">
+                        20/11/2026 00:00
+                    </time>
+                    <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-color);">
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        
+            <figure class="post-featured-image">
+                <img src="/static/uploads/como-melhorar-a-autoestima-no-dia-a-dia.webp?v=1795437001" alt="Como melhorar a autoestima no dia a dia">
+            </figure>
+        
+
+        
+
+        <div class="post-content">
+            <p dir="ltr">Descobrir como melhorar a autoestima &eacute; um processo cont&iacute;nuo que envolve aspectos mentais, emocionais e f&iacute;sicos. Ter uma vis&atilde;o positiva sobre si mesmo impacta diretamente a qualidade de vida, as rela&ccedil;&otilde;es interpessoais e a disposi&ccedil;&atilde;o para enfrentar desafios di&aacute;rios.</p>
+<h2 dir="ltr">Como melhorar a autoestima praticando o autocuidado di&aacute;rio</h2>
+<p dir="ltr">O autocuidado vai al&eacute;m de momentos pontuais de lazer. Ele abrange a forma como voc&ecirc; cuida do pr&oacute;prio corpo, da mente e da sa&uacute;de geral no cotidiano.</p>
+<p dir="ltr">Pequenas mudan&ccedil;as de h&aacute;bito geram reflexos profundos na percep&ccedil;&atilde;o de valor pr&oacute;prio. Praticar atividades f&iacute;sicas, ter momentos de descanso e manter a rotina de sa&uacute;de em dia s&atilde;o atitudes fundamentais.</p>
+<h3 dir="ltr">A rela&ccedil;&atilde;o entre a sa&uacute;de f&iacute;sica e a confian&ccedil;a</h3>
+<p dir="ltr">A percep&ccedil;&atilde;o corporal e a satisfa&ccedil;&atilde;o com a pr&oacute;pria imagem desempenham um papel importante na rotina. Quando o corpo e a mente est&atilde;o em equil&iacute;brio, a disposi&ccedil;&atilde;o pessoal aumenta consideravelmente.</p>
+<p dir="ltr">O sorriso, por exemplo, &eacute; um elemento central na express&atilde;o facial e na comunica&ccedil;&atilde;o di&aacute;ria. Desconfortos est&eacute;ticos ou funcionais na regi&atilde;o bucal podem levar ao retraimento social e &agrave; timidez ao conversar ou fotografar.</p>
+<p dir="ltr">Por esse motivo, buscar o acompanhamento de profissionais especializados ajuda a recuperar a funcionalidade e o bem-estar ao sorrir. Em casos de perdas dent&aacute;rias, entender <a href="https://clinicadentalcenter.com.br/artigos/qual-o-melhor-tipo-de-protese-dentaria" target="_blank" rel="noopener">qual o melhor tipo de pr&oacute;tese dent&aacute;ria</a> para a sua necessidade &eacute; um passo importante para restabelecer a mastiga&ccedil;&atilde;o e a seguran&ccedil;a na conviv&ecirc;ncia social.</p>
+<h2 dir="ltr">Estrat&eacute;gias mentais para desenvolver a autocompaix&atilde;o</h2>
+<p dir="ltr">A forma como voc&ecirc; dialoga consigo mesmo influencia a percep&ccedil;&atilde;o interna de capacidade. Cr&iacute;ticas severas e compara&ccedil;&otilde;es constantes com outras pessoas tendem a desgastar a autoconfian&ccedil;a de forma gradual.</p>
+<p dir="ltr">Desenvolver uma postura compreensiva diante de falhas ajuda a manter a estabilidade emocional. Isso permite encarar erros pontuais como etapas naturais do aprendizado, em vez de atestados de incapacidade.</p>
+<div dir="ltr" align="left">
+<table><colgroup><col width="312"><col width="312"></colgroup>
+<thead>
+<tr>
+<th scope="col">
+<p dir="ltr">Pensamento limitante</p>
+</th>
+<th scope="col">
+<p dir="ltr">Reenquadramento construtivo</p>
+<p dir="ltr">&nbsp;</p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<p dir="ltr">"Eu nunca consigo fazer nada direito."</p>
+</td>
+<td>
+<p dir="ltr">"Desta vez n&atilde;o saiu como esperado, mas posso ajustar a estrat&eacute;gia."</p>
+</td>
+</tr>
+<tr>
+<td>
+<p dir="ltr">"Os outros s&atilde;o sempre mais bem-sucedidos."</p>
+</td>
+<td>
+<p dir="ltr">"Cada pessoa tem uma trajet&oacute;ria pr&oacute;pria e ritmos diferentes."</p>
+</td>
+</tr>
+<tr>
+<td>
+<p dir="ltr">"N&atilde;o posso errar nesta tarefa."</p>
+</td>
+<td>
+<p dir="ltr">"O aprendizado acontece durante o processo de tentativa."</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 dir="ltr">A&ccedil;&otilde;es pr&aacute;ticas para o fortalecimento da autoconfian&ccedil;a</h2>
+<p dir="ltr">Al&eacute;m do aspecto mental, a cria&ccedil;&atilde;o de metas di&aacute;rias sustent&aacute;veis contribui para a sensa&ccedil;&atilde;o de realiza&ccedil;&atilde;o pessoal. O ac&uacute;mulo de pequenas vit&oacute;rias di&aacute;rias gera motiva&ccedil;&atilde;o para objetivos maiores.</p>
+<p dir="ltr">Definir metas curtas e alcan&ccedil;&aacute;veis permite visualizar o pr&oacute;prio progresso. Essa din&acirc;mica constante refor&ccedil;a a sensa&ccedil;&atilde;o de efici&ecirc;ncia e controle sobre a pr&oacute;pria vida.</p>
+<ul>
+<li dir="ltr" aria-level="1">
+<p dir="ltr" role="presentation">Estabele&ccedil;a limites claros: Aprenda a dizer n&atilde;o a demandas excessivas para proteger seu tempo e energia.</p>
+</li>
+<li dir="ltr" aria-level="1">
+<p dir="ltr" role="presentation">Reconhe&ccedil;a conquistas: Celebre o esfor&ccedil;o empregado em tarefas conclu&iacute;das, independentemente da complexidade.</p>
+</li>
+<li dir="ltr" aria-level="1">
+<p dir="ltr" role="presentation">Filtre o consumo de informa&ccedil;&atilde;o: Reduza o tempo em redes sociais que estimulam compara&ccedil;&otilde;es irreais.</p>
+</li>
+<li dir="ltr" aria-level="1">
+<p dir="ltr" role="presentation">Cultive boas conex&otilde;es: Mantenha contato com pessoas que incentivem seu desenvolvimento e apoiem suas escolhas.</p>
+</li>
+</ul>
+<h2 dir="ltr">A import&acirc;ncia de manter o compromisso de longo prazo</h2>
+<p dir="ltr">Construir uma autoimagem s&oacute;lida exige paci&ecirc;ncia e const&acirc;ncia no dia a dia. N&atilde;o se trata de buscar uma perfei&ccedil;&atilde;o inalcan&ccedil;&aacute;vel, mas de valorizar cada avan&ccedil;o ao longo do percurso.</p>
+<p dir="ltr">Ao integrar cuidados com o corpo, com a sa&uacute;de funcional e com a mente, a consolida&ccedil;&atilde;o da seguran&ccedil;a pessoal torna-se um processo sustent&aacute;vel e duradouro.</p>
+<p>&nbsp;</p>
+        </div>
+
+        
+    </article>
+</main>
+
+<footer class="gs-footer">
+    <div class="container">
+        <div class="gs-footer__social">
+            
+            
+            
+            
+        </div>
+        
+        <ul class="gs-footer__menu">
+            
+        </ul>
+        
+        <div class="gs-footer__description" style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-ui);">
+            Um espaço dedicado a compartilhar dicas para mulheres !
+        </div>
+        
+        
+        <div class="gs-footer__copyright">
+            <p>@2026</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Carrossel nativo simplificado (substituto das chamadas de script originais caso tenha blocos CMS)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btnPrev = e.target.closest('.btn-carousel-prev');
+            if (btnPrev) {
+                const wrapper = btnPrev.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft <= 5) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+            const btnNext = e.target.closest('.btn-carousel-next');
+            if (btnNext) {
+                const wrapper = btnNext.closest('div[id^="carrossel-"]');
+                const track = wrapper.querySelector('.dsc-track');
+                const item = track.querySelector('.dsc-item');
+                if (track && item) {
+                    const scrollAmount = item.offsetWidth + 20;
+                    if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 5) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+                    else { track.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+                }
+                return;
+            }
+        });
+    });
+</script>
+</body>
+</html>
